@@ -17,21 +17,21 @@
 - Finals: 25.01.2027 - 21.02.2027.
 - Holidays: 25.11.2026, 08.12.2026, 24.12.2026 - 03.01.2027.
 
-1. 07.10, Wednesday, 7:15 pm, ???
-2. 14.07, Wednesday, 7:15 pm, ???
-3. 21.07, Wednesday, 7:15 pm, ???
-4. 28.07, Wednesday, 7:15 pm, ???
-5. 04.11, Wednesday, 7:15 pm, ???
-6. 11.11, Wednesday, 7:15 pm, ???
-7. 18.11, Wednesday, 7:15 pm, ???
-8. **25.11, Wednesday, 7:15 pm, ???**
-9. 02.12, Wednesday, 7:15 pm, ???
-10. 09.12, Wednesday, 7:15 pm, ???
-11. 16.12, Wednesday, 7:15 pm, ???
-12. 06.01, Wednesday, 7:15 pm, ???
-13. 13.01, Wednesday, 7:15 pm, ???
-14. 20.01, Wednesday, 7:15 pm, ???
-15. **27.01, Wednesday, 7:15 pm, ???**
+1. 07.10, Wednesday, 7:15 pm, **326?**
+2. 14.10, Wednesday, 7:15 pm, **326?**
+3. 21.10, Wednesday, 7:15 pm, **326?**
+4. 28.10, Wednesday, 7:15 pm, **326?**
+5. **30.10, Friday, 5:15 pm, ???**
+6. 04.11, Wednesday, 7:15 pm, **326?**
+7. 11.11, Wednesday, 7:15 pm, **326?**
+8. **13.11, Friday, 5:15 pm, ???**
+9. 18.11, Wednesday, 7:15 pm, **326?**
+10. 02.12, Wednesday, 7:15 pm, **326?**
+11. 09.12, Wednesday, 7:15 pm, **326?**
+12. **12.12, Saturday, 10:15 am, ???**
+13. 16.12, Wednesday, 7:15 pm, **326?**
+14. 13.01, Wednesday, 7:15 pm, **326?**
+15. 20.01, Wednesday, 7:15 pm, **326?**
 
 ## ⏰ Schedules
 
