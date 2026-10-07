@@ -1,12 +1,32 @@
+import sys
 import unittest
 
 from weeks import main
 
 
 class TestParseCommandLineArguments(unittest.TestCase):
+    def setUp(self) -> None:
+        self.original_argv = sys.argv
+
+    def tearDown(self) -> None:
+        sys.argv = self.original_argv
+
     def test_when_arg_not_set_then_returns_one_one(self):
         # Arrange
         expected = (1, 1)
+        sys.argv = [self.original_argv[0]]
+
+        # Act
+        actual = main.parse_command_line_arguments()
+
+        # Assert
+        self.assertEqual(actual, expected)
+
+    def test_when_only_week_set_then_returns_that_week_and_one(self):
+        # Arrange
+        expected_week = 5
+        expected = (expected_week, 1)
+        sys.argv = [self.original_argv[0], "-w", str(expected_week)]
 
         # Act
         actual = main.parse_command_line_arguments()
