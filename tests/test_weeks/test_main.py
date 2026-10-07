@@ -34,6 +34,18 @@ class TestParseCommandLineArguments(unittest.TestCase):
         # Assert
         self.assertEqual(actual, expected)
 
+    def test_when_only_task_set_then_returns_that_task_and_one(self):
+        # Arrange
+        expected_task = 12
+        expected = (1, expected_task)
+        sys.argv = [self.original_argv[0], "-t", str(expected_task)]
+
+        # Act
+        actual = main.parse_command_line_arguments()
+
+        # Assert
+        self.assertEqual(actual, expected)
+
 
 class TestMain(unittest.TestCase):
     def test_when_called_then_returns_zero(self):
