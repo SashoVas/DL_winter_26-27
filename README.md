@@ -17,7 +17,7 @@
 - Finals: 25.01.2027 - 21.02.2027.
 - Holidays: 25.11.2026, 08.12.2026, 24.12.2026 - 03.01.2027.
 
-1. 07.10, Wednesday, 7:15 pm, 326
+1. :white_check_mark: 07.10, Wednesday, 7:15 pm, 326
 2. 14.10, Wednesday, 7:15 pm, **326?**
 3. 21.10, Wednesday, 7:15 pm, **326?**
 4. 28.10, Wednesday, 7:15 pm, **326?**
