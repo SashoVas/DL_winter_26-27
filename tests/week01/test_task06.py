@@ -13,10 +13,12 @@ class TestWeek01Task06(unittest.TestCase):
         # Arrange
         expected = """1D array (vector): shape=(5,), dtype=int64, ndim=1, size=5
 [1 2 3 4 5]
+
 2D array (matrix): shape=(2, 3), dtype=int64, ndim=2, size=6
 [[1 2 3]
  [4 5 6]]
-3D array (matrix2): shape=(2, 3, 4), dtype=int64, ndim=3, size=24
+
+3D array (volume): shape=(2, 3, 4), dtype=int64, ndim=3, size=24
 [[[ 0  1  2  3]
   [ 4  5  6  7]
   [ 8  9 10 11]]
