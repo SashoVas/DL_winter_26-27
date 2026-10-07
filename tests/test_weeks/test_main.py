@@ -1,6 +1,8 @@
 import sys
 import unittest
 
+import pytest
+
 from weeks import main
 
 
@@ -67,12 +69,37 @@ class TestParseCommandLineArguments(unittest.TestCase):
 
 
 class TestMain(unittest.TestCase):
+    def setUp(self) -> None:
+        self.original_argv = sys.argv
+
+    def tearDown(self) -> None:
+        sys.argv = self.original_argv
+
+    @pytest.fixture(autouse=True)
+    def inject_fixtures(self, capsys):
+        self.capsys = capsys
+
     def test_when_called_then_returns_zero(self):
         # Arrange
         expected = 0
+        sys.argv = [self.original_argv[0]]
 
         # Act
         actual = main.main()
 
         # Assert
         self.assertEqual(actual, expected)
+
+    def test_when_no_args_set_then_executes_task1_week1(self):
+        # Arrange
+        expected = 0
+        expected_log = "Running task 1 from week 1."
+        sys.argv = [self.original_argv[0]]
+
+        # Act
+        actual = main.main()
+        actual_log = self.capsys.readouterr().out
+
+        # Assert
+        self.assertEqual(actual, expected)
+        self.assertIn(expected_log, actual_log)

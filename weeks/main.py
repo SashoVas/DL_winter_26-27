@@ -1,4 +1,5 @@
 import argparse
+import importlib
 
 
 def parse_command_line_arguments() -> tuple[int, int]:
@@ -11,4 +12,8 @@ def parse_command_line_arguments() -> tuple[int, int]:
 
 
 def main() -> int:
-    return 0
+    week, task = parse_command_line_arguments()
+    week_str = f"{week:02d}"
+    task_str = f"{task:02d}"
+    mod = importlib.import_module(f"weeks.week{week_str}.task{task_str}")
+    return mod.main()
