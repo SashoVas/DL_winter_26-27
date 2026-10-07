@@ -103,3 +103,18 @@ class TestMain(unittest.TestCase):
         # Assert
         self.assertEqual(actual, expected)
         self.assertIn(expected_log, actual_log)
+
+    def test_when_task_does_not_exist_then_value_error_is_thrown(self):
+        # Arrange
+        week = "99"
+        task = "100"
+        expected_log = f"Task {task} does not exist in week {week}!"
+        sys.argv = [self.original_argv[0], "-w", week, "-t", task]
+
+        # Act
+        with pytest.raises(ValueError) as exc:
+            main.main()
+        actual_log = str(exc.value)
+
+        # Assert
+        self.assertIn(expected_log, actual_log)

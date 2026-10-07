@@ -15,5 +15,8 @@ def main() -> int:
     week, task = parse_command_line_arguments()
     week_str = f"{week:02d}"
     task_str = f"{task:02d}"
-    mod = importlib.import_module(f"weeks.week{week_str}.task{task_str}")
+    try:
+        mod = importlib.import_module(f"weeks.week{week_str}.task{task_str}")
+    except ModuleNotFoundError:
+        raise ValueError(f"Task {task_str} does not exist in week {week_str}!")
     return mod.main()
