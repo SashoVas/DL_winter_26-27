@@ -1,10 +1,11 @@
 import unittest
+
 import pytest
+
 from weeks.week01 import task08
 
 
 class TestWeek01Task08(unittest.TestCase):
-
     @pytest.fixture(autouse=True)
     def inject_fixtures(self, capsys):
         self.capsys = capsys
@@ -13,36 +14,46 @@ class TestWeek01Task08(unittest.TestCase):
         self,
     ):
         # Arrange
-        expected_array_len = "Array length: 100000"
+        expected_array_len = "Array length: 100"
+
+        expected_outputs = [
+            "Loop sum:",
+            "Vectorized sum:",
+            "Vectorized speedup:",
+            "Vectorized mean:",
+            "Vectorized std:",
+            "Vectorized min/max:",
+        ]
 
         # Act
         task08.main()
 
         # Assert
         actual = self.capsys.readouterr().out
-        self.assertIn("Loop sum:", actual)
-        self.assertIn("Vectorized sum:", actual)
-        self.assertIn("Vectorized speedup:", actual)
-        self.assertIn("Vectorized mean:", actual)
+        for i in expected_outputs:
+            self.assertIn(i, actual)
 
-        self.assertIn("Vectorized std:", actual)
-        self.assertIn("Vectorized min/max:", actual)
+        self.assertIn(expected_array_len, actual)
 
     def test_when_ran_with_input_returns_results_for_the_current_input(
         self,
     ):
         # Arrange
         expected_array_len = "Array length: 100"
-
+        expected_outputs = [
+            "Loop sum:",
+            "Vectorized sum:",
+            "Vectorized speedup:",
+            "Vectorized mean:",
+            "Vectorized std:",
+            "Vectorized min/max:",
+        ]
         # Act
         task08.main(100)
 
         # Assert
         actual = self.capsys.readouterr().out
-        self.assertIn("Loop sum:", actual)
-        self.assertIn("Vectorized sum:", actual)
-        self.assertIn("Vectorized speedup:", actual)
-        self.assertIn("Vectorized mean:", actual)
+        for i in expected_outputs:
+            self.assertIn(i, actual)
 
-        self.assertIn("Vectorized std:", actual)
-        self.assertIn("Vectorized min/max:", actual)
+        self.assertIn(expected_array_len, actual)

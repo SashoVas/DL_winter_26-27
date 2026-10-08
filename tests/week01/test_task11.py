@@ -1,11 +1,12 @@
 import unittest
-import pytest
-from weeks.week01 import task11
 from unittest.mock import patch
+
+import pytest
+
+from weeks.week01 import task11
 
 
 class TestWeek01Task11(unittest.TestCase):
-
     @pytest.fixture(autouse=True)
     def inject_fixtures(self, capsys):
         self.capsys = capsys

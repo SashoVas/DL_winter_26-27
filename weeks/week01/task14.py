@@ -1,5 +1,6 @@
-from dl_lib.preprocessing.functional import min_max_normalize, standardize
 import numpy as np
+
+from dl_lib.preprocessing.functional import min_max_normalize, standardize
 
 
 def main() -> None:

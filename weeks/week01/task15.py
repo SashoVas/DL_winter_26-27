@@ -16,7 +16,7 @@ def main() -> None:
         f"dtype={torch_matrix.dtype}, shape={torch_matrix.shape}, device={torch_matrix.device}"
     )
     print()
-    print(f"Selected device: cpu")
+    print("Selected device: cpu")
     torch_matrix.to("cpu")  # I dont have gpu on this computer
     print(f"Tensor moved to device: {torch_matrix.device}, dtype=torch.float32")
 

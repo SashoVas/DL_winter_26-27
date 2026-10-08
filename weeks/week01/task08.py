@@ -1,6 +1,7 @@
-import numpy as np
-import time
 import math
+import time
+
+import numpy as np
 
 
 def main(vector_len: int = 100000) -> None:
@@ -19,7 +20,7 @@ def main(vector_len: int = 100000) -> None:
     end = time.time()
     vectorized_time = end - start
     print(f"Vectorized sum: {vectorized_sum} ({vectorized_time:.4f}s)")
-    print(f"Vectorized speedup: {math.floor(iteration_time/vectorized_time)}x")
+    print(f"Vectorized speedup: {math.floor(iteration_time / vectorized_time)}x")
     print()
     print(f"Vectorized mean: {vec.mean()}")
     print(f"Vectorized std: {vec.std()}")

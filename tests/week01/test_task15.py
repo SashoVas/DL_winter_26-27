@@ -1,10 +1,11 @@
 import unittest
+
 import pytest
+
 from weeks.week01 import task15
 
 
 class TestWeek01Task15(unittest.TestCase):
-
     @pytest.fixture(autouse=True)
     def inject_fixtures(self, capsys):
         self.capsys = capsys
