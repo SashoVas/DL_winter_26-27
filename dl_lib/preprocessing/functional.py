@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def min_max_normalize(array: np.array):
+def min_max_normalize(array: np.ndarray) -> np.ndarray:
     min = array.min()
     max = array.max()
     if np.isclose(min, max):
@@ -10,7 +10,7 @@ def min_max_normalize(array: np.array):
     return (array - min) / (max - min)
 
 
-def standardize(array: np.array):
+def standardize(array: np.ndarray) -> np.ndarray:
     mu = array.mean()
     sigma = array.std()
     if np.isclose(sigma, 0):
