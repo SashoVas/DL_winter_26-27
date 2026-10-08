@@ -1,6 +1,6 @@
 import unittest
 import pytest
-from weeks.week01 import task06, task07
+from weeks.week01 import task07
 
 
 class TestWeek01Task07(unittest.TestCase):
