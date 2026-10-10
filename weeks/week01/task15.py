@@ -18,8 +18,5 @@ def main() -> None:
     print()
     print("Selected device: cpu")
     torch_matrix.to("cpu")  # I dont have gpu on this computer
-    print(f"Tensor moved to device: {torch_matrix.device}, dtype=torch.float32")
-
-
-if __name__ == "__main__":
-    main()
+    print(
+        f"Tensor moved to device: {torch_matrix.device}, dtype=torch.float32")

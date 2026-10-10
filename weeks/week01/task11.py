@@ -11,7 +11,8 @@ def main(
 ) -> None:
     matplotlib.use("Agg")
 
-    print(f"Generated {num_points} points for y = {slope}*x + {intercept} + noise")
+    print(
+        f"Generated {num_points} points for y = {slope}*x + {intercept} + noise")
     x = np.linspace(range[0], range[1], num_points)
     noise = np.random.randn(num_points)
     y = slope * x + intercept + noise
@@ -25,7 +26,3 @@ def main(
     plt.grid(True)
     plt.tight_layout()
     plt.show()
-
-
-if __name__ == "__main__":
-    main()

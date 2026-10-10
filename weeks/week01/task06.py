@@ -19,7 +19,3 @@ def main() -> None:
         f"3D array (volume): shape={matrix2.shape}, dtype={matrix2.dtype}, ndim={matrix2.ndim}, size={matrix2.size}"
     )
     print(matrix2)
-
-
-if __name__ == "__main__":
-    main()

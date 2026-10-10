@@ -28,7 +28,3 @@ def main(histogram_samples_count: int = 1000) -> None:
 
     fig.tight_layout()
     plt.show()
-
-
-if __name__ == "__main__":
-    main()

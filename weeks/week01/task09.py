@@ -18,7 +18,3 @@ def main() -> None:
         matrix + np.arange(2)
     except ValueError as e:
         print(str(e))
-
-
-if __name__ == "__main__":
-    main()

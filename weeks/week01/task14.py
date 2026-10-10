@@ -11,11 +11,8 @@ def main() -> None:
     print("Min-max:     ", min_max)
     print("Standardized:", standardized)
     print()
-    print(f"Min-max range: [{min_max.min().item():.4f}, {min_max.max().item():.4f}]")
+    print(
+        f"Min-max range: [{min_max.min().item():.4f}, {min_max.max().item():.4f}]")
     print(
         f"Standardized mean/std: {standardized.mean():.4f} / {standardized.std():.4f}"
     )
-
-
-if __name__ == "__main__":
-    main()

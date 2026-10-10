@@ -18,7 +18,3 @@ def main() -> None:
     print()
     print("The transpose of A:")
     print(A.T)
-
-
-if __name__ == "__main__":
-    main()

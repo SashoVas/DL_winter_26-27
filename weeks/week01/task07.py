@@ -14,7 +14,3 @@ def main():
     print("Boolean mask for more than 6:")
     print(matrix > 6)
     print("Values satisfying the mask:", matrix[matrix > 6])
-
-
-if __name__ == "__main__":
-    main()
