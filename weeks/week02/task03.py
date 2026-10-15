@@ -24,5 +24,5 @@ def main(pred: np.ndarray = DEFAULT_PRED, true: np.ndarray = DEFAULT_TRUE) -> No
 
     pred2 = np.array([2.0, 6.0, 8.0, 100.0])
     print("y_pred with one extreme outlier:", pred2)
-    print("MAE with outlier:", mae(pred2, true))
-    print("MSE with outlier:", mse(pred2, true))
+    print("MAE with outlier:", mae(true, pred2))
+    print("MSE with outlier:", mse(true, pred2))

@@ -10,9 +10,9 @@ def main() -> None:
     growth = np.linspace(0.0, 10.0, 50).reshape(50)
     pred[:, 0] = growth
 
-    mae_losses = np.asarray(mae(pred, true, axis=1))
-    mse_losses = np.asarray(mse(pred, true, axis=1))
-    rmse_losses = np.asarray(rmse(pred, true, axis=1))
+    mae_losses = np.asarray(mae(true, pred, axis=1))
+    mse_losses = np.asarray(mse(true, pred, axis=1))
+    rmse_losses = np.asarray(rmse(true, pred, axis=1))
 
     print(
         f"Growing error={growth[0]}: MAE={mae_losses[0]}, MSE={mse_losses[0]}, RMSE={rmse_losses[0]}"
