@@ -2,7 +2,7 @@ import numpy as np
 
 
 def main(
-    pred: np.array = np.array([3, 5, 7, 9]), true: np.array = np.array([2, 6, 8, 7])
+    pred: np.ndarray = np.array([3, 5, 7, 9]), true: np.ndarray = np.array([2, 6, 8, 7])
 ) -> np.float64:
     errors = true - pred
     me = errors.mean()
