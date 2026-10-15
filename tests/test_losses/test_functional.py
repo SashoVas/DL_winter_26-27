@@ -7,7 +7,6 @@ from dl_lib.losses import functional
 
 
 class TestMae(unittest.TestCase):
-
     def test_when_called_then_matches_hand_calculation(self):
         # Arrange
         y_true = np.array([3.0, 5.0, 7.0, 9.0])
@@ -36,7 +35,6 @@ class TestMae(unittest.TestCase):
 
 
 class TestMse(unittest.TestCase):
-
     def test_when_called_then_matches_hand_calculation(self):
         # Arrange
         y_true = np.array([3.0, 5.0, 7.0, 9.0])

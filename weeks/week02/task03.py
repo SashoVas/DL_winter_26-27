@@ -1,12 +1,14 @@
-from dl_lib.losses.functional import mae, mse
 import numpy as np
-import torch.nn.functional as F
 import torch
+import torch.nn.functional as F
+
+from dl_lib.losses.functional import mae, mse
+
+DEFAULT_PRED = np.array([3, 5, 7, 9])
+DEFAULT_TRUE = np.array([2, 6, 8, 7])
 
 
-def main(
-    pred: np.ndarray = np.array([3, 5, 7, 9]), true: np.ndarray = np.array([2, 6, 8, 7])
-) -> None:
+def main(pred: np.ndarray = DEFAULT_PRED, true: np.ndarray = DEFAULT_TRUE) -> None:
     my_mse = mse(pred, true)
     print("y_true:", true)
     print("y_pred:", pred)
@@ -18,7 +20,7 @@ def main(
     )
 
     if not np.isclose(my_mse, torch_mae):
-        raise Exception("Numbers not equal")
+        raise ValueError("Numbers not equal")
 
     pred2 = np.array([2.0, 6.0, 8.0, 100.0])
     print("y_pred with one extreme outlier:", pred2)

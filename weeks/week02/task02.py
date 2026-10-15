@@ -1,12 +1,14 @@
-from dl_lib.losses.functional import mae
 import numpy as np
-import torch.nn.functional as F
 import torch
+import torch.nn.functional as F
+
+from dl_lib.losses.functional import mae
+
+DEFAULT_PRED = np.array([3, 5, 7, 9])
+DEFAULT_TRUE = np.array([2, 6, 8, 7])
 
 
-def main(
-    pred: np.ndarray = np.array([3, 5, 7, 9]), true: np.ndarray = np.array([2, 6, 8, 7])
-) -> None:
+def main(pred: np.ndarray = DEFAULT_PRED, true: np.ndarray = DEFAULT_TRUE) -> None:
     my_mae = mae(pred, true)
     print("y_true:", true)
     print("y_pred:", pred)
@@ -18,4 +20,4 @@ def main(
     )
 
     if not np.isclose(my_mae, torch_mae):
-        raise Exception("Numbers not equal")
+        raise ValueError("Numbers not equal")

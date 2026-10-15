@@ -1,9 +1,10 @@
 import numpy as np
 
+DEFAULT_PRED = np.array([3, 5, 7, 9])
+DEFAULT_TRUE = np.array([2, 6, 8, 7])
 
-def main(
-    pred: np.ndarray = np.array([3, 5, 7, 9]), true: np.ndarray = np.array([2, 6, 8, 7])
-) -> np.float64:
+
+def main(pred: np.ndarray = DEFAULT_PRED, true: np.ndarray = DEFAULT_TRUE) -> None:
     errors = true - pred
     me = errors.mean()
 
@@ -23,5 +24,3 @@ def main(
     print("MAE (mean absolute error):", mae)
     print("MSE (mean squared error):", mse)
     print("RMSE (root mean squared error):", rmse)
-
-    return me, mae, mse, rmse
