@@ -29,4 +29,6 @@ def main() -> None:
     plt.ylabel("value")
     plt.title("Precision and recal as the classification threshold rises")
     plt.legend()
+    plt.tight_layout()
+    plt.grid(True)
     plt.show()
