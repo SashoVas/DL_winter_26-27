@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from dl_lib.activations.functional import sigmoid, relu, tanh
+from dl_lib.activations.functional import relu, sigmoid, tanh
 
 
 def main() -> None:
