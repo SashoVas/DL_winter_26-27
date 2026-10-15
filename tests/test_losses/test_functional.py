@@ -33,6 +33,55 @@ class TestMae(unittest.TestCase):
         # Assert
         self.assertAlmostEqual(actual, expected)
 
+    def test_when_axis_1_then_matches_hand_calculation_per_row(self):
+        # Arrange
+        y_true = np.array(
+            [
+                [3.0, 5.0, 7.0, 9.0],
+                [1.0, 2.0, 3.0, 4.0],
+            ]
+        )
+        y_pred = np.array(
+            [
+                [2.0, 6.0, 8.0, 7.0],
+                [1.0, 4.0, 3.0, 0.0],
+            ]
+        )
+        expected = np.array([1.25, 1.5])
+
+        # Act
+        actual = functional.mae(y_true, y_pred, axis=1)
+
+        # Assert
+        np.testing.assert_allclose(actual, expected)
+
+    def test_when_axis_2_then_matches_hand_calculation_per_innermost_vector(self):
+        # Arrange
+        y_true = np.array(
+            [
+                [[1.0, 2.0], [3.0, 4.0]],
+                [[5.0, 6.0], [7.0, 8.0]],
+            ]
+        )
+        y_pred = np.array(
+            [
+                [[2.0, 2.0], [1.0, 4.0]],
+                [[5.0, 9.0], [6.0, 10.0]],
+            ]
+        )
+        expected = np.array(
+            [
+                [0.5, 1.0],
+                [1.5, 1.5],
+            ]
+        )
+
+        # Act
+        actual = functional.mae(y_true, y_pred, axis=2)
+
+        # Assert
+        np.testing.assert_allclose(actual, expected)
+
 
 class TestMse(unittest.TestCase):
     def test_when_called_then_matches_hand_calculation(self):
@@ -78,34 +127,133 @@ class TestMse(unittest.TestCase):
         # Assert
         self.assertGreater(mse_ratio, mae_ratio)
 
+    def test_when_axis_1_then_matches_hand_calculation_per_row(self):
+        # Arrange
+        y_true = np.array(
+            [
+                [3.0, 5.0, 7.0, 9.0],
+                [1.0, 2.0, 3.0, 4.0],
+            ]
+        )
+        y_pred = np.array(
+            [
+                [2.0, 6.0, 8.0, 7.0],
+                [1.0, 4.0, 3.0, 0.0],
+            ]
+        )
+        expected = np.array([1.75, 5.0])
 
-# class TestRmse(unittest.TestCase):
-#
-#     def test_when_called_then_matches_hand_calculation(self):
-#         # Arrange
-#         y_true = np.array([3.0, 5.0, 7.0, 9.0])
-#         y_pred = np.array([2.0, 6.0, 8.0, 7.0])
-#         expected = 1.3229
-#
-#         # Act
-#         actual = functional.rmse(y_true, y_pred)
-#
-#         # Assert
-#         self.assertAlmostEqual(actual, expected, places=4)
-#
-#     def test_when_called_then_equals_square_root_of_mse(self):
-#         # Arrange
-#         y_true = np.array([3.0, 5.0, 7.0, 9.0])
-#         y_pred = np.array([2.0, 6.0, 8.0, 7.0])
-#         expected = np.sqrt(functional.mse(y_true, y_pred))
-#
-#         # Act
-#         actual = functional.rmse(y_true, y_pred)
-#
-#         # Assert
-#         self.assertAlmostEqual(actual, expected)
-#
-#
+        # Act
+        actual = functional.mse(y_true, y_pred, axis=1)
+
+        # Assert
+        np.testing.assert_allclose(actual, expected)
+
+    def test_when_axis_2_then_matches_hand_calculation_per_innermost_vector(self):
+        # Arrange
+        y_true = np.array(
+            [
+                [[1.0, 2.0], [3.0, 4.0]],
+                [[5.0, 6.0], [7.0, 8.0]],
+            ]
+        )
+        y_pred = np.array(
+            [
+                [[2.0, 2.0], [1.0, 4.0]],
+                [[5.0, 9.0], [6.0, 10.0]],
+            ]
+        )
+        expected = np.array(
+            [
+                [0.5, 2.0],
+                [4.5, 2.5],
+            ]
+        )
+
+        # Act
+        actual = functional.mse(y_true, y_pred, axis=2)
+
+        # Assert
+        np.testing.assert_allclose(actual, expected)
+
+
+class TestRmse(unittest.TestCase):
+    def test_when_called_then_matches_hand_calculation(self):
+        # Arrange
+        y_true = np.array([3.0, 5.0, 7.0, 9.0])
+        y_pred = np.array([2.0, 6.0, 8.0, 7.0])
+        expected = 1.3229
+
+        # Act
+        actual = functional.rmse(y_true, y_pred)
+
+        # Assert
+        self.assertAlmostEqual(actual, expected, places=4)
+
+    def test_when_called_then_equals_square_root_of_mse(self):
+        # Arrange
+        y_true = np.array([3.0, 5.0, 7.0, 9.0])
+        y_pred = np.array([2.0, 6.0, 8.0, 7.0])
+        expected = np.sqrt(functional.mse(y_true, y_pred))
+
+        # Act
+        actual = functional.rmse(y_true, y_pred)
+
+        # Assert
+        self.assertAlmostEqual(actual, expected)
+
+    def test_when_axis_1_then_matches_hand_calculation_per_row(self):
+        # Arrange
+        y_true = np.array(
+            [
+                [3.0, 5.0, 7.0, 9.0],
+                [1.0, 2.0, 3.0, 4.0],
+            ]
+        )
+        y_pred = np.array(
+            [
+                [2.0, 6.0, 8.0, 7.0],
+                [1.0, 4.0, 3.0, 0.0],
+            ]
+        )
+        expected = np.sqrt(np.array([1.75, 5.0]))
+
+        # Act
+        actual = functional.rmse(y_true, y_pred, axis=1)
+
+        # Assert
+        np.testing.assert_allclose(actual, expected)
+
+    def test_when_axis_2_then_matches_hand_calculation_per_innermost_vector(self):
+        # Arrange
+        y_true = np.array(
+            [
+                [[1.0, 2.0], [3.0, 4.0]],
+                [[5.0, 6.0], [7.0, 8.0]],
+            ]
+        )
+        y_pred = np.array(
+            [
+                [[2.0, 2.0], [1.0, 4.0]],
+                [[5.0, 9.0], [6.0, 10.0]],
+            ]
+        )
+        expected = np.sqrt(
+            np.array(
+                [
+                    [0.5, 2.0],
+                    [4.5, 2.5],
+                ]
+            )
+        )
+
+        # Act
+        actual = functional.rmse(y_true, y_pred, axis=2)
+
+        # Assert
+        np.testing.assert_allclose(actual, expected)
+
+
 # class TestBinaryCrossEntropy(unittest.TestCase):
 #
 #     def test_when_called_then_matches_hand_calculation(self):
