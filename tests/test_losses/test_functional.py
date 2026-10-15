@@ -255,7 +255,6 @@ class TestRmse(unittest.TestCase):
 
 
 class TestBinaryCrossEntropy(unittest.TestCase):
-
     def test_when_called_then_matches_hand_calculation(self):
         # Arrange
         y_true = np.array([1.0, 0.0])
@@ -295,7 +294,6 @@ class TestBinaryCrossEntropy(unittest.TestCase):
 
 
 class TestCategoricalCrossEntropy(unittest.TestCase):
-
     def test_when_called_then_matches_hand_calculation(self):
         # Arrange
         y_true = np.array([0, 1, 2])
