@@ -9,7 +9,7 @@ DEFAULT_PRED = np.array([1, 0, 0, 1, 1])
 def main(pred: np.ndarray = DEFAULT_PRED, true: np.ndarray = DEFAULT_TRUE) -> None:
     print("y_true:", true)
     print("y_pred:", pred)
-    cm = confusion_matrix(pred, true)
+    cm = confusion_matrix(true, pred)
     print("True positives:", cm["tp"])
     print("True negatives:", cm["tn"])
     print("False positives:", cm["fp"])
