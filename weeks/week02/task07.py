@@ -16,8 +16,7 @@ def main() -> None:
     print(" recall:", recall(true, pred))
     print(" f1:", f1_score(true, pred))
     print()
-    pred = np.array([0] * 990 + [1] * 10)
-    np.random.shuffle(pred)
+    pred = np.array([0] * 990 + [1] * 7 + [0] * 3)
 
     true = np.array([0] * 990 + [1] * 10)
     print("Imbalanced dataset (990 negative, 10 positive):")
