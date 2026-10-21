@@ -41,6 +41,24 @@
       - [Task 13](#task-13-1)
   - [\\frac{y\_i}{p\_i}](#fracy_ip_i)
     - [Derivative formulas](#derivative-formulas)
+  - [Week 03 - Building perceptrons](#week-03---building-perceptrons)
+    - [A model that can multiply by 2](#a-model-that-can-multiply-by-2)
+      - [Task 01](#task-01-2)
+      - [Task 02](#task-02-2)
+      - [Task 03](#task-03-2)
+      - [Task 04](#task-04-2)
+      - [Task 05](#task-05-2)
+    - [Logic gates](#logic-gates)
+      - [Task 06](#task-06-2)
+      - [Task 07](#task-07-2)
+      - [Task 08](#task-08-2)
+      - [Task 09](#task-09-2)
+      - [Task 10](#task-10-2)
+    - [Modelling XOR](#modelling-xor)
+      - [Task 11](#task-11-2)
+      - [Task 12](#task-12-2)
+      - [Task 13](#task-13-2)
+      - [Task 14](#task-14-1)
 
 ## Week 01 - Introduction to NumPy, Matplotlib and PyTorch
 
@@ -3368,3 +3386,1163 @@ $$
 = \frac{p_{n,k}-y_{n,k}}{N}
 }
 $$
+
+## Week 03 - Building perceptrons
+
+Administrative - week 3: [ ] Nothing on my side.
+
+<details>
+
+<summary>What is a deep learning model?</summary>
+
+Set of parameters connected in various ways.
+
+</details>
+
+<details>
+<summary>What is a parameter?</summary>
+
+A floating point number.
+
+</details>
+
+<details>
+
+<summary>Hmm - so, how can a set of parameters solve a task?</summary>
+
+By assigning the optimal value to each of these parameters.
+
+</details>
+
+<details>
+
+<summary>But what is an optimal value?</summary>
+
+The value with which the model can *in most cases* solve a task.
+
+Notice then that a deep learning model is an automatic mathematical optimization model for a set of parameters. **`It solves tasks by approximation, not by building explicit logic`**.
+
+</details>
+
+<details>
+
+<summary>How is the process of parameter optimization called?</summary>
+
+Training.
+
+</details>
+
+<details>
+
+<summary>What is the first step in any processing task?</summary>
+
+The description of the desired model behavior is codified into input-output pairs.
+
+This description of the expected behavior is **implicitly** hidden in the data in the form of **patterns**. Thus, deep learning is uncovering those patterns and using them to solve various problems.
+
+</details>
+
+<details>
+
+<summary>What steps happen during training?</summary>
+
+1. You give the untrained model your data (your `description` of desired behavior).
+2. The model returns an answer.
+3. You calculate how far the model is from your ground truth answer.
+4. The model uses this information to tweak its parameters until it fits your description well enough.
+
+</details>
+
+And there you have it - a deep learning model that does what you want! Right?
+
+<details>
+
+<summary>When does a model become perfect?</summary>
+
+It can never be perfect. Because it solves the task by approximation it'll always be solving the task by simulating proficiency.
+
+</details>
+
+<details>
+
+<summary>What does it mean for a model to tweak its parameters?</summary>
+
+It's a process whereby:
+
+1. Multiple models are created each with slightly different values for their parameters.
+2. Their distance to the ground truth labels is measured.
+3. The model that is closest to the ground truth labels is taken to be the final model.
+
+</details>
+
+<details>
+
+<summary>What tasks can deep learning models solve?</summary>
+
+Here is the twist - they can solve `everything`! For any task as long as you have enough data, you can model it.
+
+</details>
+
+One of the things you can model is **the probability of the next word in a sentence**.
+
+<details>
+
+<summary>What class of models solves this task?</summary>
+
+Large Language Models!
+
+You have a partially written sentence and you can create a mathematical model that predicts how likely every possible word, in the language you're working in, is to be the next word in that sentence. And after you've selected the word, you can repeat the process on this extended sentence - that's how you get `ChatGPT`.
+
+</details>
+
+<details>
+
+<summary>What are the typical job roles related to AI and how do they work together?</summary>
+
+- Data Engineer: responsible for finding/producing/curating and labelling data.
+- Data Scientist: responsible for training the best model possible, given the available data.
+- Machine Learning Engineer: responsible for taking a trained model and wrapping it in a production system used by clients.
+
+![w03_ai_silos.png](assets/w03_ai_silos.png "w03_ai_silos.png")
+
+Lately, different types of combinations of these roles have popped up:
+
+- Machine Learning Scientist: responsible for building, training and deploying a model.
+- AI Engineer: responsible for using pre-trained models and already existing tools to build user-facing applications.
+
+</details>
+
+### A model that can multiply by 2
+
+<details>
+<summary>What is our first step?</summary>
+
+Data!
+
+This is rather simple since we only do one operation.
+
+</details>
+
+<details>
+<summary>How would it look like?</summary>
+
+| x | y |
+| --- | --- |
+| 1 | 2 |
+| 2 | 4 |
+| 3 | 6 |
+| 4 | 8 |
+
+</details>
+
+<details>
+<summary>How is each row called?</summary>
+
+An observation.
+
+</details>
+
+<details>
+<summary>What type of task are we solving?</summary>
+
+Regression.
+
+</details>
+
+<details>
+<summary>How many features does the above dataset have?</summary>
+
+The features are the inputs the user enters. We have only one - $x$.
+
+</details>
+
+The next step would be to figure out how we'll solve the task.
+
+<details>
+<summary>What would the architecture of this model be?</summary>
+
+It'd would be a single neuron with one weight - $w$.
+
+![w03_multiplier.png](assets/w03_multiplier.png "w03_multiplier.png")
+
+</details>
+
+<details>
+<summary>What is the next step?</summary>
+
+We start the training process.
+
+</details>
+
+<details>
+<summary>How does it start?</summary>
+
+We start with a random guess for $w$. For the sake of concreteness, let's say a random floating-point number in the interval `[0, 10)`.
+
+> [!NOTE]
+> The interval does not matter - even if it does not contain $2$ the training process would still converge towards it.
+
+![w03_multiplier_guess.png](assets/w03_multiplier_guess.png "w03_multiplier_guess.png")
+
+</details>
+
+#### Task 01
+
+**Description:**
+
+Define **`create_dataset`** in `dl_lib.perceptron.datasets`: builds the training data for the doubling problem. Takes a count `n`; returns the first `n` consecutive `(x, 2 * x)` pairs starting at `0`, as a list of tuples. This is the first of several small, named datasets we will collect in this module - the gates in the next section join it there.
+
+Also define **`initialize_weights`** in `dl_lib.perceptron.functional`: gives the model a starting guess. Takes a lower and upper bound and how many values to draw; returns that many values, each sampled uniformly at random from `[low, high)`, as a `numpy` array. An optional seed makes the draw reproducible.
+
+Then create a script that prints a dataset with the first four observations and two possible draws of a random starting weight.
+
+**Acceptance criteria:**
+
+- `numpy` is used for the implementation.
+
+**Test cases:**
+
+See `tests/test_dl_lib/test_perceptron/test_datasets.py` and `tests/test_dl_lib/test_perceptron/test_functional.py`.
+
+**Example output:**
+
+```console
+python run.py -w 3 -t 1
+```
+
+```text
+Dataset: [(0.0, 0.0), (1.0, 2.0), (2.0, 4.0), (3.0, 6.0)]
+initialize_weights(0, 100): 77.39560485559633
+initialize_weights(0, 10):  7.739560485559633
+```
+
+<details>
+<summary>What is the next step?</summary>
+
+We process of the training observations with this random weight and record what the model predicted.
+
+</details>
+
+<details>
+<summary>What is the next step?</summary>
+
+We now need to give information to the model about how wrong it is and how it can improve.
+
+</details>
+
+<details>
+<summary>How can we do that?</summary>
+
+The loss function!
+
+</details>
+
+Let's say we focus on a single sample:
+
+![w03_multiplier_loss.png](assets/w03_multiplier_loss.png "w03_multiplier_loss.png")
+
+<details>
+<summary>What would the model do with this value?</summary>
+
+It'll see what will happen to the output of the loss function when it "wiggles" $w$ by a tiny amount `eps`:
+
+![w03_multiplier_loss_wiggle.png](assets/w03_multiplier_loss_wiggle.png "w03_multiplier_loss_wiggle.png")
+
+As expected the value either goes up or down. This means that our loss function would represent a parabola.
+
+![w03_multiplier_loss_viz.png](assets/w03_multiplier_loss_viz.png "w03_multiplier_loss_viz.png")
+
+</details>
+
+But that's a problem - we don't always know in which direction the value would go down.
+
+<details>
+<summary>Right?</summary>
+
+We do, actually! It's the opposite direction of the one in which the derivative grows!
+
+![w03_derivative_values.gif](assets/w03_derivative_values.gif "w03_derivative_values.gif")
+
+For now, we won't calculate the exact derivative because we don't need to do that - we can use its general formula:
+
+$${\displaystyle L=\lim _{eps\to 0}{\frac {loss(w+eps)-loss(w)}{eps}}}$$
+
+</details>
+
+#### Task 02
+
+**Description:**
+
+Create a script that builds a `6`-sample dataset and a seeded weight (`seed=42`, range `[0, 10)`), then computes the mean squared error between the model's predictions and the true values. The script then nudges the weight by `+0.002`, `+0.001`, `-0.001`, and `-0.002` in turn and prints the loss after each nudge, so we can see which direction actually helps.
+
+**Acceptance criteria:**
+
+- Calculations use `numpy` and `dl_lib.losses.functional.mse`.
+- The loss is printed before and after each of the four nudges.
+
+**Example output:**
+
+```console
+python run.py -w 3 -t 2
+```
+
+```text
+Dataset: [(0.0, 0.0), (1.0, 2.0), (2.0, 4.0), (3.0, 6.0), (4.0, 8.0), (5.0, 10.0)]
+w: 7.739560485559633
+MSE: 301.9734168678107
+
+Perturbing w:
+  w + (+0.002) -> w=7.741560, MSE=302.183904
+  w + (+0.001) -> w=7.740560, MSE=302.078651
+  w + (-0.001) -> w=7.738560, MSE=301.868201
+  w + (-0.002) -> w=7.737560, MSE=301.763003
+```
+
+<details>
+<summary>How would we modify <code>w</code>?</summary>
+
+We ***step*** in the direction of decline, by doing: `w -= L`.
+
+</details>
+
+Ok - let's try that. We do it and get this:
+
+```text
+w_old=7.6
+Loss before update: 301.973417
+Numerical gradient: 105.225276
+
+w_new=-97.485715
+Loss after update: 90726.235467
+```
+
+<details>
+<summary>Wait - didn't we say that the loss should decrease?</summary>
+
+We did, but the value of `L` is too large. If our step is always `L` we would start oscilating.
+
+</details>
+
+<details>
+<summary>How can we deal with this?</summary>
+
+***Learning rate!***
+
+We'll take a fraction of the full gradient: `w -= learning_rate * L`.
+
+And this is it! This process is guaranteed to find $2$ as the optimal value.
+
+</details>
+
+<details>
+<summary>How is this algorithm called?</summary>
+
+[Gradient Descent](https://en.wikipedia.org/wiki/Gradient_descent): the iterative algorithm for minimizing a differentiable multivariate function.
+
+</details>
+
+<details>
+<summary>How do we call the process of going through the full training dataset one time and doing the optimization step?</summary>
+
+One ***epoch***.
+
+</details>
+
+#### Task 03
+
+**Description:**
+
+Define in `dl_lib.perceptron.functional`:
+
+- **`numerical_gradient`**: approximates the gradient of a loss function at the current parameters. Takes a loss function and the parameters array; returns an array the same shape as the parameters, where each entry is the central-difference approximation of the partial derivative with respect to that one entry, leaving every other entry untouched during the computation.
+- **`gradient_descent_step`**: applies one step of gradient descent. Takes the parameters, a gradient the same shape, and a learning rate; returns the parameters moved one step against the gradient.
+
+Create a script that computes the loss, the numerical gradient, and the result of subtracting the raw gradient with no learning rate, then the result of one properly scaled step. It finishes with a `10`-epoch training loop printing the loss after every epoch.
+
+**Acceptance criteria:**
+
+- The loss is printed before and after the update.
+- The run shows what happens with no learning rate versus a learning rate of `0.001`.
+- The `10`-epoch loop shows the loss decreasing every epoch.
+
+**Test cases:**
+
+See `tests/test_dl_lib/test_perceptron/test_functional.py`.
+
+**Example output:**
+
+```console
+python run.py -w 3 -t 3
+```
+
+```text
+Loss before update: 301.973417
+Numerical gradient: 105.225276
+w after subtracting the raw gradient: w=-97.485715, loss=90726.235467
+w after one step with learning_rate=0.001: w=7.634335, loss=291.002555
+
+Loss before update: 301.973417
+epoch  1: w=7.634335, loss=291.002555
+epoch  2: w=7.531039, loss=280.430270
+epoch  3: w=7.429637, loss=270.242083
+epoch  4: w=7.330093, loss=260.424038
+epoch  5: w=7.232375, loss=250.962688
+epoch  6: w=7.136448, loss=241.845074
+epoch  7: w=7.042280, loss=233.058708
+epoch  8: w=6.949838, loss=224.591556
+epoch  9: w=6.859091, loss=216.432020
+epoch 10: w=6.770008, loss=208.568924
+```
+
+In Week 2, we calculated how MSE changes with respect to each prediction. Now let's find how it changes with respect to the model's weight.
+
+For a batch of $N$ examples, mean squared error is:
+
+$$
+L=\frac{1}{N}\sum_{i=1}^{N}(\hat{y}_i-y_i)^2
+$$
+
+We already derived its partial derivative with respect to each prediction:
+
+$$
+\boxed{
+\frac{\partial L}{\partial \hat{y}_i}
+= \frac{2}{N}(\hat{y}_i-y_i)
+}
+$$
+
+During training, however, we change the **weight**, so we need to calculate how changing the weight affects the loss. Thus we need to get this:
+
+$$
+\boxed{
+\frac{dL}{dw}
+= \sum_{i=1}^{N}
+\frac{\partial L}{\partial \hat{y}_i}
+\frac{\partial \hat{y}_i}{\partial w}
+}
+$$
+
+For each observation, we multiply:
+
+- how the prediction affects the loss;
+- how the weight affects that prediction.
+
+We then add these contributions because all predictions depend on the same weight.
+
+<details>
+<summary>How do we combine the two derivatives?</summary>
+
+Substitute the derivative of MSE from Week 2:
+
+$$
+\frac{dL}{dw}
+= \sum_{i=1}^{N}
+\frac{2}{N}(\hat{y}_i-y_i)
+\frac{\partial \hat{y}_i}{\partial w}
+$$
+
+Then substitute the derivative of the prediction:
+
+$$
+\frac{dL}{dw}
+= \sum_{i=1}^{N}
+\frac{2}{N}(\hat{y}_i-y_i)x_i
+$$
+
+Move the constant factor outside the sum:
+
+$$
+\frac{dL}{dw}
+= \frac{2}{N}\sum_{i=1}^{N}x_i(\hat{y}_i-y_i)
+$$
+
+Finally, substitute $\hat{y}_i=x_iw$:
+
+$$
+\boxed{
+\frac{dL}{dw}
+= \frac{2}{N}\sum_{i=1}^{N}x_i(x_iw-y_i)
+}
+$$
+
+This is the **analytical gradient** we will implement in Task 04.
+
+</details>
+
+#### Task 04
+
+**Description:**
+
+Define **`analytical_gradient`** in `dl_lib.perceptron.functional`: computes this exact gradient instead of approximating it. Takes a dataset of `(x, y)` pairs and the current weights, plus the bias and the activation the model uses (both optional, defaulting to no bias and no activation, which is this task's case); returns the exact weight gradient together with the exact bias gradient, following the same chain rule through the forward pass that `dataset_loss` evaluates numerically.
+
+Create a script that reuses Task 03's dataset and seeded weight, then prints the loss, the numerical gradient, and the analytical gradient side by side, together with their difference.
+
+**Acceptance criteria:**
+
+- The numerical and analytical gradients agree to within `1e-4`.
+- Training itself is untouched - Task 05's training loop still uses `numerical_gradient`.
+
+**Test cases:**
+
+See `tests/test_dl_lib/test_perceptron/test_functional.py`.
+
+**Example output:**
+
+```console
+python run.py -w 3 -t 4
+```
+
+```text
+Loss: 301.973417
+Numerical gradient:  105.225276
+Analytical gradient: 105.225276
+Difference: 0.00000000
+```
+
+#### Task 05
+
+**Description:**
+
+Create a script that trains the weight for `500` epochs with `learning_rate=0.001` and prints the final value. Then run the same training again starting from a weight drawn without a seed, to check that convergence does not depend on a lucky starting point.
+
+**Acceptance criteria:**
+
+- After `500` epochs the weight is close to `2.0` and the loss is close to `0`.
+- Training without a seed converges to the same place from a different starting point.
+
+**Example output:**
+
+```console
+python run.py -w 3 -t 5
+```
+
+```text
+Seed 42, initial w=7.739560
+After 500 epochs: w=2.000551, loss=0.000003 (target: w=2.0)
+
+Training again without a seed:
+No seed, initial w=7.168567
+After 500 epochs: w=2.000496, loss=0.000002 (target: w=2.0)
+```
+
+Congratulations! You just created and trained your first neural network 🎉!
+
+### Logic gates
+
+Let's create a model that can act as an `AND` gate!
+
+<details>
+<summary>What is our first step?</summary>
+
+Data!
+
+| x1 | x2 | y |
+| --- | --- | --- |
+| 0 | 0 | 0 |
+| 0 | 1 | 0 |
+| 1 | 0 | 0 |
+| 1 | 1 | 1 |
+
+</details>
+
+<details>
+<summary>What is next?</summary>
+
+Architecture!
+
+We might start off with something like this:
+
+![w03_and_or_models.png](assets/w03_and_or_models.png "w03_and_or_models.png")
+
+However, because our task now shifts from being a regression one into a classification one, we can also add the `sigmoid` function to control the output values:
+
+$${\displaystyle f(x)={\frac {1}{1+e^{-x}}}}$$
+
+![w03_and_or_models_sigmoid.png](assets/w03_and_or_models_sigmoid.png "w03_and_or_models_sigmoid.png")
+
+</details>
+
+<details>
+<summary>Can we use the same architecture to model an <code>OR</code> gate?</summary>
+
+Absolutely!
+
+</details>
+
+But in this case adding a sigmoid can actually cause a problem.
+
+<details>
+
+<summary>What input values would produce an incorrect prediction for the <code>OR</code> and <code>AND</code> gates?</summary>
+
+Look at what happens when we have $x_1=0$ and $x_2=0$:
+
+- the logit will be $0$;
+- it will be transformed into $0.5$ by the sigmoid;
+- if we're using $>= 0.5$ as a threshold (which is the default), we'd return $1$:
+
+![w03_sigmoid_problem.png](assets/w03_sigmoid_problem.png "w03_sigmoid_problem.png")
+
+</details>
+
+<details>
+
+<summary>How do we fix this?</summary>
+
+Welcome, ***bias***! It'll handle the logic the neuron would apply when the linear combination adds up to $0$, be it due to the weights being $0$ or the inputs.
+
+![w03_bias.png](assets/w03_bias.png "w03_bias.png")
+
+</details>
+
+#### Task 06
+
+**Description:**
+
+Define a `Perceptron` class in `dl_lib.perceptron.perceptron`: a single neuron with a weighted sum of its inputs, built so that later tasks can turn on a bias and an activation without becoming a different class. It provides:
+
+- **construction**: builds the neuron's weights. Takes the number of inputs, a `(low, high)` range to draw them from, an optional seed, and two switches used by later tasks - `use_bias` (default `False`) and `activation` (default `None`, meaning no activation is applied).
+- **`forward`**: applies the neuron to one input vector. Takes an array of `n_inputs` values; returns the weighted sum of the inputs and the weights, plus the bias if `use_bias` is on, with `activation` applied if one was given.
+
+Also define **`train`** in `dl_lib.perceptron.training`: trains a `Perceptron`'s weights (and its bias, if it has one) with finite-difference gradient descent, reusing `numerical_gradient` and `gradient_descent_step`. Takes the model, a dataset of `(x, y)` pairs, a learning rate, a number of epochs, and how often to record progress; returns a list of `(epoch, loss)` pairs, one per recorded epoch plus the final one.
+
+Also define **`and_dataset`** and **`or_dataset`** in `dl_lib.perceptron.datasets`.
+
+Finally, create a script that trains two `Perceptron` models - one on the `AND` dataset, one on `OR` without bias and an activation function and prints the loss every `10,000` epochs plus each model's final predictions on its own dataset.
+
+**Acceptance criteria:**
+
+- Weights are drawn from a seeded distribution so the run is reproducible.
+- The loss decreases, or stays at its lowest reachable value, as training proceeds.
+
+**Test cases:**
+
+See `tests/test_dl_lib/test_perceptron/test_datasets.py`, `tests/test_dl_lib/test_perceptron/test_perceptron.py`, and `tests/test_dl_lib/test_perceptron/test_training.py`.
+
+**Example output:**
+
+```console
+python run.py -w 3 -t 6
+```
+
+```text
+AND gate - initial weights: [ 0.5479121  -0.12224312]
+  epoch  10000: loss=0.083333
+  epoch  20000: loss=0.083333
+  epoch  30000: loss=0.083333
+  epoch  40000: loss=0.083333
+  epoch  50000: loss=0.083333
+  epoch  60000: loss=0.083333
+  epoch  70000: loss=0.083333
+  epoch  80000: loss=0.083333
+  epoch  90000: loss=0.083333
+  epoch 100000: loss=0.083333
+AND gate - final weights: [0.33333333 0.33333333]
+AND gate - predictions:
+  AND(0, 0) = 0 -> predicted 0.000000
+  AND(0, 1) = 0 -> predicted 0.333333
+  AND(1, 0) = 0 -> predicted 0.333333
+  AND(1, 1) = 1 -> predicted 0.666667
+
+OR gate - initial weights: [ 0.5479121  -0.12224312]
+  epoch  10000: loss=0.083333
+  epoch  20000: loss=0.083333
+  epoch  30000: loss=0.083333
+  epoch  40000: loss=0.083333
+  epoch  50000: loss=0.083333
+  epoch  60000: loss=0.083333
+  epoch  70000: loss=0.083333
+  epoch  80000: loss=0.083333
+  epoch  90000: loss=0.083333
+  epoch 100000: loss=0.083333
+OR gate - final weights: [0.66666667 0.66666667]
+OR gate - predictions:
+  OR(0, 0) = 0 -> predicted 0.000000
+  OR(0, 1) = 1 -> predicted 0.666667
+  OR(1, 0) = 1 -> predicted 0.666667
+  OR(1, 1) = 1 -> predicted 1.333333
+```
+
+#### Task 07
+
+**Description:**
+
+Retrain `AND` and `OR` this time with a bias (but still no activation function), so each model gets a third parameter that is free to shift its output even when both inputs are `0`.
+
+**Acceptance criteria:**
+
+- The same two gates are retrained with `use_bias=True`.
+- The final loss is lower than Task 06's.
+
+**Test cases:**
+
+See `tests/test_dl_lib/test_perceptron/test_perceptron.py`.
+
+**Example output:**
+
+```console
+python run.py -w 3 -t 7
+```
+
+```text
+AND gate - initial weights: [ 0.5479121  -0.12224312], bias: 0.717196
+  epoch  10000: loss=0.062500
+  epoch  20000: loss=0.062500
+  epoch  30000: loss=0.062500
+  epoch  40000: loss=0.062500
+  epoch  50000: loss=0.062500
+  epoch  60000: loss=0.062500
+  epoch  70000: loss=0.062500
+  epoch  80000: loss=0.062500
+  epoch  90000: loss=0.062500
+  epoch 100000: loss=0.062500
+AND gate - final weights: [0.5 0.5], bias: -0.250000
+AND gate - predictions:
+  AND(0, 0) = 0 -> predicted -0.250000
+  AND(0, 1) = 0 -> predicted 0.250000
+  AND(1, 0) = 0 -> predicted 0.250000
+  AND(1, 1) = 1 -> predicted 0.750000
+
+OR gate - initial weights: [ 0.5479121  -0.12224312], bias: 0.717196
+  epoch  10000: loss=0.062500
+  epoch  20000: loss=0.062500
+  epoch  30000: loss=0.062500
+  epoch  40000: loss=0.062500
+  epoch  50000: loss=0.062500
+  epoch  60000: loss=0.062500
+  epoch  70000: loss=0.062500
+  epoch  80000: loss=0.062500
+  epoch  90000: loss=0.062500
+  epoch 100000: loss=0.062500
+OR gate - final weights: [0.5 0.5], bias: 0.250000
+OR gate - predictions:
+  OR(0, 0) = 0 -> predicted 0.250000
+  OR(0, 1) = 1 -> predicted 0.750000
+  OR(1, 0) = 1 -> predicted 0.750000
+  OR(1, 1) = 1 -> predicted 1.250000
+```
+
+#### Task 08
+
+**Description:**
+
+Retrain `AND` and `OR` this time with a bias and an activation function.
+
+To show a visual comparison train for `100,000` epochs with `learning_rate=0.1` - once with no activation and once with sigmoid - and plot both loss curves on one figure.
+
+**Acceptance criteria:**
+
+- Both loss curves are plotted over the full `100,000` epochs on one figure.
+- The sigmoid-activated model's final loss is lower than the plain model's.
+
+**Test cases:**
+
+See `tests/test_dl_lib/test_perceptron/test_perceptron.py`.
+
+**Example output:**
+
+```console
+python run.py -w 3 -t 8
+```
+
+```text
+Without sigmoid - final loss: 0.062500
+  AND(0, 0) = 0 -> predicted -0.250000
+  AND(0, 1) = 0 -> predicted 0.250000
+  AND(1, 0) = 0 -> predicted 0.250000
+  AND(1, 1) = 1 -> predicted 0.750000
+
+With sigmoid    - final loss: 0.000470
+  AND(0, 0) = 0 -> predicted 0.000017
+  AND(0, 1) = 0 -> predicted 0.023489
+  AND(1, 0) = 0 -> predicted 0.023489
+  AND(1, 1) = 1 -> predicted 0.972141
+```
+
+![w03_task08_loss_curve.png](assets/w03_task08_loss_curve.png "w03_task08_loss_curve.png")
+
+In Week 2, we derived the gradient of sigmoid combined with binary cross-entropy with respect to each logit. Now we only need to connect the logits to the weights and bias.
+
+<details>
+<summary>What do we already know from Week 2?</summary>
+
+For mean binary cross-entropy with sigmoid predictions:
+
+$$
+\boxed{
+\frac{\partial L}{\partial z_i}
+= \frac{p_i-y_i}{N}
+}
+$$
+
+</details>
+
+<details>
+<summary>What is <code>p_i</code>?</summary>
+
+It is the output of our model:
+
+$$
+z_i=x_{i1}w_1+x_{i2}w_2+b,
+\qquad
+p_i=\sigma(z_i)
+$$
+
+</details>
+
+<details>
+<summary>How do we calculate the weight gradients?</summary>
+
+When differentiating with respect to weight $w_j$, the inputs and all other parameters are held constant:
+
+$$
+\frac{\partial z_i}{\partial w_j}=x_{ij}
+$$
+
+Each weight contributes to every observation's logit, so the chain rule gives:
+
+$$
+\frac{\partial L}{\partial w_j}
+= \sum_{i=1}^{N}
+\frac{\partial L}{\partial z_i}
+\frac{\partial z_i}{\partial w_j}
+$$
+
+Substitute the two derivatives:
+
+$$
+\boxed{
+\frac{\partial L}{\partial w_j}
+= \frac{1}{N}\sum_{i=1}^{N}(p_i-y_i)x_{ij}
+}
+$$
+
+Each weight gradient is the mean of the prediction errors multiplied by the corresponding input feature.
+
+</details>
+
+<details>
+<summary>How do we calculate the bias gradient?</summary>
+
+The bias is added directly to each logit:
+
+$$
+\frac{\partial z_i}{\partial b}=1
+$$
+
+Apply the chain rule:
+
+$$
+\frac{\partial L}{\partial b}
+= \sum_{i=1}^{N}
+\frac{\partial L}{\partial z_i}
+\frac{\partial z_i}{\partial b}
+= \sum_{i=1}^{N}\frac{p_i-y_i}{N}\cdot1
+$$
+
+Therefore:
+
+$$
+\boxed{
+\frac{\partial L}{\partial b}
+= \frac{1}{N}\sum_{i=1}^{N}(p_i-y_i)
+}
+$$
+
+The bias gradient is the mean prediction error.
+
+</details>
+
+#### Task 09
+
+**Description:**
+
+Extend **`analytical_gradient`** in `dl_lib.perceptron.functional` with the sigmoid-activated, binary-cross-entropy case, selected via a new `loss="bce"` argument. Unlike the mean-squared-error case, this path takes no `activation_derivative` - the cancellation derived above means it is not needed.
+
+Create a script that builds the sigmoid-activated, bias-using `AND` gate model from Task 08, then computes and prints the numerical and the analytical gradient (trained with binary cross-entropy) for its weights and its bias, component by component, together with their difference.
+
+**Acceptance criteria:**
+
+- Each component of the analytical gradient matches the corresponding component of the numerical gradient to within `1e-4`.
+
+**Test cases:**
+
+See `tests/test_dl_lib/test_perceptron/test_functional.py` and `tests/test_dl_lib/test_activations/test_functional.py`.
+
+**Example output:**
+
+```console
+python run.py -w 3 -t 9
+```
+
+```text
+AND gate (sigmoid) - weights: [ 0.5479121  -0.12224312], bias: 0.717196
+Numerical weight gradient:  [0.13452735 0.10067649]
+Analytical weight gradient: [0.13452735 0.10067649]
+Weight gradient difference: [8.01413103e-11 6.73556211e-11]
+Numerical bias gradient:  0.463650
+Analytical bias gradient: 0.463650
+Bias gradient difference: 0.00000000
+```
+
+<details>
+<summary>Can we use the same architecture to model a <code>NAND</code> gate?</summary>
+
+Yep! Let's see it in action!
+
+</details>
+
+#### Task 10
+
+**Description:**
+
+Define **`nand_dataset`** in `dl_lib.perceptron.datasets` and create a script `weeks/week3/task10.py` that trains a sigmoid-activated `Perceptron` on the `NAND` dataset, using binary cross-entropy as established in Task 09.
+
+**Acceptance criteria:**
+
+- The final predictions are within `0.03` of each target.
+
+**Test cases:**
+
+See `tests/test_dl_lib/test_perceptron/test_datasets.py`.
+
+**Example output:**
+
+```console
+python run.py -w 3 -t 10
+```
+
+```text
+  epoch  10000: loss=0.017375
+  epoch  20000: loss=0.008660
+  epoch  30000: loss=0.005755
+  epoch  40000: loss=0.004307
+  epoch  50000: loss=0.003440
+  epoch  60000: loss=0.002863
+  epoch  70000: loss=0.002451
+  epoch  80000: loss=0.002143
+  epoch  90000: loss=0.001904
+  epoch 100000: loss=0.001713
+NAND gate - final weights: [-12.0755756 -12.0755756], bias: 18.282030
+NAND gate - predictions:
+  NAND(0, 0) = 1 -> predicted 1.000000
+  NAND(0, 1) = 1 -> predicted 0.997988
+  NAND(1, 0) = 1 -> predicted 0.997988
+  NAND(1, 1) = 0 -> predicted 0.002817
+```
+
+### Modelling XOR
+
+<details>
+<summary>What is our first step?</summary>
+
+Data!
+
+| x1 | x2 | y |
+| --- | --- | --- |
+| 0 | 0 | 0 |
+| 0 | 1 | 1 |
+| 1 | 0 | 1 |
+| 1 | 1 | 0 |
+
+</details>
+
+<details>
+<summary>How are the classes distributed in <code>2D</code> space?</summary>
+
+![w03_class_distribution.png](assets/w03_class_distribution.png "w03_class_distribution.png")
+
+> [!WARNING]
+> A perceptron can only separate linearly separable data points.
+
+Since the `XOR` function is not linearly separable, it is impossible for a single hyperplane / single perceptron to separate it.
+
+</details>
+
+<details>
+<summary>So what actually solves XOR?</summary>
+
+Depth. Instead of one neuron, we use two hidden neurons feeding a third output neuron, drawing inspiration from tha actual mathematical formula the defines the XOR gate:
+
+`(x|y) & ~(x&y)`
+
+</details>
+
+Each hidden neuron can draw its own line; combined, the two lines carve the input space into the regions `XOR` needs. This is the smallest possible multilayer network, and it is exactly why it matters: a single layer has a hard mathematical ceiling, and stacking layers is what lifts it.
+
+<details>
+<summary>How would the architecture look like?</summary>
+
+Essentially, we want to have this: `AND(OR(x, y), NAND(x, y))`:
+
+![w03_xor_architecture.png](assets/w03_xor_architecture.png "w03_xor_architecture.png")
+
+</details>
+
+<details>
+<summary>How many parameters would we have in total?</summary>
+
+9
+
+</details>
+
+#### Task 11
+
+**Description:**
+
+Define an `Xor` class in `dl_lib.perceptron.xor`: a fixed, two-layer network - two sigmoid hidden units, each looking at both inputs, feeding one sigmoid output unit. It provides:
+
+- **construction**: draws the hidden layer's two weight vectors and biases, and the output layer's weight vector and bias, all from a `(low, high)` range, with an optional seed.
+- **`forward`**: applies the network to one `(x1, x2)` input. Takes an array of 2 values; returns the output unit's sigmoid activation, computed from the two hidden units' sigmoid activations.
+
+Also define a module-level **`forward`** function in `dl_lib.perceptron.xor`: takes a model and the two raw inputs `x1` and `x2` as separate numbers; returns the same result as calling the model's own `forward` with them packed into an array.
+
+Also define **`xor_dataset`** in `dl_lib.perceptron.datasets`.
+
+Create a script that trains an `Xor` model, prints the progress and the final predictions. Trains with binary cross-entropy, as established in Task 09.
+
+> [!WARNING]
+> The model is sensitive to the random starting values! This is a well-known property of training multilayer networks - it is one reason initialization schemes matter so much once networks grow larger than this one.
+>
+> In this task if both hidden units happened to start out at similar weights and biases the gradient descent moves them together instead of letting them specialize into two different lines.
+>
+> If we happen to start from a point where the two hidden units are different enough from each other to specialize, and training escapes the trap.
+
+**Acceptance criteria:**
+
+- An XOR model is defined and trained.
+
+**Test cases:**
+
+See `tests/test_dl_lib/test_perceptron/test_datasets.py` and `tests/test_dl_lib/test_perceptron/test_xor.py`.
+
+**Example output:**
+
+```console
+python run.py -w 3 -t 11
+```
+
+```text
+First attempt - seed=42:
+  epoch   2000: loss=0.348307
+  epoch   4000: loss=0.347388
+  epoch   6000: loss=0.347102
+  epoch   8000: loss=0.346964
+  epoch  10000: loss=0.346882
+  XOR(0, 0) = 0.000433
+  XOR(0, 1) = 0.499870
+  XOR(1, 0) = 0.999717
+  XOR(1, 1) = 0.500129
+
+Second attempt - seed=1 (a different random start):
+  epoch   2000: loss=0.002470
+  epoch   4000: loss=0.001192
+  epoch   6000: loss=0.000784
+  epoch   8000: loss=0.000584
+  epoch  10000: loss=0.000465
+  XOR(0, 0) = 0.000443
+  XOR(0, 1) = 0.999586
+  XOR(1, 0) = 0.999386
+  XOR(1, 1) = 0.000388
+```
+
+#### Task 12
+
+**Description:**
+
+Define a `SquareNet` class in `dl_lib.perceptron.square_net` that models the square function: `x -> x^2`. It provides:
+
+- **construction**: draws a configurable number of hidden sigmoid units' weights and biases, and the output layer's weights and bias, all from a `(low, high)` range, with an optional seed.
+- **`forward`**: applies the network to one scalar input. Takes an array holding a single value; returns the output unit's value.
+
+Create a script that trains a `SquareNet` with `12` hidden units on every integer from `-8` to `8` (so that the values we check, `2` and `7`, fall inside the training range rather than being extrapolated), for `80,000` epochs.
+
+> [!NOTE]
+> `model(2) => 4` and `model(7) => 49` only work if the network has actually seen the shape of the curve nearby - this is the lesson "don't test outside the training range" when dealing with neural networks for regression problems.
+
+**Acceptance criteria:**
+
+- `model(2)` is within `0.5` of `4` and `model(7)` is within `0.5` of `49`.
+
+**Test cases:**
+
+See `tests/test_dl_lib/test_perceptron/test_square_net.py`.
+
+**Example output:**
+
+```console
+python run.py -w 3 -t 12
+```
+
+```text
+Training:
+  epoch  10000: loss=2.738519
+  epoch  20000: loss=0.681237
+  epoch  30000: loss=0.336482
+  epoch  40000: loss=0.205148
+  epoch  50000: loss=0.134811
+  epoch  60000: loss=0.092973
+  epoch  70000: loss=0.066927
+  epoch  80000: loss=0.050224
+
+Predictions:
+  model(-8) = 63.752 (x^2 = 64)
+  model(-7) = 49.407 (x^2 = 49)
+  model(-2) = 3.757 (x^2 = 4)
+  model(0) = 0.378 (x^2 = 0)
+  model(2) = 3.735 (x^2 = 4)
+  model(7) = 49.265 (x^2 = 49)
+  model(8) = 63.831 (x^2 = 64)
+```
+
+#### Task 13
+
+**Description:**
+
+Answer the following questions in Bulgarian:
+
+1. What is machine learning in 1 sentence?
+2. What is deep learning in 1 sentence?
+3. What is does model training mean in 1 sentence?
+4. What task do Large Language Models solve?
+5. What is the difference between loss functions and metrics?
+6. Why is the use of mean squared error preferred to the use of mean absolute error?
+7. Why can't we cube the difference to get the mean error instead of squaring it?
+8. Why is the derivative of the loss function beneficial during model training?
+
+**Acceptance criteria:**
+
+1. Answers are written in Bulgarian.
+2. Answers are written in the body of the email (not in a `.docx` or `.txt` file).
+
+#### Task 14
+
+**Description:**
+
+Watch [this YouTube video from the The Alan Turing Institute](https://www.youtube.com/watch?v=2kSl0xkq2lM) and answer the following questions:
+
+1. Which class of AI techniques began to work around 2005 for solving real-world problems?
+2. What is a classic application of AI is discussed in the video?
+3. What is the simplest way of getting Machine Learning to solve a task?
+4. Define what supervised learning is.
+5. What does AI require in order to work at all?
+6. What class of tasks does the task for facial recognition belong to?
+7. What is the task solved by each neuron in the brain?
+8. What happens when a neuron recognizes a pattern?
+9. What is a digital picture made up of?
+10. What are the three reasons that allowed the modelling of human brain cells in software?
+11. Which type of computer processor is suited really well for performing the mathematics related to deep learning?
+12. Do the capabilities of neural networks grow with scale?
+13. What allowed for the biggest and fastest advances in the field?
+14. What is the name of the probably most important paper in the last decade?
+15. What is the Transformer architecture designed for?
+16. What is the innovation that the Transformer architecture has?
+17. What is the key point about GPT-3?
+18. Is machine learning more efficient at learning than humans? Why?
+19. What is "the bitter truth"?
+20. What is one reason why ChatGPT is not conscious?
+
+**Acceptance criteria:**
+
+1. Answers are written in Bulgarian.
+2. Answers are written in the body of the email (not in a `.docx` or `.txt` file).
