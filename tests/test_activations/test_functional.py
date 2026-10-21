@@ -51,6 +51,43 @@
 #         np.testing.assert_allclose(actual, expected)
 #
 #
+# class TestSigmoidDerivative(unittest.TestCase):
+#
+#     def test_when_input_is_zero_then_returns_one_quarter(self):
+#         # Arrange
+#         x = np.array([0.0])
+#         expected = 0.25
+#
+#         # Act
+#         actual = functional.sigmoid_derivative(x)[0]
+#
+#         # Assert
+#         self.assertAlmostEqual(actual, expected)
+#
+#     def test_when_input_is_very_negative_or_positive_then_approaches_zero(self):
+#         # Arrange
+#         x = np.array([-100.0, 100.0])
+#         expected = np.array([0.0, 0.0])
+#
+#         # Act
+#         actual = functional.sigmoid_derivative(x)
+#
+#         # Assert
+#         np.testing.assert_allclose(actual, expected, atol=1e-8)
+#
+#     def test_when_called_then_matches_the_numerical_derivative_of_sigmoid(self):
+#         # Arrange
+#         x = np.array([-2.0, -0.5, 0.3, 1.5])
+#         h = 1e-5
+#         expected = (functional.sigmoid(x + h) - functional.sigmoid(x - h)) / (2 * h)
+#
+#         # Act
+#         actual = functional.sigmoid_derivative(x)
+#
+#         # Assert
+#         np.testing.assert_allclose(actual, expected, atol=1e-6)
+#
+#
 # class TestRelu(unittest.TestCase):
 #
 #     def test_when_input_is_negative_then_returns_zero(self):
