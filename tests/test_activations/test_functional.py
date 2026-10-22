@@ -48,6 +48,8 @@ class TestSigmoid(unittest.TestCase):
 
         # Assert
         np.testing.assert_allclose(actual, expected)
+
+
 #
 #
 # class TestSigmoidDerivative(unittest.TestCase):

@@ -2,7 +2,6 @@ import unittest
 
 import numpy as np
 
-from dl_lib.losses import functional as losses_functional
 from dl_lib.perceptron import functional
 
 

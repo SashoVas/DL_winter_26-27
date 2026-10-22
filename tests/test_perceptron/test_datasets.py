@@ -1,7 +1,5 @@
 import unittest
 
-import numpy as np
-
 from dl_lib.perceptron import datasets
 
 
