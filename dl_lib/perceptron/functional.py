@@ -1,5 +1,5 @@
 from collections.abc import Callable
-
+from dl_lib.losses.functional import mse
 import numpy as np
 
 
@@ -32,6 +32,7 @@ def analytical_gradient(
     bias: np.ndarray | float = 0,
     activation: Callable = lambda x: x,
     activation_derivative: Callable = lambda x: np.ones_like(x),
+    loss="mse",
 ) -> tuple:
 
     x = np.array([i[0] for i in dataset])
@@ -41,9 +42,13 @@ def analytical_gradient(
 
     logits = x @ weights + bias
     probs = activation(logits)
-    anti_der = activation_derivative(logits)
-    w_grad = (2 / len(dataset)) * (x.T @ ((probs - y) * anti_der))
-    bias_grad = (2 / len(dataset)) * ((probs - y) * anti_der).sum()
+    if loss == "mse":
+        anti_der = activation_derivative(logits)
+        w_grad = (2 / len(dataset)) * (x.T @ ((probs - y) * anti_der))
+        bias_grad = (2 / len(dataset)) * ((probs - y) * anti_der).sum()
+    elif loss == "bce":
+        w_grad = x.T @ ((probs - y) / len(y))
+        bias_grad = (probs - y).sum() / len(y)
     return w_grad, bias_grad
 
 
@@ -58,3 +63,30 @@ def forward(
     activation: Callable = lambda x: x,
 ) -> np.ndarray:
     return activation(x @ weights + bias)
+
+
+def dataset_loss(
+    dataset,
+    targets,
+    weights,
+    bias,
+    activation: Callable | None = lambda x: x,
+    loss: Callable = mse,
+) -> float:
+    if activation == None:
+        activation = lambda x: x
+    x = np.array([i[0] for i in dataset])
+    y = np.array([i[1] for i in dataset])
+    res = forward(x, weights, bias, activation)
+    return loss(targets, res)
+
+
+def dataset_loss_given_bias(
+    dataset, targets, weights, activation, bias_array, loss: Callable = mse
+):
+    if activation == None:
+        activation = lambda x: x
+    x = np.array([i[0] for i in dataset])
+    y = np.array([i[1] for i in dataset])
+    res = forward(x, weights, bias_array, activation)
+    return loss(targets, res)

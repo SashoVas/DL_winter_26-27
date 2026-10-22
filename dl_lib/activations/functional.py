@@ -17,3 +17,7 @@ def softmax(x: np.ndarray) -> np.ndarray:
     maximum = x.max(axis=-1, keepdims=True)
     exps = np.exp(x - maximum)
     return exps / exps.sum(axis=-1, keepdims=True)
+
+
+def sigmoid_derivative(x: np.ndarray) -> np.ndarray:
+    return sigmoid(x) * (1 - sigmoid(x))

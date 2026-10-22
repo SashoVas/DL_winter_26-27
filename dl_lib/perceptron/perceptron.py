@@ -17,7 +17,11 @@ class Perceptron:
     ):
         self.weights = initialize_weights(low, high, size, seed)
         self.use_bias = use_bias
-        self.bias = np.array(0)
+        rng = np.random.default_rng(seed=seed)
+        if use_bias:
+            self.bias = rng.uniform(low=low, high=high, size=1)
+        else:
+            self.bias = np.array(0)
         self.activation = activation
 
     def forward(self, x: np.ndarray) -> np.ndarray:
