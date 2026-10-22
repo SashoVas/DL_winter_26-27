@@ -207,27 +207,50 @@ class TestGradientDescentStep(unittest.TestCase):
         np.testing.assert_allclose(actual, expected)
 
 
-# class TestAnalyticalGradient(unittest.TestCase):
-#     def test_when_no_activation_then_matches_the_closed_form_gradient(self):
-#         # Arrange
-#         dataset = [
-#             (np.array([0.0]), 0.0),
-#             (np.array([1.0]), 2.0),
-#             (np.array([2.0]), 4.0),
-#         ]
-#         weights = np.array([1.0])
-#         expected_weight_gradient = np.array([-10.0 / 3.0])
-#         expected_bias_gradient = -2.0
-#
-#         # Act
-#         actual_weight_gradient, actual_bias_gradient = functional.analytical_gradient(
-#             dataset, weights
-#         )
-#
-#         # Assert
-#         np.testing.assert_allclose(actual_weight_gradient, expected_weight_gradient)
-#         self.assertAlmostEqual(actual_bias_gradient, expected_bias_gradient)
-#
+class TestAnalyticalGradient(unittest.TestCase):
+    def test_when_no_activation_then_matches_the_closed_form_gradient(self):
+        # Arrange
+        dataset = [
+            (np.array([0.0]), 0.0),
+            (np.array([1.0]), 2.0),
+            (np.array([2.0]), 4.0),
+        ]
+        weights = np.array([1.0])
+        expected_weight_gradient = np.array([-10.0 / 3.0])
+        expected_bias_gradient = -2.0
+
+        # Act
+        actual_weight_gradient, actual_bias_gradient = functional.analytical_gradient(
+            dataset, weights
+        )
+
+        # Assert
+        np.testing.assert_allclose(actual_weight_gradient, expected_weight_gradient)
+        self.assertAlmostEqual(actual_bias_gradient, expected_bias_gradient)
+
+    def test_when_no_activation_then_matches_the_closed_form_gradient_with_different_dimensions(
+        self,
+    ):
+        # Arrange
+        dataset = [
+            (0.0, 0.0),
+            (1.0, 2.0),
+            (2.0, 4.0),
+        ]
+        weights = np.array([1.0])
+        expected_weight_gradient = np.array([-10.0 / 3.0])
+        expected_bias_gradient = -2.0
+
+        # Act
+        actual_weight_gradient, actual_bias_gradient = functional.analytical_gradient(
+            dataset, weights
+        )
+
+        # Assert
+        np.testing.assert_allclose(actual_weight_gradient, expected_weight_gradient)
+        self.assertAlmostEqual(actual_bias_gradient, expected_bias_gradient)
+
+
 #     def test_when_activation_given_then_matches_the_numerical_gradient(self):
 #         # Arrange
 #         dataset = [

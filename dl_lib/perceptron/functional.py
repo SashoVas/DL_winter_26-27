@@ -26,5 +26,26 @@ def numerical_gradient(
     return res
 
 
+def analytical_gradient(
+    dataset: list,
+    weights: np.ndarray,
+    bias: np.ndarray | float = 0,
+    activation: Callable = lambda x: x,
+    activation_derivative: Callable = lambda x: np.ones_like(x),
+) -> tuple:
+
+    x = np.array([i[0] for i in dataset])
+    if x.ndim == 1:
+        x = x.reshape(len(x), 1)
+    y = np.array([i[1] for i in dataset])
+
+    logits = (x @ weights + bias).squeeze()
+    probs = activation(logits)
+    anti_der = activation_derivative(logits)
+    w_grad = (2 / len(dataset)) * ((probs - y) * anti_der * x.squeeze()).sum()
+    bias_grad = (2 / len(dataset)) * ((probs - y) * anti_der).sum()
+    return w_grad, bias_grad
+
+
 def gradient_descent_step(params: np.ndarray, grad: np.ndarray, lr: float):
     return params - lr * grad
