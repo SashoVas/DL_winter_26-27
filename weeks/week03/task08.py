@@ -1,11 +1,11 @@
+import matplotlib.pyplot as plt
 import numpy as np
 
-from dl_lib.perceptron.datasets import and_dataset, or_dataset
+from dl_lib.activations.functional import sigmoid
+from dl_lib.losses.functional import mse
+from dl_lib.perceptron.datasets import and_dataset
 from dl_lib.perceptron.perceptron import Perceptron
 from dl_lib.perceptron.training import train
-from dl_lib.losses.functional import binary_cross_entropy, mse
-from dl_lib.activations.functional import sigmoid
-import matplotlib.pyplot as plt
 
 
 def main() -> None:

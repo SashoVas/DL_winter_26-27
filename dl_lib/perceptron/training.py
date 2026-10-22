@@ -21,7 +21,11 @@ def train(
     result = []
     for epoch in range(1, epochs + 1):
         grad_w, grad_b = analytical_gradient(
-            dataset, model.weights, bias=model.bias, activation=model.activation
+            dataset,
+            model.weights,
+            bias=model.bias,
+            activation=model.activation,
+            loss="mse" if loss == mse else "bce",
         )
         model.weights = gradient_descent_step(model.weights, grad_w, lr=learning_rate)
         if model.use_bias:

@@ -1,13 +1,12 @@
+from collections.abc import Callable
+
 import numpy as np
 
-from dl_lib.perceptron.datasets import and_dataset, or_dataset
-from dl_lib.perceptron.perceptron import Perceptron
-from dl_lib.perceptron.training import train
-from dl_lib.losses.functional import binary_cross_entropy, mse
 from dl_lib.activations.functional import sigmoid
-from dl_lib.perceptron.functional import numerical_gradient, analytical_gradient
-import matplotlib.pyplot as plt
-from typing import Callable
+from dl_lib.losses.functional import binary_cross_entropy
+from dl_lib.perceptron.datasets import and_dataset
+from dl_lib.perceptron.functional import analytical_gradient, numerical_gradient
+from dl_lib.perceptron.perceptron import Perceptron
 
 
 def get_loss_of_only_one_param_weight(

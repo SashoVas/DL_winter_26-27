@@ -1,9 +1,9 @@
 import numpy as np
 
+from dl_lib.losses.functional import binary_cross_entropy
 from dl_lib.perceptron.datasets import and_dataset, or_dataset
 from dl_lib.perceptron.perceptron import Perceptron
 from dl_lib.perceptron.training import train
-from dl_lib.losses.functional import binary_cross_entropy
 
 
 def main() -> None:

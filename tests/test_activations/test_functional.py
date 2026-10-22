@@ -51,7 +51,6 @@ class TestSigmoid(unittest.TestCase):
 
 
 class TestSigmoidDerivative(unittest.TestCase):
-
     def test_when_input_is_zero_then_returns_one_quarter(self):
         # Arrange
         x = np.array([0.0])

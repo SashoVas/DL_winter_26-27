@@ -2,8 +2,8 @@ import unittest
 
 import numpy as np
 
-from dl_lib.perceptron import functional
 import dl_lib.losses.functional as losses_functional
+from dl_lib.perceptron import functional
 
 
 class TestInitializeWeights(unittest.TestCase):

@@ -1,6 +1,8 @@
 from collections.abc import Callable
-from dl_lib.losses.functional import mse
+
 import numpy as np
+
+from dl_lib.losses.functional import mse
 
 
 def initialize_weights(
@@ -42,6 +44,8 @@ def analytical_gradient(
 
     logits = x @ weights + bias
     probs = activation(logits)
+    w_grad = None
+    bias_grad = None
     if loss == "mse":
         anti_der = activation_derivative(logits)
         w_grad = (2 / len(dataset)) * (x.T @ ((probs - y) * anti_der))
@@ -76,7 +80,6 @@ def dataset_loss(
     if activation == None:
         activation = lambda x: x
     x = np.array([i[0] for i in dataset])
-    y = np.array([i[1] for i in dataset])
     res = forward(x, weights, bias, activation)
     return loss(targets, res)
 
@@ -87,6 +90,5 @@ def dataset_loss_given_bias(
     if activation == None:
         activation = lambda x: x
     x = np.array([i[0] for i in dataset])
-    y = np.array([i[1] for i in dataset])
     res = forward(x, weights, bias_array, activation)
     return loss(targets, res)
