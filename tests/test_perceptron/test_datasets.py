@@ -1,23 +1,23 @@
-# import unittest
-#
-# import numpy as np
-#
-# from dl_lib.perceptron import datasets
-#
-#
-# class TestCreateDataset(unittest.TestCase):
-#     def test_when_called_then_returns_n_consecutive_x_and_2x_pairs(self):
-#         # Arrange
-#         n = 4
-#         expected = [(0.0, 0.0), (1.0, 2.0), (2.0, 4.0), (3.0, 6.0)]
-#
-#         # Act
-#         actual = datasets.create_dataset(n)
-#
-#         # Assert
-#         self.assertEqual(actual, expected)
-#
-#
+import unittest
+
+import numpy as np
+
+from dl_lib.perceptron import datasets
+
+
+class TestCreateDataset(unittest.TestCase):
+    def test_when_called_then_returns_n_consecutive_x_and_2x_pairs(self):
+        # Arrange
+        n = 4
+        expected = [(0.0, 0.0), (1.0, 2.0), (2.0, 4.0), (3.0, 6.0)]
+
+        # Act
+        actual = datasets.create_dataset(n)
+
+        # Assert
+        self.assertEqual(actual, expected)
+
+
 # class TestAndDataset(unittest.TestCase):
 #     def test_when_called_then_returns_the_and_truth_table(self):
 #         # Arrange

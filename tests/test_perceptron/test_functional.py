@@ -1,40 +1,40 @@
-# import unittest
-#
-# import numpy as np
-#
-# from dl_lib.losses import functional as losses_functional
-# from dl_lib.perceptron import functional
-#
-#
-# class TestInitializeWeights(unittest.TestCase):
-#     def test_when_called_then_returns_size_many_values_in_the_given_range(self):
-#         # Arrange
-#         low = 0.0
-#         high = 10.0
-#         size = 5
-#
-#         # Act
-#         actual = functional.initialize_weights(low, high, size=size, seed=42)
-#
-#         # Assert
-#         self.assertEqual(actual.shape, (size,))
-#         self.assertTrue(np.all(actual >= low))
-#         self.assertTrue(np.all(actual < high))
-#
-#     def test_when_seed_is_fixed_then_result_is_reproducible(self):
-#         # Arrange
-#         low = 0.0
-#         high = 10.0
-#         seed = 42
-#
-#         # Act
-#         first = functional.initialize_weights(low, high, size=3, seed=seed)
-#         second = functional.initialize_weights(low, high, size=3, seed=seed)
-#
-#         # Assert
-#         np.testing.assert_array_equal(first, second)
-#
-#
+import unittest
+
+import numpy as np
+
+from dl_lib.losses import functional as losses_functional
+from dl_lib.perceptron import functional
+
+
+class TestInitializeWeights(unittest.TestCase):
+    def test_when_called_then_returns_size_many_values_in_the_given_range(self):
+        # Arrange
+        low = 0.0
+        high = 10.0
+        size = 5
+
+        # Act
+        actual = functional.initialize_weights(low, high, size=size, seed=42)
+
+        # Assert
+        self.assertEqual(actual.shape, (size,))
+        self.assertTrue(np.all(actual >= low))
+        self.assertTrue(np.all(actual < high))
+
+    def test_when_seed_is_fixed_then_result_is_reproducible(self):
+        # Arrange
+        low = 0.0
+        high = 10.0
+        seed = 42
+
+        # Act
+        first = functional.initialize_weights(low, high, size=3, seed=seed)
+        second = functional.initialize_weights(low, high, size=3, seed=seed)
+
+        # Assert
+        np.testing.assert_array_equal(first, second)
+
+
 # class TestForward(unittest.TestCase):
 #     def test_when_activation_is_none_then_returns_the_weighted_sum_plus_bias(self):
 #         # Arrange
