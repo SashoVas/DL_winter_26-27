@@ -144,69 +144,69 @@ class TestInitializeWeights(unittest.TestCase):
 #         self.assertAlmostEqual(actual, expected)
 #
 #
-# class TestNumericalGradient(unittest.TestCase):
-#     def test_when_called_on_a_quadratic_loss_then_matches_the_analytical_derivative(
-#         self,
-#     ):
-#         # Arrange
-#         def loss_fn(params: np.ndarray) -> float:
-#             return float(np.sum(params**2))
-#
-#         params = np.array([3.0, -2.0])
-#         expected = np.array([6.0, -4.0])
-#
-#         # Act
-#         actual = functional.numerical_gradient(loss_fn, params)
-#
-#         # Assert
-#         np.testing.assert_allclose(actual, expected, atol=1e-4)
-#
-#     def test_when_params_is_two_dimensional_then_gradient_matches_the_analytical_derivative(
-#         self,
-#     ):
-#         # Arrange
-#         def loss_fn(params: np.ndarray) -> float:
-#             return float(np.sum(params**2))
-#
-#         params = np.array([[3.0, -2.0], [1.0, 0.5]])
-#         expected = np.array([[6.0, -4.0], [2.0, 1.0]])
-#
-#         # Act
-#         actual = functional.numerical_gradient(loss_fn, params)
-#
-#         # Assert
-#         np.testing.assert_allclose(actual, expected, atol=1e-4)
-#
-#     def test_when_called_then_leaves_params_unchanged(self):
-#         # Arrange
-#         def loss_fn(params: np.ndarray) -> float:
-#             return float(np.sum(params**2))
-#
-#         params = np.array([3.0, -2.0])
-#         expected = np.array([3.0, -2.0])
-#
-#         # Act
-#         functional.numerical_gradient(loss_fn, params)
-#
-#         # Assert
-#         np.testing.assert_array_equal(params, expected)
-#
-#
-# class TestGradientDescentStep(unittest.TestCase):
-#     def test_when_called_then_moves_params_against_the_gradient(self):
-#         # Arrange
-#         params = np.array([1.0, 1.0])
-#         gradient = np.array([2.0, -2.0])
-#         learning_rate = 0.1
-#         expected = np.array([0.8, 1.2])
-#
-#         # Act
-#         actual = functional.gradient_descent_step(params, gradient, learning_rate)
-#
-#         # Assert
-#         np.testing.assert_allclose(actual, expected)
-#
-#
+class TestNumericalGradient(unittest.TestCase):
+    def test_when_called_on_a_quadratic_loss_then_matches_the_analytical_derivative(
+        self,
+    ):
+        # Arrange
+        def loss_fn(params: np.ndarray) -> float:
+            return float(np.sum(params**2))
+
+        params = np.array([3.0, -2.0])
+        expected = np.array([6.0, -4.0])
+
+        # Act
+        actual = functional.numerical_gradient(loss_fn, params)
+
+        # Assert
+        np.testing.assert_allclose(actual, expected, atol=1e-4)
+
+    def test_when_params_is_two_dimensional_then_gradient_matches_the_analytical_derivative(
+        self,
+    ):
+        # Arrange
+        def loss_fn(params: np.ndarray) -> float:
+            return float(np.sum(params**2))
+
+        params = np.array([[3.0, -2.0], [1.0, 0.5]])
+        expected = np.array([[6.0, -4.0], [2.0, 1.0]])
+
+        # Act
+        actual = functional.numerical_gradient(loss_fn, params)
+
+        # Assert
+        np.testing.assert_allclose(actual, expected, atol=1e-4)
+
+    def test_when_called_then_leaves_params_unchanged(self):
+        # Arrange
+        def loss_fn(params: np.ndarray) -> float:
+            return float(np.sum(params**2))
+
+        params = np.array([3.0, -2.0])
+        expected = np.array([3.0, -2.0])
+
+        # Act
+        functional.numerical_gradient(loss_fn, params)
+
+        # Assert
+        np.testing.assert_array_equal(params, expected)
+
+
+class TestGradientDescentStep(unittest.TestCase):
+    def test_when_called_then_moves_params_against_the_gradient(self):
+        # Arrange
+        params = np.array([1.0, 1.0])
+        gradient = np.array([2.0, -2.0])
+        learning_rate = 0.1
+        expected = np.array([0.8, 1.2])
+
+        # Act
+        actual = functional.gradient_descent_step(params, gradient, learning_rate)
+
+        # Assert
+        np.testing.assert_allclose(actual, expected)
+
+
 # class TestAnalyticalGradient(unittest.TestCase):
 #     def test_when_no_activation_then_matches_the_closed_form_gradient(self):
 #         # Arrange
