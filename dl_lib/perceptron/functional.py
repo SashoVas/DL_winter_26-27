@@ -39,13 +39,22 @@ def analytical_gradient(
         x = x.reshape(len(x), 1)
     y = np.array([i[1] for i in dataset])
 
-    logits = (x @ weights + bias).squeeze()
+    logits = x @ weights + bias
     probs = activation(logits)
     anti_der = activation_derivative(logits)
-    w_grad = (2 / len(dataset)) * ((probs - y) * anti_der * x.squeeze()).sum()
+    w_grad = (2 / len(dataset)) * (x.T @ ((probs - y) * anti_der))
     bias_grad = (2 / len(dataset)) * ((probs - y) * anti_der).sum()
     return w_grad, bias_grad
 
 
 def gradient_descent_step(params: np.ndarray, grad: np.ndarray, lr: float):
     return params - lr * grad
+
+
+def forward(
+    x: np.ndarray,
+    weights: np.ndarray,
+    bias: float | np.ndarray = 0,
+    activation: Callable = lambda x: x,
+) -> np.ndarray:
+    return activation(x @ weights + bias)
