@@ -14,6 +14,7 @@ def train(
     epochs: int,
     log_every: int = 1,
     loss: Callable = mse,
+    enable_prints: bool = True,
 ) -> list:
     x = np.array([i[0] for i in dataset])
     y = np.array([i[1] for i in dataset])
@@ -27,7 +28,8 @@ def train(
             model.bias = gradient_descent_step(model.bias, grad_b, lr=learning_rate)
         l = loss(y, model.forward(x))
         if epoch % log_every == 0:
-            print(f"epoch {epoch}: loss={l}")
+            if enable_prints:
+                print(f"epoch {epoch}: loss={l}")
             result.append((epoch, l))
 
     return result
