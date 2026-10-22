@@ -66,17 +66,17 @@ class TestNandDataset(unittest.TestCase):
         )
 
 
-# class TestXorDataset(unittest.TestCase):
-#     def test_when_called_then_returns_the_xor_truth_table(self):
-#         # Arrange
-#         expected_targets = [0.0, 1.0, 1.0, 0.0]
-#
-#         # Act
-#         actual = datasets.xor_dataset()
-#
-#         # Assert
-#         self.assertEqual([y for _, y in actual], expected_targets)
-#         np.testing.assert_array_equal(
-#             np.array([x for x, _ in actual]),
-#             np.array([[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]]),
-#         )
+class TestXorDataset(unittest.TestCase):
+    def test_when_called_then_returns_the_xor_truth_table(self):
+        # Arrange
+        expected_targets = [0.0, 1.0, 1.0, 0.0]
+
+        # Act
+        actual = datasets.xor_dataset()
+
+        # Assert
+        self.assertEqual([y for _, y in actual], expected_targets)
+        np.testing.assert_array_equal(
+            np.array([x for x, _ in actual]),
+            np.array([[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]]),
+        )

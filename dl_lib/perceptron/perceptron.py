@@ -2,7 +2,7 @@ from collections.abc import Callable
 
 import numpy as np
 
-from dl_lib.perceptron.functional import initialize_weights
+from dl_lib.perceptron.functional import forward, initialize_weights
 
 
 class Perceptron:
@@ -25,4 +25,4 @@ class Perceptron:
         self.activation = activation
 
     def forward(self, x: np.ndarray) -> np.ndarray:
-        return self.activation(x @ self.weights + self.bias)
+        return forward(x, self.weights, self.bias, self.activation)

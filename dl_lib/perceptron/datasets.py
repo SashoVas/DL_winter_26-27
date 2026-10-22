@@ -12,3 +12,7 @@ def or_dataset():
 
 def nand_dataset():
     return [([i, j], not (i and j)) for i in [0, 1] for j in [0, 1]]
+
+
+def xor_dataset():
+    return [([i, j], i ^ j) for i in [0, 1] for j in [0, 1]]
