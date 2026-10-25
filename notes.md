@@ -4136,7 +4136,7 @@ OR gate - predictions:
 
 **Description:**
 
-Retrain `AND` and `OR` this time with a bias and an activation function.
+Retrain `AND` this time with a bias and an activation function.
 
 To show a visual comparison train for `100,000` epochs with `learning_rate=0.1` - once with no activation and once with sigmoid - and plot both loss curves on one figure.
 
