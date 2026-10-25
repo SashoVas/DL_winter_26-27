@@ -3673,12 +3673,18 @@ $${\displaystyle L=\lim _{eps\to 0}{\frac {loss(w+eps)-loss(w)}{eps}}}$$
 
 **Description:**
 
-Create a script that builds a `6`-sample dataset and a seeded weight (`seed=42`, range `[0, 10)`), then computes the mean squared error between the model's predictions and the true values. The script then nudges the weight by `+0.002`, `+0.001`, `-0.001`, and `-0.002` in turn and prints the loss after each nudge, so we can see which direction actually helps.
+Define **`forward`** in `dl_lib.perceptron.functional`: applies the model to one input. Takes an input array and the weights, plus an optional bias (defaulting to `0.0`) and an optional activation (defaulting to `None`, meaning none is applied); returns the weighted sum of the input and the weights, plus the bias, with the activation applied if one was given.
+
+Create a script that builds a `6`-sample dataset and a seeded weight (`seed=42`, range `[0, 10)`), then uses `forward` to get the model's predictions and computes the mean squared error between them and the true values. The script then nudges the weight by `+0.002`, `+0.001`, `-0.001`, and `-0.002` in turn and prints the loss after each nudge, so we can see which direction actually helps.
 
 **Acceptance criteria:**
 
 - Calculations use `numpy` and `dl_lib.losses.functional.mse`.
 - The loss is printed before and after each of the four nudges.
+
+**Test cases:**
+
+See `tests/test_dl_lib/test_perceptron/test_functional.py`.
 
 **Example output:**
 
