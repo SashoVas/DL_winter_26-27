@@ -50,7 +50,7 @@ Grading:
     - Behavior-driven development.
     - Presence of a model report file.
 - [ ] Midterm:
-  - Date: still TODO - possibly end of November - start of December.
+  - Date: one of these dates: 05.12, 06.12, 13.12.
   - Room: ???.
   - Time: ???, ~1 hour.
   - Content: theoretical questions and one-two tasks.

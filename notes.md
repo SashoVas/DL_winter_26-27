@@ -3612,8 +3612,8 @@ python run.py -w 3 -t 1
 
 ```text
 Dataset: [(0.0, 0.0), (1.0, 2.0), (2.0, 4.0), (3.0, 6.0)]
-initialize_weights(0, 100): 77.39560485559633
-initialize_weights(0, 10):  7.739560485559633
+initialize_weights(0, 100, 1): 77.39560485559633
+initialize_weights(0, 10, 1):  7.739560485559633
 ```
 
 <details>
@@ -3673,12 +3673,18 @@ $${\displaystyle L=\lim _{eps\to 0}{\frac {loss(w+eps)-loss(w)}{eps}}}$$
 
 **Description:**
 
-Create a script that builds a `6`-sample dataset and a seeded weight (`seed=42`, range `[0, 10)`), then computes the mean squared error between the model's predictions and the true values. The script then nudges the weight by `+0.002`, `+0.001`, `-0.001`, and `-0.002` in turn and prints the loss after each nudge, so we can see which direction actually helps.
+Define **`forward`** in `dl_lib.perceptron.functional`: applies the model to one input. Takes an input array and the weights, plus an optional bias (defaulting to `0.0`) and an optional activation (defaulting to `None`, meaning none is applied); returns the weighted sum of the input and the weights, plus the bias, with the activation applied if one was given.
+
+Create a script that builds a `6`-sample dataset and a seeded weight (`seed=42`, range `[0, 10)`), then uses `forward` to get the model's predictions and computes the mean squared error between them and the true values. The script then nudges the weight by `+0.002`, `+0.001`, `-0.001`, and `-0.002` in turn and prints the loss after each nudge, so we can see which direction actually helps.
 
 **Acceptance criteria:**
 
 - Calculations use `numpy` and `dl_lib.losses.functional.mse`.
 - The loss is printed before and after each of the four nudges.
+
+**Test cases:**
+
+See `tests/test_dl_lib/test_perceptron/test_functional.py`.
 
 **Example output:**
 
@@ -4006,6 +4012,10 @@ Define a `Perceptron` class in `dl_lib.perceptron.perceptron`: a single neuron w
 
 Also define **`train`** in `dl_lib.perceptron.training`: trains a `Perceptron`'s weights (and its bias, if it has one) with finite-difference gradient descent, reusing `numerical_gradient` and `gradient_descent_step`. Takes the model, a dataset of `(x, y)` pairs, a learning rate, a number of epochs, and how often to record progress; returns a list of `(epoch, loss)` pairs, one per recorded epoch plus the final one.
 
+`train` builds that loss by calling **`dataset_loss`** in `dl_lib.perceptron.functional`: takes the dataset, its targets, a `weights`/`bias`/`activation` combination, and the `loss` function to use (mean squared error by default); returns that loss evaluated over the whole dataset - the single scalar `numerical_gradient` perturbs against.
+
+Because `numerical_gradient` always perturbs an array while a `Perceptron`'s bias is a single float, `train` updates the bias through **`dataset_loss_given_bias`** instead: the same computation as `dataset_loss`, but with `bias` moved last and taken as a 1-element array, so it can be wrapped the same way as the weights.
+
 Also define **`and_dataset`** and **`or_dataset`** in `dl_lib.perceptron.datasets`.
 
 Finally, create a script that trains two `Perceptron` models - one on the `AND` dataset, one on `OR` without bias and an activation function and prints the loss every `10,000` epochs plus each model's final predictions on its own dataset.
@@ -4017,7 +4027,7 @@ Finally, create a script that trains two `Perceptron` models - one on the `AND` 
 
 **Test cases:**
 
-See `tests/test_dl_lib/test_perceptron/test_datasets.py`, `tests/test_dl_lib/test_perceptron/test_perceptron.py`, and `tests/test_dl_lib/test_perceptron/test_training.py`.
+See `tests/test_dl_lib/test_perceptron/test_datasets.py`, `tests/test_dl_lib/test_perceptron/test_functional.py`, `tests/test_dl_lib/test_perceptron/test_perceptron.py`, and `tests/test_dl_lib/test_perceptron/test_training.py`.
 
 **Example output:**
 
@@ -4126,7 +4136,7 @@ OR gate - predictions:
 
 **Description:**
 
-Retrain `AND` and `OR` this time with a bias and an activation function.
+Retrain `AND` this time with a bias and an activation function.
 
 To show a visual comparison train for `100,000` epochs with `learning_rate=0.1` - once with no activation and once with sigmoid - and plot both loss curves on one figure.
 
