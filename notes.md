@@ -3612,8 +3612,8 @@ python run.py -w 3 -t 1
 
 ```text
 Dataset: [(0.0, 0.0), (1.0, 2.0), (2.0, 4.0), (3.0, 6.0)]
-initialize_weights(0, 100): 77.39560485559633
-initialize_weights(0, 10):  7.739560485559633
+initialize_weights(0, 100, 1): 77.39560485559633
+initialize_weights(0, 10, 1):  7.739560485559633
 ```
 
 <details>
