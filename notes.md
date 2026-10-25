@@ -4012,6 +4012,10 @@ Define a `Perceptron` class in `dl_lib.perceptron.perceptron`: a single neuron w
 
 Also define **`train`** in `dl_lib.perceptron.training`: trains a `Perceptron`'s weights (and its bias, if it has one) with finite-difference gradient descent, reusing `numerical_gradient` and `gradient_descent_step`. Takes the model, a dataset of `(x, y)` pairs, a learning rate, a number of epochs, and how often to record progress; returns a list of `(epoch, loss)` pairs, one per recorded epoch plus the final one.
 
+`train` builds that loss by calling **`dataset_loss`** in `dl_lib.perceptron.functional`: takes the dataset, its targets, a `weights`/`bias`/`activation` combination, and the `loss` function to use (mean squared error by default); returns that loss evaluated over the whole dataset - the single scalar `numerical_gradient` perturbs against.
+
+Because `numerical_gradient` always perturbs an array while a `Perceptron`'s bias is a single float, `train` updates the bias through **`dataset_loss_given_bias`** instead: the same computation as `dataset_loss`, but with `bias` moved last and taken as a 1-element array, so it can be wrapped the same way as the weights.
+
 Also define **`and_dataset`** and **`or_dataset`** in `dl_lib.perceptron.datasets`.
 
 Finally, create a script that trains two `Perceptron` models - one on the `AND` dataset, one on `OR` without bias and an activation function and prints the loss every `10,000` epochs plus each model's final predictions on its own dataset.
@@ -4023,7 +4027,7 @@ Finally, create a script that trains two `Perceptron` models - one on the `AND` 
 
 **Test cases:**
 
-See `tests/test_dl_lib/test_perceptron/test_datasets.py`, `tests/test_dl_lib/test_perceptron/test_perceptron.py`, and `tests/test_dl_lib/test_perceptron/test_training.py`.
+See `tests/test_dl_lib/test_perceptron/test_datasets.py`, `tests/test_dl_lib/test_perceptron/test_functional.py`, `tests/test_dl_lib/test_perceptron/test_perceptron.py`, and `tests/test_dl_lib/test_perceptron/test_training.py`.
 
 **Example output:**
 
