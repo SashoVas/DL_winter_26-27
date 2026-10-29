@@ -6,7 +6,7 @@ class Value:
         self.data = data
         self._prev = set()
         self._op = None
-        self.grad = 0
+        self.grad = 0.0
         self.label = label
 
     def __repr__(self) -> str:

@@ -1,8 +1,7 @@
-from dl_lib.engine.graph import draw_dot, trace
 from dl_lib.engine.value import Value
 
 
-def build_output(a_val=2, b_val=-3, c_val=10, f_val=5):
+def build_output(a_val=2, b_val=-3, c_val=10, f_val=5) -> float:
     a = Value(a_val, "a")
     b = Value(b_val, "b")
     e = a * b

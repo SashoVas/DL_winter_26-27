@@ -1,4 +1,4 @@
-from dl_lib.engine.graph import draw_dot, trace
+from dl_lib.engine.graph import draw_dot
 from dl_lib.engine.value import Value
 
 
