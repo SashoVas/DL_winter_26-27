@@ -272,84 +272,87 @@ class TestBackward(unittest.TestCase):
         self.assertEqual(a.grad, expected)
 
 
-# class TestPow(unittest.TestCase):
-#
-#     def test_when_raised_to_float_power_then_data_matches_hand_calculation(
-#             self):
-#         # Arrange
-#         a = Value(2.0)
-#         expected = 8.0
-#
-#         # Act
-#         actual = (a**3.0).data
-#
-#         # Assert
-#         self.assertEqual(actual, expected)
-#
-#     def test_when_backward_called_then_operand_gradient_matches_power_rule(
-#             self):
-#         # Arrange
-#         a = Value(2.0)
-#         out = a**3.0
-#         expected = 3.0 * 2.0**2.0
-#
-#         # Act
-#         out.backward()
-#
-#         # Assert
-#         self.assertEqual(a.grad, expected)
-#
-#
-# class TestTrueDiv(unittest.TestCase):
-#
-#     def test_when_value_divided_by_float_then_data_matches_hand_calculation(
-#             self):
-#         # Arrange
-#         a = Value(6.0)
-#         expected = 3.0
-#
-#         # Act
-#         actual = (a / 2.0).data
-#
-#         # Assert
-#         self.assertEqual(actual, expected)
-#
-#     def test_when_value_divided_by_value_then_data_matches_hand_calculation(
-#             self):
-#         # Arrange
-#         a = Value(6.0)
-#         b = Value(2.0)
-#         expected = 3.0
-#
-#         # Act
-#         actual = (a / b).data
-#
-#         # Assert
-#         self.assertEqual(actual, expected)
-#
-#
-# class TestExp(unittest.TestCase):
-#
-#     def test_when_called_then_data_matches_hand_calculation(self):
-#         # Arrange
-#         a = Value(0.0)
-#         expected = 1.0
-#
-#         # Act
-#         actual = a.exp().data
-#
-#         # Assert
-#         self.assertEqual(actual, expected)
-#
-#     def test_when_backward_called_then_operand_gradient_equals_its_own_result(
-#             self):
-#         # Arrange
-#         a = Value(2.0)
-#         out = a.exp()
-#         expected = out.data
-#
-#         # Act
-#         out.backward()
-#
-#         # Assert
-#         self.assertAlmostEqual(a.grad, expected)
+class TestPow(unittest.TestCase):
+    def test_when_raised_to_float_power_then_data_matches_hand_calculation(self):
+        # Arrange
+        a = Value(2.0)
+        expected = 8.0
+
+        # Act
+        actual = (a**3.0).data
+
+        # Assert
+        self.assertEqual(actual, expected)
+
+    def test_when_backward_called_then_operand_gradient_matches_power_rule(self):
+        # Arrange
+        a = Value(2.0)
+        out = a**3.0
+        expected = 3.0 * 2.0**2.0
+
+        # Act
+        out.backward()
+
+        # Assert
+        self.assertEqual(a.grad, expected)
+
+
+class TestTrueDiv(unittest.TestCase):
+    def test_when_value_divided_by_float_then_data_matches_hand_calculation(self):
+        # Arrange
+        a = Value(6.0)
+        expected = 3.0
+
+        # Act
+        actual = (a / 2.0).data
+
+        # Assert
+        self.assertEqual(actual, expected)
+
+    def test_when_value_divided_by_value_then_data_matches_hand_calculation(self):
+        # Arrange
+        a = Value(6.0)
+        b = Value(2.0)
+        expected = 3.0
+
+        # Act
+        actual = (a / b).data
+
+        # Assert
+        self.assertEqual(actual, expected)
+
+    def test_when_value_divided_by_value_then_grad_matches_hand_calculation(self):
+        a = Value(6.0)
+        b = Value(3.0)
+
+        c = a / b
+        c.backward()
+
+        self.assertEqual(c.data, 2.0)
+        self.assertEqual(a.grad, 1 / 3)
+        self.assertEqual(b.grad, -2 / 3)
+
+
+class TestExp(unittest.TestCase):
+    def test_when_called_then_data_matches_hand_calculation(self):
+        # Arrange
+        a = Value(0.0)
+        expected = 1.0
+
+        # Act
+        actual = a.exp().data
+
+        # Assert
+        self.assertEqual(actual, expected)
+
+    def test_when_backward_called_then_operand_gradient_equals_its_own_result(self):
+        # Arrange
+        a = Value(2.0)
+        out = a.exp()
+        expected = out.data
+
+        # Act
+        out.backward()
+
+        # Assert
+        self.assertAlmostEqual(a.grad, expected)

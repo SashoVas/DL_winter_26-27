@@ -51,6 +51,43 @@ class Value:
     def __rmul__(self, other: float) -> Value:
         return self * other
 
+    def __pow__(self, other: float) -> Value:
+        res = Value(self.data**other, label=f"({self.label}**{other})")
+        res._op = "**"
+        res._prev = {self}
+
+        def _backward():
+            self.grad += res.grad * other * (self.data ** (other - 1))
+
+        res._backward = _backward
+        return res
+
+    def __truediv__(self, other: Value | float) -> Value:
+        other = other if isinstance(other, Value) else Value(other)
+
+        res = Value(self.data / other.data, label=f"({self.label}/{other.label})")
+        res._op = "/"
+        res._prev = {self, other}
+
+        def _backward():
+            self.grad += res.grad * (1 / other.data)
+            other.grad += res.grad * (-self.data / other.data**2)
+
+        res._backward = _backward
+        return res
+
+    def exp(self) -> Value:
+        res = Value(math.exp(self.data), label=f"(e^{self.label})")
+        res._op = "exp"
+        res._prev = {self}
+
+        def _backward():
+            self.grad += res.grad * res.data
+
+        res._backward = _backward
+
+        return res
+
     def tanh(self) -> Value:
 
         res = Value(
