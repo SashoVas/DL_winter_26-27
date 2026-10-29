@@ -173,33 +173,33 @@ class TestRMul(unittest.TestCase):
         self.assertEqual(actual, expected)
 
 
-# class TestTanh(unittest.TestCase):
-#
-#     def test_when_called_then_data_matches_hand_calculation(self):
-#         # Arrange
-#         value = Value(0.0)
-#         expected = 0.0
-#
-#         # Act
-#         actual = value.tanh().data
-#
-#         # Assert
-#         self.assertAlmostEqual(actual, expected)
-#
-#     def test_when_called_then_result_tracks_operand_and_op(self):
-#         # Arrange
-#         value = Value(0.0)
-#         expected_prev = {value}
-#         expected_op = "tanh"
-#
-#         # Act
-#         out = value.tanh()
-#
-#         # Assert
-#         self.assertEqual(out._prev, expected_prev)
-#         self.assertEqual(out._op, expected_op)
-#
-#
+class TestTanh(unittest.TestCase):
+
+    def test_when_called_then_data_matches_hand_calculation(self):
+        # Arrange
+        value = Value(0.0)
+        expected = 0.0
+
+        # Act
+        actual = value.tanh().data
+
+        # Assert
+        self.assertAlmostEqual(actual, expected)
+
+    def test_when_called_then_result_tracks_operand_and_op(self):
+        # Arrange
+        value = Value(0.0)
+        expected_prev = {value}
+        expected_op = "tanh"
+
+        # Act
+        out = value.tanh()
+
+        # Assert
+        self.assertEqual(out._prev, expected_prev)
+        self.assertEqual(out._op, expected_op)
+
+
 # class TestBackward(unittest.TestCase):
 #
 #     def test_when_called_on_sum_of_distinct_values_then_each_operand_gets_gradient_one(

@@ -1,4 +1,5 @@
 from __future__ import annotations
+import math
 
 
 class Value:
@@ -16,10 +17,9 @@ class Value:
     def __add__(self, other: Value | float) -> Value:
         other = other if isinstance(other, Value) else Value(other)
 
-        res = Value(self.data + other.data)
+        res = Value(self.data + other.data, label=f"{self.label}+{other.label}")
         res._op = "+"
         res._prev = {self, other}
-
         return res
 
     def __radd__(self, other: float) -> Value:
@@ -28,10 +28,22 @@ class Value:
     def __mul__(self, other: Value | float) -> Value:
         other = other if isinstance(other, Value) else Value(other)
 
-        res = Value(self.data * other.data)
+        res = Value(self.data * other.data, label=f"{self.label}*{other.label}")
         res._op = "*"
         res._prev = {self, other}
+
         return res
 
     def __rmul__(self, other: float) -> Value:
         return self * other
+
+    def tanh(self) -> Value:
+
+        res = Value(
+            (math.exp(self.data) - math.exp(-self.data))
+            / (math.exp(self.data) + math.exp(-self.data)),
+            label=f"tanh({self.label})",
+        )
+        res._op = "tanh"
+        res._prev = {self}
+        return res
