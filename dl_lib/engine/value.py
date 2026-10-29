@@ -41,6 +41,11 @@ class Value:
         res._op = "*"
         res._prev = {self, other}
 
+        def _backward():
+            self.grad += res.grad * other.data
+            other.grad += res.grad * self.data
+
+        res._backward = _backward
         return res
 
     def __rmul__(self, other: float) -> Value:
@@ -55,6 +60,11 @@ class Value:
         )
         res._op = "tanh"
         res._prev = {self}
+
+        def _backward():
+            self.grad += (1 - res.data**2) * res.grad
+
+        res._backward = _backward
         return res
 
     def backward(self):

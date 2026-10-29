@@ -94,7 +94,6 @@ class TestDrawDot(unittest.TestCase):
 
 
 class TestTopSort(unittest.TestCase):
-
     def test_when_called_on_leaf_then_returns_only_that_node(self):
         # Arrange
         a = Value(2.0)
