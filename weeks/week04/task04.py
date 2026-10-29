@@ -3,18 +3,17 @@ from dl_lib.engine.value import Value
 
 
 def main() -> int:
-    a = Value(-3, "a")
-    b = Value(2, "b")
-    c = a * b
-    c.label = "e"
-    d = Value(10, "c")
-    e = d + c
-    e.label = "d"
-    f = Value(5)
-    output = f * e
+    a = Value(2, "a")
+    b = Value(-3, "b")
+    e = a * b
+    e.label = "e"
+    c = Value(10, "c")
+    d = e + c
+    d.label = "d"
+    f = Value(5, "f")
+    output = f * d
     output.label = "output"
 
-    nodes, children = trace(e)
     print("output =", output)
     print("output.grad =", output.grad)
     print("d.grad =", d.grad)
