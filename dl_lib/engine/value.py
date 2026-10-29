@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import math
 
 
@@ -47,3 +48,13 @@ class Value:
         res._op = "tanh"
         res._prev = {self}
         return res
+
+    def _backward(self):
+        for child in self._prev:
+            child.grad += self.grad
+
+    def backward(self):
+        self.grad = 1.0
+        self._backward()
+        for child in self._prev:
+            child._backward()

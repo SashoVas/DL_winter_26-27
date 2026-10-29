@@ -174,7 +174,6 @@ class TestRMul(unittest.TestCase):
 
 
 class TestTanh(unittest.TestCase):
-
     def test_when_called_then_data_matches_hand_calculation(self):
         # Arrange
         value = Value(0.0)

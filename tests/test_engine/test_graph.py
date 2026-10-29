@@ -93,55 +93,54 @@ class TestDrawDot(unittest.TestCase):
         self.assertEqual(source.count("label="), expected_node_count)
 
 
-# class TestTopSort(unittest.TestCase):
-#
-#     def test_when_called_on_leaf_then_returns_only_that_node(self):
-#         # Arrange
-#         a = Value(2.0)
-#         expected = [a]
-#
-#         # Act
-#         actual = graph.top_sort(a)
-#
-#         # Assert
-#         self.assertEqual(actual, expected)
-#
-#     def test_when_called_on_expression_then_every_operand_precedes_its_result(
-#             self):
-#         # Arrange
-#         a = Value(2.0)
-#         b = Value(-3.0)
-#         c = Value(10.0)
-#         e = a * b
-#         d = e + c
-#
-#         # Act
-#         order = graph.top_sort(d)
-#
-#         # Assert
-#         self.assertLess(order.index(a), order.index(e))
-#         self.assertLess(order.index(b), order.index(e))
-#         self.assertLess(order.index(e), order.index(d))
-#         self.assertLess(order.index(c), order.index(d))
-#         self.assertEqual(order[-1], d)
-#
-#     def test_when_a_value_feeds_two_parents_then_it_appears_only_once(self):
-#         # Arrange
-#         a = Value(2.0)
-#         b = Value(-3.0)
-#         c = a + b
-#         d = a * b
-#         e = c + d
-#
-#         # Act
-#         order = graph.top_sort(e)
-#
-#         # Assert
-#         expected_count = 1
-#         self.assertEqual(order.count(a), expected_count)
-#         self.assertEqual(order.count(b), expected_count)
-#         self.assertLess(order.index(a), order.index(c))
-#         self.assertLess(order.index(b), order.index(c))
-#         self.assertLess(order.index(a), order.index(d))
-#         self.assertLess(order.index(b), order.index(d))
-#         self.assertEqual(order[-1], e)
+class TestTopSort(unittest.TestCase):
+
+    def test_when_called_on_leaf_then_returns_only_that_node(self):
+        # Arrange
+        a = Value(2.0)
+        expected = [a]
+
+        # Act
+        actual = graph.top_sort(a)
+
+        # Assert
+        self.assertEqual(actual, expected)
+
+    def test_when_called_on_expression_then_every_operand_precedes_its_result(self):
+        # Arrange
+        a = Value(2.0)
+        b = Value(-3.0)
+        c = Value(10.0)
+        e = a * b
+        d = e + c
+
+        # Act
+        order = graph.top_sort(d)
+
+        # Assert
+        self.assertLess(order.index(a), order.index(e))
+        self.assertLess(order.index(b), order.index(e))
+        self.assertLess(order.index(e), order.index(d))
+        self.assertLess(order.index(c), order.index(d))
+        self.assertEqual(order[-1], d)
+
+    def test_when_a_value_feeds_two_parents_then_it_appears_only_once(self):
+        # Arrange
+        a = Value(2.0)
+        b = Value(-3.0)
+        c = a + b
+        d = a * b
+        e = c + d
+
+        # Act
+        order = graph.top_sort(e)
+
+        # Assert
+        expected_count = 1
+        self.assertEqual(order.count(a), expected_count)
+        self.assertEqual(order.count(b), expected_count)
+        self.assertLess(order.index(a), order.index(c))
+        self.assertLess(order.index(b), order.index(c))
+        self.assertLess(order.index(a), order.index(d))
+        self.assertLess(order.index(b), order.index(d))
+        self.assertEqual(order[-1], e)

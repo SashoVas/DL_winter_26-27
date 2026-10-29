@@ -39,3 +39,19 @@ def draw_dot(root: Value):
         dot.edge(child.label, parent.label + parent._op)
 
     return dot
+
+
+def top_sort(root: Value) -> list:
+    stack = []
+    visited = set()
+
+    def dfs(node: Value) -> None:
+        if node in visited:
+            return
+        visited.add(node)
+        for child in node._prev:
+            dfs(child)
+        stack.append(node)
+
+    dfs(root)
+    return stack
