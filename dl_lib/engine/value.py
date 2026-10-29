@@ -10,6 +10,7 @@ class Value:
         self._op = None
         self.grad = 0.0
         self.label = label
+        self._backward = lambda: None
 
     def __repr__(self) -> str:
         cls = self.__class__.__name__
@@ -21,6 +22,13 @@ class Value:
         res = Value(self.data + other.data, label=f"{self.label}+{other.label}")
         res._op = "+"
         res._prev = {self, other}
+
+        def _backward():
+            self.grad += res.grad
+            other.grad += res.grad
+
+        res._backward = _backward
+
         return res
 
     def __radd__(self, other: float) -> Value:
@@ -48,10 +56,6 @@ class Value:
         res._op = "tanh"
         res._prev = {self}
         return res
-
-    def _backward(self):
-        for child in self._prev:
-            child.grad += self.grad
 
     def backward(self):
         self.grad = 1.0
