@@ -2,7 +2,7 @@ from __future__ import annotations
 
 
 class Value:
-    def __init__(self, data: float, label: str | None = None):
+    def __init__(self, data: float, label: str = ""):
         self.data = data
         self._prev = set()
         self._op = None

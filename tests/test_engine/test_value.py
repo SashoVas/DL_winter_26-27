@@ -14,39 +14,37 @@ class TestInit(unittest.TestCase):
         # Assert
         self.assertEqual(actual, expected)
 
+    def test_when_constructed_without_label_then_label_defaults_to_empty_string(self):
+        # Arrange
+        expected = ""
 
-#     def test_when_constructed_without_label_then_label_defaults_to_empty_string(
-#             self):
-#         # Arrange
-#         expected = ""
-#
-#         # Act
-#         actual = Value(2.0).label
-#
-#         # Assert
-#         self.assertEqual(actual, expected)
-#
-#     def test_when_constructed_with_label_then_stores_it(self):
-#         # Arrange
-#         expected = "a"
-#
-#         # Act
-#         actual = Value(2.0, label="a").label
-#
-#         # Assert
-#         self.assertEqual(actual, expected)
-#
-#     def test_when_constructed_then_grad_defaults_to_zero(self):
-#         # Arrange
-#         expected = 0.0
-#
-#         # Act
-#         actual = Value(2.0).grad
-#
-#         # Assert
-#         self.assertEqual(actual, expected)
-#
-#
+        # Act
+        actual = Value(2.0).label
+
+        # Assert
+        self.assertEqual(actual, expected)
+
+    def test_when_constructed_with_label_then_stores_it(self):
+        # Arrange
+        expected = "a"
+
+        # Act
+        actual = Value(2.0, label="a").label
+
+        # Assert
+        self.assertEqual(actual, expected)
+
+    def test_when_constructed_then_grad_defaults_to_zero(self):
+        # Arrange
+        expected = 0.0
+
+        # Act
+        actual = Value(2.0).grad
+
+        # Assert
+        self.assertEqual(actual, expected)
+
+
 class TestRepr(unittest.TestCase):
     def test_when_printed_then_shows_data(self):
         # Arrange
