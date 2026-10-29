@@ -2,10 +2,12 @@ from __future__ import annotations
 
 
 class Value:
-    def __init__(self, data: float):
+    def __init__(self, data: float, label: str | None = None):
         self.data = data
         self._prev = set()
         self._op = None
+        self.grad = 0
+        self.label = label
 
     def __repr__(self) -> str:
         cls = self.__class__.__name__
