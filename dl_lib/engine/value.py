@@ -105,7 +105,9 @@ class Value:
         return res
 
     def backward(self):
+        from dl_lib.engine.graph import top_sort
+
         self.grad = 1.0
-        self._backward()
-        for child in self._prev:
+        order = top_sort(self)
+        for child in reversed(order):
             child._backward()
