@@ -78,6 +78,22 @@
       - [Task 12](#task-12-3)
       - [Task 13](#task-13-3)
       - [Task 14](#task-14-2)
+  - [Week 05 - Multilayer Perceptrons](#week-05---multilayer-perceptrons)
+    - [Task 01](#task-01-4)
+    - [Task 02](#task-02-4)
+    - [Task 03](#task-03-4)
+    - [Task 04](#task-04-4)
+    - [Task 05](#task-05-4)
+    - [Task 06](#task-06-4)
+    - [Task 07](#task-07-4)
+    - [Task 08](#task-08-4)
+    - [Task 09](#task-09-4)
+    - [Task 10](#task-10-4)
+    - [Task 11](#task-11-4)
+    - [Task 12](#task-12-4)
+    - [Task 13](#task-13-4)
+    - [Task 14](#task-14-3)
+    - [Task 15](#task-15-1)
 
 ## Week 01 - Introduction to NumPy, Matplotlib and PyTorch
 
@@ -5233,4 +5249,525 @@ w1.grad (decomposed) = 1.0
 o (built-in tanh) = Value(data=0.7071067811865476)
 x1.grad (built-in tanh) = -1.4999999999999996
 w1.grad (built-in tanh) = 0.9999999999999998
+```
+
+## Week 05 - Multilayer Perceptrons
+
+### Task 01
+
+Consider a two-input neural network with one hidden layer containing one neuron with a ReLU activation. The output layer is linear with the goal of doing regression.
+
+Given:
+
+- $x_1 = 1$
+- $x_2 = 2$
+- $w_1 = 0.5$
+- $w_2 = -1$
+- $b_1 = 0$
+- $w_3 = 1$
+- $b_2 = 0$
+
+and $y = 1$:
+
+1. Run the forward pass.
+2. Perform one iteration of stochastic gradient descent.
+3. Compute the new values of the parameters.
+4. What would you do if you saw these gradients in production?
+
+<details>
+<summary>Reveal solution</summary>
+
+Let's draw a high-level overview of the network we're working with:
+
+![w05_recap_11.png](assets/w05_recap_11.png "w05_recap_11.png")
+
+Great - this gives us a feeling of what's happening in the forward pass!
+
+To complete point one we can create the computation graph and calculate the fields `data`:
+
+![w05_recap_12.svg](assets/w05_recap_12.svg "w05_recap_12.svg")
+
+This completes point 1. We have the final output of the network: `0` and the computed loss: `1`.
+
+We use the method shown previously to compute the gradients:
+
+![w05_recap_13.svg](assets/w05_recap_13.svg "w05_recap_13.svg")
+
+This completes point 2.
+
+Since we do not have a learning rate in the description, let's assume it's $\lambda$. We'd then get the following updates:
+
+- $w_1^{new} = 0.5$
+- $w_2^{new} = -1$
+- $b_1^{new} = 0$
+- $w_3^{new} = 1$
+- $b_2^{new} = 0 - \lambda(-2) = 2\lambda$
+
+This completes point 3.
+
+Point 4 directs our attention to the gradient values. Having zero gradients is a big problem - we basically have dead neurons. We can see that this is caused by the scale of the weights and parameters. We could address this by:
+
+1. Having the parameters initialized with small values around `0` - uniform using the number of input features, see [nn.Linear](https://docs.pytorch.org/docs/stable/generated/torch.nn.Linear.html).
+2. Having the inputs normalized between `0` and `1` or standardized with a mean of `0` and a standard deviation of `1`.
+3. We should also keep tracking the gradient so that we can track our progress.
+
+And this is it - the above completes point 4.
+
+</details>
+
+### Task 02
+
+**Description:**
+
+A multilayer perceptron is built out of neurons, and the library has none yet.
+
+Define a class `Neuron` in `dl_lib.engine.mlp`. Given a number of inputs `n_inputs` and an optional seeded generator `rng`, it:
+
+- draws one weight `Value` per input and one bias `Value`, each from a uniform distribution between `-1` and `1` (defaulting to a fresh `random.Random(42)` if no `rng` is given, so it is reproducible without one).
+- on `__call__`, computes the hyperbolic tangent of the weighted sum of the given inputs plus the bias, and returns the result as a single `Value`.
+- exposes a method `parameters`, returning every weight followed by the bias.
+
+Create a script that constructs a neuron with three inputs, prints its weights and bias, and calls it on the inputs `2.0`, `3.0`, `-1.0`.
+
+**Acceptance criteria:**
+
+- A neuron draws one weight per input and a single bias, in that order.
+- Calling a neuron on a list of inputs returns one `Value`: the hyperbolic tangent of the weighted sum plus the bias.
+- `parameters` returns the weights followed by the bias.
+
+**Test cases:** See `tests/test_dl_lib/test_engine/test_mlp.py`.
+
+**Example output:**
+
+```bash
+python run.py -w 5 -t 2
+```
+
+```text
+neuron.w = [0.2788535969157675, -0.9499784895546661, -0.4499413632617615]
+neuron.b = -0.5535785237023545
+neuron(x) = Value(data=-0.9835404188768979)
+```
+
+### Task 03
+
+**Description:**
+
+A single `Neuron` produces exactly one number; a network needs many of them reading the same inputs.
+
+Define a class `Layer` in `dl_lib.engine.mlp`. Given a number of inputs `n_inputs`, a number of outputs `n_outputs`, and an optional seeded generator `rng` (defaulting the same way, and threaded into every neuron it creates, so the whole layer's weights come from one continuous sequence of draws rather than each neuron restarting the same one), it:
+
+- constructs one neuron per output, each seeing all of the inputs.
+- on `__call__`, calls every neuron on the same input and returns their outputs as a list - always a list, even when there is only one neuron.
+- exposes a method `parameters`, returning every neuron's parameters, concatenated in order.
+
+Create a script that constructs a layer of four neurons over three inputs, calls it on the inputs `2.0`, `3.0`, `-1.0`, and prints the outputs and the neuron count.
+
+**Acceptance criteria:**
+
+- A layer creates one neuron per output, all sharing the same generator.
+- Calling a layer returns a list with one output per neuron, even when there is only one neuron.
+- `parameters` returns every neuron's parameters, concatenated in order.
+
+**Test cases:** See `tests/test_dl_lib/test_engine/test_mlp.py`.
+
+**Example output:**
+
+```bash
+python run.py -w 5 -t 3
+```
+
+```text
+layer(x) = [-0.9835404188768979, 0.3761781385427304, -0.9881211941388645, -0.9991982278148797]
+Number of neurons: 4
+```
+
+### Task 04
+
+**Description:**
+
+One layer is a single step of computation; depth is what makes a network expressive.
+
+Define a class `MLP` in `dl_lib.engine.mlp`. Given a number of inputs `n_inputs`, a list `n_outputs` holding each layer's output size, and an optional seeded generator `rng` (defaulting and threaded down the same way, through every layer it creates), it:
+
+- builds one layer per requested output size, sizing each layer's input to the previous layer's output, and the first layer's input to `n_inputs`.
+- on `__call__`, feeds the input through every layer in sequence, then collapses a final layer of exactly one neuron down to a bare `Value` rather than a one-element list.
+- exposes a method `parameters`, returning every layer's parameters, concatenated in order.
+
+Create a script that constructs a network over three inputs with two hidden layers of four neurons each and a single output neuron, calls it on the inputs `2.0`, `3.0`, `-1.0`, and prints the collapsed output and the layer count.
+
+**Acceptance criteria:**
+
+- A network builds one layer per requested output size, each sized to match the previous layer's output.
+- Calling a network whose final layer holds one neuron returns a bare `Value`, not a one-element list.
+- Calling a network whose final layer holds several neurons returns a list.
+- `parameters` returns every layer's parameters, concatenated in order.
+
+**Test cases:** See `tests/test_dl_lib/test_engine/test_mlp.py`.
+
+**Example output:**
+
+```bash
+python run.py -w 5 -t 4
+```
+
+```text
+mlp(x) = Value(data=0.6994093620224068)
+Number of layers: 3
+```
+
+### Task 05
+
+**Description:**
+
+Create a script that constructs a network over three inputs with two hidden layers of four neurons each and a single output neuron, then prints how many parameters it reports in total, along with the first three.
+
+**Acceptance criteria:**
+
+- The script prints the network's total parameter count.
+- The script prints the value held by each of the first three parameters.
+
+**Test cases:** See `tests/test_dl_lib/test_engine/test_mlp.py`.
+
+**Example output:**
+
+```bash
+python run.py -w 5 -t 5
+```
+
+```text
+Number of parameters: 41
+First three parameters: [0.2788535969157675, -0.9499784895546661, -0.4499413632617615]
+```
+
+### Task 06
+
+**Description:**
+
+Construct a network over three inputs with two hidden layers of four neurons each and a single output neuron, plus a toy dataset of four samples:
+
+| inputs | target |
+| --- | --- |
+| `2.0`, `3.0`, `-1.0` | `1.0` |
+| `3.0`, `-1.0`, `0.5` | `-1.0` |
+| `0.5`, `1.0`, `1.0` | `-1.0` |
+| `1.0`, `1.0`, `-1.0` | `1.0` |
+
+Run every sample through the network and compute the mean squared error loss: the sum, over all four samples, of the squared difference between the prediction and the target. Note that `Value` implements no subtraction, so the difference has to be written as an addition of the negated target.
+
+**Acceptance criteria:**
+
+- The script predicts one output per sample.
+- The script computes and prints the summed squared error over all four samples.
+
+**Example output:**
+
+```bash
+python run.py -w 5 -t 6
+```
+
+```text
+Predictions: [0.6994093620224068, 0.502629581661551, 0.6931545900944502, 0.8755224728708614]
+MSE loss: 5.230517512042235
+```
+
+### Task 07
+
+**Description:**
+
+Take the same network and four-sample dataset and run 20 epochs at a learning rate of `0.05`. Each epoch: predict every sample, compute the mean squared error, backpropagate it, then nudge every parameter against its own gradient, scaled by the learning rate. Print the loss each epoch, and alongside it the sum of the absolute values of every parameter's gradient.
+
+**Acceptance criteria:**
+
+- Every epoch predicts, computes the loss, backpropagates, and updates every parameter against its gradient.
+- The script prints the loss and the total absolute gradient every epoch.
+
+**Example output:**
+
+```bash
+python run.py -w 5 -t 7
+```
+
+```text
+epoch 0: loss = 5.230517512042235, sum|grad| = 34.220129865268504
+epoch 1: loss = 2.7046890507642445, sum|grad| = 50.695208354620014
+epoch 2: loss = 2.9924726393773007, sum|grad| = 52.612452853912515
+epoch 3: loss = 0.691642620292373, sum|grad| = 56.48349050871577
+epoch 4: loss = 0.4336539664762626, sum|grad| = 57.57833114644233
+epoch 5: loss = 0.21830440118736802, sum|grad| = 59.80607980031232
+epoch 6: loss = 0.019389294167293656, sum|grad| = 60.14971784558
+epoch 7: loss = 0.0022878054068387367, sum|grad| = 60.18274658248433
+epoch 8: loss = 0.0003795654448862342, sum|grad| = 60.1877236273685
+epoch 9: loss = 7.106617897142327e-05, sum|grad| = 60.18853422221534
+epoch 10: loss = 1.461312374585821e-05, sum|grad| = 60.188665823408435
+epoch 11: loss = 3.3297172627176823e-06, sum|grad| = 60.188686743232836
+epoch 12: loss = 8.430137915314457e-07, sum|grad| = 60.18868976278141
+epoch 13: loss = 2.3569129381387933e-07, sum|grad| = 60.188690025825025
+epoch 14: loss = 7.188755669820813e-08, sum|grad| = 60.188689954595695
+epoch 15: loss = 2.353579396751116e-08, sum|grad| = 60.18868989184172
+epoch 16: loss = 8.118357925684746e-09, sum|grad| = 60.18868986024918
+epoch 17: loss = 2.8961033543749084e-09, sum|grad| = 60.18868984659204
+epoch 18: loss = 1.0521901589172596e-09, sum|grad| = 60.188689841072545
+epoch 19: loss = 3.854305930747228e-10, sum|grad| = 60.18868983891087
+```
+
+The loss collapses to almost zero within a dozen epochs, which looks like a success - but `sum|grad|` tells a different story: it should shrink toward zero right alongside the loss (a near-zero loss means near-zero gradients), yet instead it climbs and then plateaus around `60.19`.
+
+A gradient accumulates rather than overwrites on every backward pass, which is what makes a value reused inside one graph sum its contributions correctly; this loop never resets the gradients back to zero between epochs, so every epoch's gradient is added on top of every previous epoch's.
+
+The loss still happens to decrease on this particular toy problem because the stale, inflated gradient still points in a direction that helps - but the number printed as "the gradient" no longer has anything to do with the current error.
+
+### Task 08
+
+**Description:**
+
+Create a script that fixes the bug.
+
+**Acceptance criteria:**
+
+- Every parameter's gradient is zeroed before each epoch's backward pass.
+- The script prints the loss and the total absolute gradient every epoch.
+
+**Example output:**
+
+```bash
+python run.py -w 5 -t 8
+```
+
+```text
+epoch 0: loss = 5.230517512042235, sum|grad| = 34.2201298652685
+epoch 1: loss = 2.7046890507642445, sum|grad| = 18.74975816325999
+epoch 2: loss = 1.8460237252314982, sum|grad| = 15.764631738821066
+epoch 3: loss = 1.1774870087919072, sum|grad| = 16.871430528965146
+epoch 4: loss = 0.8217294550832637, sum|grad| = 13.24971182611667
+epoch 5: loss = 0.5957215587693911, sum|grad| = 9.877267078121829
+epoch 6: loss = 0.43115794091632775, sum|grad| = 4.901610361018949
+epoch 7: loss = 0.3468314917603138, sum|grad| = 3.8102077451205383
+epoch 8: loss = 0.28903713992681357, sum|grad| = 3.251459183294917
+epoch 9: loss = 0.24605065583938177, sum|grad| = 2.8263207442955087
+epoch 10: loss = 0.21309389813936697, sum|grad| = 2.491675487126754
+epoch 11: loss = 0.18718814718937848, sum|grad| = 2.2225823174480586
+epoch 12: loss = 0.16638755353165732, sum|grad| = 2.002310777340805
+epoch 13: loss = 0.1493799733703151, sum|grad| = 1.8191838275399463
+epoch 14: loss = 0.13525484661841908, sum|grad| = 1.6648593432876941
+epoch 15: loss = 0.12336389545940171, sum|grad| = 1.5332515941800222
+epoch 16: loss = 0.11323493741060488, sum|grad| = 1.4198348584183966
+epoch 17: loss = 0.10451700918771248, sum|grad| = 1.3211841680618464
+epoch 18: loss = 0.09694449026136834, sum|grad| = 1.2346661268862242
+epoch 19: loss = 0.09031307448189842, sum|grad| = 1.158226617994818
+```
+
+### Task 09
+
+**Description:**
+
+Scalar `Value`s cannot carry a real network - from here on the pieces operate on tensors, in a fresh `dl_lib.nn` package independent of `dl_lib.engine`.
+
+Define an abstract base class `Module` in `dl_lib.nn.module`. It:
+
+- declares an abstract method `forward`, taking a tensor and returning a tensor, for subclasses to implement.
+- makes a module callable like a function, by having the call delegate straight to `forward`.
+- carries a flag `training`, declared on the class itself rather than per instance, and starting out switched on.
+- exposes a method `train`, turning that flag on and returning the module itself, so calls can be chained.
+- exposes a method `eval`, turning that flag off and returning the module itself.
+
+Create a script that defines a small local subclass - ex. one that doubles its input - to demonstrate the base class, and calls it on a tensor.
+
+**Acceptance criteria:**
+
+- The base class cannot be instantiated on its own, because `forward` is abstract.
+- A subclass implementing `forward` can be called directly, and the call returns what `forward` returns.
+- A freshly constructed module reports that it is in training mode.
+- `train` switches a module into training mode and `eval` switches it out, each returning the module itself.
+
+**Test cases:** See `tests/test_dl_lib/test_nn/test_module.py`.
+
+**Example output:**
+
+```bash
+python run.py -w 5 -t 9
+```
+
+```text
+x = tensor([1., 2., 3.])
+double(x) = tensor([2., 4., 6.])
+```
+
+> [!NOTE]
+> The subclass supplied nothing but `forward`; being callable came from the base class alone.
+
+### Task 10
+
+**Description:**
+
+Define a class `Sigmoid` in `dl_lib.nn.activations`, extending `Module`. Its `forward` returns the logistic sigmoid of the input, applied element by element.
+
+Create a script that applies a sigmoid to a small tensor spanning negative and positive values and prints the result.
+
+**Acceptance criteria:**
+
+- Calling a sigmoid returns the logistic sigmoid of every element of the input.
+
+**Test cases:** See `tests/test_dl_lib/test_nn/test_activations.py`.
+
+**Example output:**
+
+```bash
+python run.py -w 5 -t 10
+```
+
+```text
+x = tensor([-3., -1.,  0.,  1.,  3.])
+sigmoid(x) = tensor([0.0474, 0.2689, 0.5000, 0.7311, 0.9526])
+```
+
+### Task 11
+
+**Description:**
+
+A sigmoid only ever emits positive numbers, so every layer downstream receives an input that is off-center before it even starts.
+
+Define a **`Tanh`** class in `dl_lib.nn.activations`, extending `Module`. Its `forward` returns the hyperbolic tangent of the input, applied element by element.
+
+Create a script that applies a hyperbolic tangent to a small tensor spanning negative and positive values and prints the result.
+
+**Acceptance criteria:**
+
+- Calling a hyperbolic tangent returns the hyperbolic tangent of every element of the input.
+
+**Test cases:** See `tests/test_dl_lib/test_nn/test_activations.py`.
+
+**Example output:**
+
+```bash
+python run.py -w 5 -t 11
+```
+
+```text
+x = tensor([-3., -1.,  0.,  1.,  3.])
+tanh(x) = tensor([-0.9951, -0.7616,  0.0000,  0.7616,  0.9951])
+```
+
+### Task 12
+
+**Description:**
+
+Both squashing activations flatten out at their extremes, so a strongly activated neuron receives almost no gradient and learns at a crawl.
+
+Define a **`ReLU`** class in `dl_lib.nn.activations`, extending `Module`. Its `forward` returns the element-wise maximum of the input and zero.
+
+Create a script that applies a rectifier to a small tensor spanning negative, zero, and positive values and prints the result.
+
+**Acceptance criteria:**
+
+- Calling a rectifier zeroes every negative element of the input and leaves the rest unchanged.
+
+**Test cases:** See `tests/test_dl_lib/test_nn/test_activations.py`.
+
+**Example output:**
+
+```bash
+python run.py -w 5 -t 12
+```
+
+```text
+x = tensor([-2., -1.,  0.,  1.,  2.])
+relu(x) = tensor([0., 0., 0., 1., 2.])
+```
+
+### Task 13
+
+**Description:**
+
+Zeroing negatives also zeroes their gradient, so a neuron pushed into the negative region can stay dead for the rest of training.
+
+Define a **`LeakyReLU`** class in `dl_lib.nn.activations`, extending `Module`. It is constructed with a `negative_slope`, defaulting to one hundredth, and its `forward` passes non-negative elements through untouched while scaling negative ones by that slope.
+
+Create a script that applies a leaky rectifier with a slope of `0.1` to a small tensor spanning negative, zero, and positive values and prints the result.
+
+**Acceptance criteria:**
+
+- Calling a leaky rectifier leaves non-negative elements of the input unchanged and scales negative elements by the configured slope.
+- The slope defaults to one hundredth when none is given.
+
+**Test cases:** See `tests/test_dl_lib/test_nn/test_activations.py`.
+
+**Example output:**
+
+```bash
+python run.py -w 5 -t 13
+```
+
+```text
+x = tensor([-2., -1.,  0.,  1.,  2.])
+leaky_relu(x) = tensor([-0.2000, -0.1000,  0.0000,  1.0000,  2.0000])
+```
+
+### Task 14
+
+**Description:**
+
+Calling modules one by one by hand does not scale past a couple of them.
+
+Define a **`Sequential`** class in `dl_lib.nn.sequential`, extending `Module`. Constructed from any number of modules, it:
+
+- on `forward`, feeds its input through every module in order and returns the last one's output.
+- exposes methods **`append`**, **`extend`**, and **`insert`**, for growing the chain after construction - one module at the end, many at the end, and one at a given position.
+- overrides **`train`**, switching the chain itself and every module it holds into training mode, recursing into any nested chain, and returning itself.
+- overrides **`eval`**, doing the same in the other direction.
+
+Create a script that chains a rectifier followed by a hyperbolic tangent, calls the chain on a small tensor, and prints the result.
+
+**Acceptance criteria:**
+
+- Calling a chain feeds the input through every module in order and returns the final result.
+- Each of `append`, `extend`, and `insert` grows the chain.
+- Putting a chain into training mode also puts every module it holds into training mode, including those nested inside an inner chain.
+- Putting a chain into evaluation mode does the same in the other direction.
+
+**Test cases:** See `tests/test_dl_lib/test_nn/test_sequential.py`.
+
+**Example output:**
+
+```bash
+python run.py -w 5 -t 14
+```
+
+```text
+x = tensor([-2.,  2.])
+sequential(x) = tensor([0.0000, 0.9640])
+```
+
+### Task 15
+
+**Description:**
+
+An optimizer needs the tensors it is about to update, but nothing in `dl_lib.nn` can hand that list over.
+
+Add a method **`parameters`** to `Module` in `dl_lib.nn.module`. It takes no arguments and returns an empty list by default, since a plain module such as an activation owns no learnable tensors, and nothing is discovered automatically by reflection. A subclass that does own learnable tensors overrides the method to hand them back explicitly.
+
+Add a **`parameters`** method to `Sequential` in `dl_lib.nn.sequential` as well, overriding the base one. It returns every module's own parameters concatenated, in the order the modules were added, so a chain reports its full parameter list from a single call however deep it runs.
+
+Create a script that defines a small local affine module - a weight matrix and a bias vector, overriding `parameters` to return both - then chains two of them with a rectifier in between, asks the chain for its parameters, and prints how many tensors came back along with each one's shape.
+
+**Acceptance criteria:**
+
+- A plain module reports no parameters.
+- A chain reports every module's own parameters, concatenated in the order the modules were added.
+- A chain nested inside another chain still has its parameters collected.
+
+**Test cases:** See `tests/test_dl_lib/test_nn/test_module.py` and `tests/test_dl_lib/test_nn/test_sequential.py`.
+
+**Example output:**
+
+```bash
+python run.py -w 5 -t 15
+```
+
+```text
+number of learnable tensors = 4
+params[0].shape = (3, 4)
+params[1].shape = (4,)
+params[2].shape = (4, 2)
+params[3].shape = (2,)
 ```
