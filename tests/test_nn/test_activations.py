@@ -1,36 +1,36 @@
-# import unittest
-#
-# import torch
-#
-# from dl_lib.nn.activations import LeakyReLU, ReLU, Sigmoid, Tanh
-#
-#
-# class TestSigmoidCall(unittest.TestCase):
-#    def test_when_input_is_zero_then_returns_one_half(self):
-#        # Arrange
-#        sigmoid = Sigmoid()
-#        x = torch.tensor([0.0])
-#        expected = torch.tensor([0.5])
-#
-#        # Act
-#        actual = sigmoid(x)
-#
-#        # Assert
-#        self.assertTrue(torch.allclose(actual, expected))
-#
-#    def test_when_called_then_matches_torch_sigmoid(self):
-#        # Arrange
-#        sigmoid = Sigmoid()
-#        x = torch.tensor([-3.0, -1.0, 0.0, 1.0, 3.0])
-#        expected = torch.sigmoid(x)
-#
-#        # Act
-#        actual = sigmoid(x)
-#
-#        # Assert
-#        self.assertTrue(torch.allclose(actual, expected))
-#
-#
+import unittest
+
+import torch
+
+from dl_lib.nn.activations import Sigmoid  # ,LeakyReLU, ReLU,  Tanh
+
+
+class TestSigmoidCall(unittest.TestCase):
+    def test_when_input_is_zero_then_returns_one_half(self):
+        # Arrange
+        sigmoid = Sigmoid()
+        x = torch.tensor([0.0])
+        expected = torch.tensor([0.5])
+
+        # Act
+        actual = sigmoid(x)
+
+        # Assert
+        self.assertTrue(torch.allclose(actual, expected))
+
+    def test_when_called_then_matches_torch_sigmoid(self):
+        # Arrange
+        sigmoid = Sigmoid()
+        x = torch.tensor([-3.0, -1.0, 0.0, 1.0, 3.0])
+        expected = torch.sigmoid(x)
+
+        # Act
+        actual = sigmoid(x)
+
+        # Assert
+        self.assertTrue(torch.allclose(actual, expected))
+
+
 # class TestTanhCall(unittest.TestCase):
 #    def test_when_input_is_zero_then_returns_zero(self):
 #        # Arrange
