@@ -1,4 +1,23 @@
 from dl_lib.engine.mlp import MLP
+from dl_lib.engine.value import Value
+
+
+def calc_y_hat(X: list[list], mlp: MLP) -> list[Value]:
+    y_hat: list[Value] = []
+    for x in X:
+        prediction = mlp(x)
+
+        if not isinstance(prediction, Value):
+            raise TypeError("Expected a single output from the MLP")
+
+        y_hat.append(prediction)
+    return y_hat
+
+
+def calc_loss(y_hat: list, y: list) -> Value:
+    return sum(
+        ((y_hat_i + (-y_i)) ** 2 for y_hat_i, y_i in zip(y_hat, y)), start=Value(0.0)
+    )
 
 
 def main() -> int:
@@ -8,12 +27,12 @@ def main() -> int:
     lr = 0.05
 
     for epoch in range(20):
-        y_hat = [mlp(x) for x in X]
-        se_loss = sum((y_hat_i + (-y_i)) ** 2 for y_hat_i,
-                      y_i in zip(y_hat, y))
+        y_hat = calc_y_hat(X, mlp)
+        se_loss = calc_loss(y_hat, y)
         se_loss.backward()
         print(
-            f"epoch {epoch}: loss = {se_loss.data}, sum|grad| = {sum(abs(p.grad) for p in mlp.parameters())}")
+            f"epoch {epoch}: loss = {se_loss.data}, sum|grad| = {sum(abs(p.grad) for p in mlp.parameters())}"
+        )
         for p in mlp.parameters():
             p.data -= lr * p.grad
             p.grad = 0.0

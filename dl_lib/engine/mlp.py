@@ -44,7 +44,7 @@ class MLP:
             for inputs, outputs in zip([n_inputs] + n_outputs[:-1], n_outputs)
         ]
 
-    def __call__(self, x: list) -> list:
+    def __call__(self, x: list) -> list | Value:
         for layer in self.layers:
             x = layer(x)
 

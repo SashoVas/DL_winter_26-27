@@ -152,8 +152,7 @@ class TestLayerParameters(unittest.TestCase):
     def test_when_parameters_called_then_returns_parameters_from_every_neuron(self):
         # Arrange
         layer = Layer(3, 2)
-        expected = [*layer.neurons[0].parameters(), *
-                    layer.neurons[1].parameters()]
+        expected = [*layer.neurons[0].parameters(), *layer.neurons[1].parameters()]
 
         # Act
         actual = layer.parameters()
