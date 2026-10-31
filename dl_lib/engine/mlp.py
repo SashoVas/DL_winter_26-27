@@ -1,14 +1,17 @@
 import random
+
 from dl_lib.engine.value import Value
+
+DEFAULT_RNG = random.Random(42)
 
 
 class Neuron:
-    def __init__(self, n_inputs: int, rng=random.Random(42)):
+    def __init__(self, n_inputs: int, rng: random.Random = DEFAULT_RNG):
 
         self.w = [Value(rng.uniform(-1, 1)) for i in range(n_inputs)]
         self.b = Value(rng.uniform(-1, 1))
 
-    def __call__(self, x: list) -> Neuron:
+    def __call__(self, x: list) -> Value:
         logit = sum(x_i * w_i for x_i, w_i in zip(x, self.w)) + self.b
         y_hat = logit.tanh()
 
@@ -19,7 +22,7 @@ class Neuron:
 
 
 class Layer:
-    def __init__(self, n_inputs: int, n_outputs: int, rng=random.Random(42)):
+    def __init__(self, n_inputs: int, n_outputs: int, rng: random.Random = DEFAULT_RNG):
         self.neurons = [Neuron(n_inputs, rng) for i in range(n_outputs)]
 
     def __call__(self, x: list) -> list:
@@ -33,7 +36,9 @@ class Layer:
 
 
 class MLP:
-    def __init__(self, n_inputs: int, n_outputs: list, rng=random.Random(42)):
+    def __init__(
+        self, n_inputs: int, n_outputs: list, rng: random.Random = DEFAULT_RNG
+    ):
         self.layers = [
             Layer(inputs, outputs, rng)
             for inputs, outputs in zip([n_inputs] + n_outputs[:-1], n_outputs)

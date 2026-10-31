@@ -2,12 +2,10 @@ import random
 import unittest
 
 from dl_lib.engine.mlp import MLP, Layer, Neuron
-
 from dl_lib.engine.value import Value
 
 
 class TestNeuronInit(unittest.TestCase):
-
     def test_when_constructed_then_has_one_weight_per_input(self):
         # Arrange
         expected = 3
@@ -44,7 +42,6 @@ class TestNeuronInit(unittest.TestCase):
 
 
 class TestNeuronCall(unittest.TestCase):
-
     def test_when_called_then_output_matches_hand_calculation(self):
         # Arrange
         neuron = Neuron(2, rng=random.Random(42))
@@ -70,7 +67,6 @@ class TestNeuronCall(unittest.TestCase):
 
 
 class TestNeuronParameters(unittest.TestCase):
-
     def test_when_parameters_called_then_returns_weights_then_bias(self):
         # Arrange
         neuron = Neuron(2)
@@ -95,7 +91,6 @@ class TestNeuronParameters(unittest.TestCase):
 
 
 class TestLayerInit(unittest.TestCase):
-
     def test_when_constructed_then_has_one_neuron_per_output(self):
         # Arrange
         expected = 4
@@ -111,14 +106,14 @@ class TestLayerInit(unittest.TestCase):
     ):
         # Arrange
         rng = random.Random(42)
-        expected = []
+        expected: list[list[float] | float] = []
         for _ in range(2):
             expected.append([rng.uniform(-1, 1) for _ in range(3)])
             expected.append(rng.uniform(-1, 1))
 
         # Act
         layer = Layer(3, 2, rng=random.Random(42))
-        actual = []
+        actual: list[list[float] | float] = []
         for neuron in layer.neurons:
             actual.append([v.data for v in neuron.w])
             actual.append(neuron.b.data)
@@ -128,7 +123,6 @@ class TestLayerInit(unittest.TestCase):
 
 
 class TestLayerCall(unittest.TestCase):
-
     def test_when_called_then_returns_one_output_per_neuron(self):
         # Arrange
         layer = Layer(3, 4)
@@ -155,11 +149,11 @@ class TestLayerCall(unittest.TestCase):
 
 
 class TestLayerParameters(unittest.TestCase):
-
     def test_when_parameters_called_then_returns_parameters_from_every_neuron(self):
         # Arrange
         layer = Layer(3, 2)
-        expected = [*layer.neurons[0].parameters(), *layer.neurons[1].parameters()]
+        expected = [*layer.neurons[0].parameters(), *
+                    layer.neurons[1].parameters()]
 
         # Act
         actual = layer.parameters()
@@ -180,7 +174,6 @@ class TestLayerParameters(unittest.TestCase):
 
 
 class TestMLPInit(unittest.TestCase):
-
     def test_when_constructed_then_has_one_layer_per_output_size(self):
         # Arrange
         expected = 2
@@ -204,7 +197,6 @@ class TestMLPInit(unittest.TestCase):
 
 
 class TestMLPCall(unittest.TestCase):
-
     def test_when_called_with_multi_neuron_output_layer_then_returns_a_list(self):
         # Arrange
         mlp = MLP(3, [4, 2])
@@ -233,7 +225,6 @@ class TestMLPCall(unittest.TestCase):
 
 
 class TestMLPParameters(unittest.TestCase):
-
     def test_when_parameters_called_then_returns_parameters_from_every_layer(self):
         # Arrange
         mlp = MLP(3, [4, 1])
