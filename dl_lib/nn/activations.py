@@ -11,3 +11,8 @@ class Sigmoid(Module):
 class Tanh(Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return (torch.exp(x) - torch.exp(-x)) / (torch.exp(x) + torch.exp(-x))
+
+
+class ReLU(Module):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return torch.maximum(x, torch.zeros_like(x))
