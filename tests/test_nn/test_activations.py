@@ -2,7 +2,7 @@ import unittest
 
 import torch
 
-from dl_lib.nn.activations import ReLU, Sigmoid, Tanh, LeakyReLU
+from dl_lib.nn.activations import LeakyReLU, ReLU, Sigmoid, Tanh
 
 
 class TestSigmoidCall(unittest.TestCase):
@@ -118,8 +118,7 @@ class TestLeakyReLUCall(unittest.TestCase):
         # Assert
         self.assertTrue(torch.allclose(actual, expected))
 
-    def test_when_negative_slope_not_given_then_scales_negatives_by_default_value(
-            self):
+    def test_when_negative_slope_not_given_then_scales_negatives_by_default_value(self):
         # Arrange
         leaky_relu = LeakyReLU()
         x = torch.tensor([-2.0, -1.0, 0.0, 1.0, 2.0])
