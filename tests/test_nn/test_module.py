@@ -43,29 +43,28 @@ class TestCall(unittest.TestCase):
         self.assertTrue(torch.equal(actual, expected))
 
 
-# class TestParameters(unittest.TestCase):
-#    def test_when_called_then_returns_empty_list_by_default(self):
-#        # Arrange
-#        module = _DoubleModule()
-#        expected = []
-#
-#        # Act
-#        actual = module.parameters()
-#
-#        # Assert
-#        self.assertEqual(actual, expected)
-#
-#    def test_when_called_on_a_different_subclass_then_still_returns_empty_list(
-#            self):
-#        # Arrange
-#        module = _NegateModule()
-#        expected = []
-#
-#        # Act
-#        actual = module.parameters()
-#
-#        # Assert
-#        self.assertEqual(actual, expected)
+class TestParameters(unittest.TestCase):
+    def test_when_called_then_returns_empty_list_by_default(self):
+        # Arrange
+        module = _DoubleModule()
+        expected = []
+
+        # Act
+        actual = module.parameters()
+
+        # Assert
+        self.assertEqual(actual, expected)
+
+    def test_when_called_on_a_different_subclass_then_still_returns_empty_list(self):
+        # Arrange
+        module = _NegateModule()
+        expected = []
+
+        # Act
+        actual = module.parameters()
+
+        # Assert
+        self.assertEqual(actual, expected)
 
 
 class TestTrain(unittest.TestCase):

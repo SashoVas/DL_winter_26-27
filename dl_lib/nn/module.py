@@ -22,3 +22,6 @@ class Module(ABC):
     def eval(self) -> Module:
         self.training = False
         return self
+
+    def parameters(self) -> list[torch.Tensor]:
+        return []
