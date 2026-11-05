@@ -34,13 +34,13 @@ def plot() -> None:
         list(range(len(xs))),
         xs,
         label="AdamW (large gradient history)",
-        color="red",
     )
     plt.plot(
         list(range(len(xs2))),
         xs2,
         label="AdamW (small gradient history)",
-        color="purple",
+        color="lightblue",
+        ls="--",
     )
     plt.tight_layout()
 

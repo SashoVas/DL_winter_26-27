@@ -36,7 +36,8 @@ def plot() -> None:
         label="RMSprop (noisy gradient)",
         color="red",
     )
-    plt.plot(list(range(len(xs2))), xs2, label="Adam (noisy gradient)", color="purple")
+    plt.plot(list(range(len(xs2))), xs2,
+             label="Adam (noisy gradient)")
 
     plt.xlabel("step")
     plt.ylabel("x")
@@ -74,13 +75,12 @@ def plot2() -> None:
         list(range(len(xs))),
         xs,
         label="Adam (large gradient history)",
-        color="red",
     )
     plt.plot(
         list(range(len(xs2))),
         xs2,
         label="Adam (small gradient history)",
-        color="purple",
+        color="lightblue",
     )
     plt.tight_layout()
 
