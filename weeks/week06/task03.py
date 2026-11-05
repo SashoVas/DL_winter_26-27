@@ -28,5 +28,6 @@ def main() -> int:
     plt.ylabel("f(x)")
     plt.legend()
     plt.title("Plain SGD trajectory trapped in a local minimum")
+    plt.tight_layout()
     plt.show()
     return 0

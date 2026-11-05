@@ -52,6 +52,8 @@ def plot_second():
 
     axis.contour(grid_x, grid_y, grid_z, levels=30, cmap="Greys")
     axis.legend()
+    plt.title("SGD with momentum zig-zagging in a steep, narrow ravine")
+    plt.tight_layout()
     plt.show()
 
 
@@ -64,6 +66,7 @@ def main() -> int:
     plt.ylabel("f(x)")
     plt.legend()
     plt.title("Plain SGD trajectory with and without momentum")
+    plt.tight_layout()
     plt.show()
     plot_second()
     return 0

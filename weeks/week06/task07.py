@@ -38,10 +38,11 @@ def plot() -> None:
         color="green",
     )
     plt.plot(list(range(len(xs2))), xs2, label="RMSprop (early spike)", color="purple")
-
+    plt.title("RMSprop recovers from an early gradient spike where AdaGrad stalls")
     plt.xlabel("step")
     plt.ylabel("x")
     plt.legend()
+    plt.tight_layout()
     plt.show()
     print(f"AdaGrad (early spike) final x: {x[0].item()}")
     print(f"RMSprop  (early spike) final x: {x2[0].item()}")
@@ -77,10 +78,12 @@ def plot2() -> None:
     plt.plot(
         list(range(len(xs2))), xs2, label="RMSprop (clean gradient)", color="purple"
     )
-
+    plt.title("RMSprop jitters around the minimum under noisy gradients")
     plt.xlabel("step")
     plt.ylabel("x")
     plt.legend()
+    plt.tight_layout()
+
     plt.show()
     print(f"RMSprop (noisy gradient) final x {x[0].item()}")
     print(f"RMSprop (clean gradient) final x: {x2[0].item()}")
@@ -88,6 +91,6 @@ def plot2() -> None:
 
 def main() -> int:
 
-    # plot()
+    plot()
     plot2()
     return 0
