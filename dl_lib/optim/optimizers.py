@@ -105,7 +105,6 @@ class Adam(Optimizer):
 
 
 class AdamW(Adam):
-
     def __init__(self, params, lr, beta1=0.9, beta2=0.999, eps=1e-8, weight_decay=0):
         super().__init__(params, lr, beta1, beta2, eps, weight_decay)
 
@@ -113,9 +112,7 @@ class AdamW(Adam):
         self.t += 1
         with torch.no_grad():
             for param, m_i, v_i in zip(self.params, self.m, self.v):
-                grad = (
-                    param.grad if param.grad is not None else 0
-                )
+                grad = param.grad if param.grad is not None else 0
                 m_i *= self.beta1
                 m_i += (1 - self.beta1) * grad
 
@@ -125,5 +122,5 @@ class AdamW(Adam):
                 m_i_hat = m_i / (1 - self.beta1**self.t)
                 v_i_hat = v_i / (1 - self.beta2**self.t)
 
-                param *= (1-self.lr*self.weight_decay)
+                param *= 1 - self.lr * self.weight_decay
                 param -= self.lr * (m_i_hat) / (torch.sqrt(v_i_hat) + self.eps)

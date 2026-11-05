@@ -2,7 +2,7 @@ import unittest
 
 import torch
 
-from dl_lib.optim.optimizers import SGD, AdaGrad, Adam, RMSprop, AdamW
+from dl_lib.optim.optimizers import SGD, AdaGrad, Adam, AdamW, RMSprop
 
 
 class TestSGDInit(unittest.TestCase):
@@ -137,8 +137,7 @@ class TestAdaGradInit(unittest.TestCase):
         # Assert
         self.assertEqual(len(actual), len(expected))
         for actual_accumulator, expected_accumulator in zip(actual, expected):
-            self.assertTrue(torch.equal(
-                actual_accumulator, expected_accumulator))
+            self.assertTrue(torch.equal(actual_accumulator, expected_accumulator))
 
 
 class TestAdaGradStep(unittest.TestCase):
@@ -195,8 +194,7 @@ class TestRMSpropInit(unittest.TestCase):
         # Assert
         self.assertEqual(len(actual), len(expected))
         for actual_accumulator, expected_accumulator in zip(actual, expected):
-            self.assertTrue(torch.equal(
-                actual_accumulator, expected_accumulator))
+            self.assertTrue(torch.equal(actual_accumulator, expected_accumulator))
 
 
 class TestRMSpropStep(unittest.TestCase):

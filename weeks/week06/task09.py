@@ -20,8 +20,8 @@ def plot() -> None:
     for i in range(60):
         optimizer.zero_grad()
         optimizer2.zero_grad()
-        y = f(x)
-        y2 = f(x2)
+        _ = f(x)
+        _ = f(x2)
         xs.append(x[0].item())
         xs2.append(x2[0].item())
 
@@ -47,9 +47,7 @@ def plot() -> None:
     plt.xlabel("step")
     plt.ylabel("x")
     plt.legend()
-    plt.title(
-        "Adam decays both parameters by the same proportion"
-    )
+    plt.title("Adam decays both parameters by the same proportion")
     plt.show()
     print(f"AdamW (large gradient history) final p: {x[0].item()}")
     print(f"AdamW (small gradient history) final p: {x2[0].item()}")

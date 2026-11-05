@@ -36,8 +36,7 @@ def plot() -> None:
         label="RMSprop (noisy gradient)",
         color="red",
     )
-    plt.plot(list(range(len(xs2))), xs2,
-             label="Adam (noisy gradient)", color="purple")
+    plt.plot(list(range(len(xs2))), xs2, label="Adam (noisy gradient)", color="purple")
 
     plt.xlabel("step")
     plt.ylabel("x")
@@ -61,8 +60,8 @@ def plot2() -> None:
     for i in range(60):
         optimizer.zero_grad()
         optimizer2.zero_grad()
-        y = f(x)
-        y2 = f(x2)
+        _ = f(x)
+        _ = f(x2)
         xs.append(x[0].item())
         xs2.append(x2[0].item())
 
