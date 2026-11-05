@@ -1,10 +1,9 @@
-# import unittest
-#
-# import torch
-#
-# from dl_lib.optim.optimizers import SGD, AdaGrad, Adam, AdamW, RMSprop
-#
-#
+import unittest
+
+import torch
+
+from dl_lib.optim.optimizers import SGD  # , AdaGrad, Adam, AdamW, RMSprop
+
 # class TestSGDInit(unittest.TestCase):
 #    def test_when_momentum_not_given_then_defaults_to_zero(self):
 #        # Arrange
@@ -62,8 +61,8 @@
 #
 #        # Assert
 #        self.assertTrue(torch.allclose(p, expected))
-#
-#
+
+
 # class TestSGDMomentumStep(unittest.TestCase):
 #    def test_when_called_twice_then_velocity_accumulates_across_steps(self):
 #        # Arrange
