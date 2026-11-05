@@ -1,6 +1,7 @@
-import matplotlib.pyplot as plt
-import torch
 import random
+
+import torch
+
 from dl_lib.optim.optimizers import SGD
 
 
@@ -8,7 +9,7 @@ def f(x: torch.Tensor) -> torch.Tensor:
     return x**4 + x**3 - 5 * x**2
 
 
-def run(lr: float, momentum: float = 0) -> None:
+def run(lr: float, momentum: float = 0) -> tuple:
     x = torch.tensor([2.0], requires_grad=True)
     optimizer = SGD([x], lr=lr, momentum=momentum)
     xs = []
@@ -24,7 +25,7 @@ def run(lr: float, momentum: float = 0) -> None:
 def main() -> int:
     print(f"{'lr':>8} {'momentum':>10} {'final x':>10} {'f(x)':>10}")
     rand = random.Random(42)
-    best = None
+    best: tuple | None = None
     for i in range(8):
         lr = rand.uniform(0.02, 0.05)
         momentum = rand.uniform(0.1, 1.3)
@@ -32,9 +33,11 @@ def main() -> int:
         print(f"{lr:8.4f} {momentum:10.4f} {x_final:10.4f} {f_x:10.4f}")
         if best is None or f_x < best[0]:
             best = (f_x, lr, momentum, x_final)
-    f_x, lr, momentum, x_final = best
-    print(
-        f"Best config: lr={lr:.4f}, momentum={momentum:.4f} "
-        f"-> x={x_final:.4f}, f(x)={f_x:.4f}"
-    )
+
+    if best != None:
+        f_x, lr, momentum, x_final = best
+        print(
+            f"Best config: lr={lr:.4f}, momentum={momentum:.4f} "
+            f"-> x={x_final:.4f}, f(x)={f_x:.4f}"
+        )
     return 0

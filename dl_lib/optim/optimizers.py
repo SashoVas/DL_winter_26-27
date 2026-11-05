@@ -17,3 +17,25 @@ class SGD(Optimizer):
                     self.lr * param.grad if param.grad is not None else 1
                 )  # we do this inplace, so there are no copies
                 param += velocity
+
+
+class AdaGrad(Optimizer):
+    def __init__(
+        self,
+        params: list[torch.Tensor],
+        lr: float,
+        eps: float = 1e-10,
+    ):
+        super().__init__(params, lr)
+        self.accumulators = [torch.zeros_like(param) for param in self.params]
+        self.eps = eps
+
+    def step(self) -> None:
+        with torch.no_grad():
+            for param, accumulator in zip(self.params, self.accumulators):
+                accumulator += (
+                    param.grad**2 if param.grad is not None else 1
+                )  # we do this inplace, so there are no copies
+                param -= (self.lr * (param.grad if param.grad is not None else 0)) / (
+                    torch.sqrt(accumulator) + self.eps
+                )

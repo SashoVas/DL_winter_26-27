@@ -51,7 +51,7 @@ def plot_second():
     axis.scatter(xs, ys, s=10, c="orange")
 
     axis.contour(grid_x, grid_y, grid_z, levels=30, cmap="Greys")
-
+    axis.legend()
     plt.show()
 
 
