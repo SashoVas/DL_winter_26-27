@@ -1,9 +1,10 @@
-from dl_lib.optim.optimizers import SGD
-import torch
 import matplotlib.pyplot as plt
+import torch
+
+from dl_lib.optim.optimizers import SGD
 
 
-def f(x):
+def f(x: torch.Tensor) -> torch.Tensor:
     return x**4 + x**3 - 5 * x**2
 
 
@@ -12,7 +13,7 @@ def main() -> int:
     optimizer = SGD([x], lr=0.02)
     xs = []
     ys = []
-    for i in range(10):
+    for _ in range(10):
         optimizer.zero_grad()
         y = f(x)
         xs.append(x[0].item())
@@ -28,3 +29,4 @@ def main() -> int:
     plt.legend()
     plt.title("Plain SGD trajectory trapped in a local minimum")
     plt.show()
+    return 0

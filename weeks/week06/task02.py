@@ -1,5 +1,6 @@
-from dl_lib.optim.optimizers import SGD
 import torch
+
+from dl_lib.optim.optimizers import SGD
 
 
 def main() -> int:
@@ -9,3 +10,4 @@ def main() -> int:
     print(f"{param=}")
     optimizer.step()
     print(f"{param=}")
+    return 0

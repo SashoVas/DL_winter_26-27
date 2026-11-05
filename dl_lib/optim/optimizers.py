@@ -1,12 +1,19 @@
-from dl_lib.optim.optimizer import Optimizer
 import torch
+
+from dl_lib.optim.optimizer import Optimizer
 
 
 class SGD(Optimizer):
-    def __init__(self, params, lr):
+    def __init__(self, params: list[torch.Tensor], lr: float, momentum: float = 0):
         super().__init__(params, lr)
+        self.momentum = momentum
+        self.velocities = [torch.zeros_like(param) for param in self.params]
 
-    def step(self):
+    def step(self) -> None:
         with torch.no_grad():
-            for param in self.params:
-                param -= self.lr * param.grad
+            for param, velocity in zip(self.params, self.velocities):
+                velocity *= self.momentum  # we do this inplace, so there are no copies
+                velocity -= (
+                    self.lr * param.grad if param.grad is not None else 1
+                )  # we do this inplace, so there are no copies
+                param += velocity

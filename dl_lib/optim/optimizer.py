@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+
 import torch
 
 
@@ -15,5 +16,5 @@ class Optimizer(ABC):
                 param.grad = torch.zeros_like(param)
 
     @abstractmethod
-    def step(self):
+    def step(self):  # pragma: no cover
         pass
