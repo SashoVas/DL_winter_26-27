@@ -39,3 +39,28 @@ class AdaGrad(Optimizer):
                 param -= (self.lr * (param.grad if param.grad is not None else 0)) / (
                     torch.sqrt(accumulator) + self.eps
                 )
+
+
+class RMSprop(Optimizer):
+    def __init__(
+        self,
+        params: list[torch.Tensor],
+        lr: float,
+        alpha: float = 0.99,
+        eps: float = 1e-8,
+    ):
+        super().__init__(params, lr)
+        self.alpha = alpha
+        self.accumulators = [torch.zeros_like(param) for param in self.params]
+        self.eps = eps
+
+    def step(self):
+        with torch.no_grad():
+            for param, accumulator in zip(self.params, self.accumulators):
+                accumulator *= self.alpha
+                accumulator += (1 - self.alpha) * (
+                    param.grad**2 if param.grad is not None else 1
+                )  # we do this inplace, so there are no copies
+                param -= (self.lr * (param.grad if param.grad is not None else 0)) / (
+                    torch.sqrt(accumulator) + self.eps
+                )
