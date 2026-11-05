@@ -50,15 +50,15 @@ def plot() -> None:
 
 
 def plot2() -> None:
-    x = torch.tensor([5.0], requires_grad=True)
-    x2 = torch.tensor([5.0], requires_grad=True)
-    optimizer = Adam([x], lr=0.1, weight_decay=0.01)
+    x = torch.tensor([1.0], requires_grad=True)
+    x2 = torch.tensor([1.0], requires_grad=True)
+    optimizer = Adam([x], lr=0.1, weight_decay=0.05)
     optimizer.v[0] = torch.ones_like(optimizer.v[0]) * 10
-    optimizer2 = Adam([x2], lr=0.1, weight_decay=0.01)
+    optimizer2 = Adam([x2], lr=0.1, weight_decay=0.05)
     optimizer2.v[0] = torch.ones_like(optimizer2.v[0]) * 1 / 10
     xs = []
     xs2 = []
-    for i in range(100):
+    for i in range(60):
         optimizer.zero_grad()
         optimizer2.zero_grad()
         y = f(x)
@@ -66,11 +66,9 @@ def plot2() -> None:
         xs.append(x[0].item())
         xs2.append(x2[0].item())
 
-        y.backward()
-        y2.backward()
-        # if x.grad is not None and x2.grad is not None:
-        #    x.grad += torch.randn_like(x.grad)
-        #    x2.grad += torch.randn_like(x.grad)
+        # y.backward()
+        # y2.backward()
+
         optimizer.step()
         optimizer2.step()
     plt.plot(
