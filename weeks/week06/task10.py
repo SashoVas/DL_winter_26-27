@@ -35,8 +35,7 @@ OPTIMIZERS = [
         "AdaGrad",
         "per-parameter learning rate, needs a bigger lr here",
     ),
-    (RMSprop, {"lr": 0.05}, "RMSprop",
-     "decayed accumulator, fastest to converge here"),
+    (RMSprop, {"lr": 0.05}, "RMSprop", "decayed accumulator, fastest to converge here"),
     (
         Adam,
         {"lr": 0.1, "weight_decay": 0.01},

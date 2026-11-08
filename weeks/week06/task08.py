@@ -36,8 +36,7 @@ def plot() -> None:
         label="RMSprop (noisy gradient)",
         color="red",
     )
-    plt.plot(list(range(len(xs2))), xs2,
-             label="Adam (noisy gradient)")
+    plt.plot(list(range(len(xs2))), xs2, label="Adam (noisy gradient)")
 
     plt.xlabel("step")
     plt.ylabel("x")
