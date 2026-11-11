@@ -12,11 +12,10 @@ class SGD(Optimizer):
     def step(self) -> None:
         with torch.no_grad():
             for param, velocity in zip(self.params, self.velocities):
-                velocity *= self.momentum  # we do this inplace, so there are no copies
-                velocity -= (
-                    self.lr * param.grad if param.grad is not None else 1
-                )  # we do this inplace, so there are no copies
-                param += velocity
+                velocity *= self.momentum
+                velocity += param.grad if param.grad is not None else 0
+
+                param -= self.lr * velocity
 
 
 class AdaGrad(Optimizer):
