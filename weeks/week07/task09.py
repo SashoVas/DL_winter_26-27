@@ -37,6 +37,71 @@ class LinearLayer(Module):
         return [self.W]
 
 
+class Identity(Module):
+    def forward(self, x):
+        return x
+
+
+class MyModel(Module):
+    def __init__(
+        self,
+        activation: str = "tanh",
+        dropout: bool = False,
+        norm: str = "batch",
+        num_layers: int = 2,
+        skip_connections: bool = False,
+        hidden_size: int = 64,
+        scale: float = 1.0,
+    ):
+        super().__init__()
+        self.layers = []
+        self.skip_connections = skip_connections
+        self.initial_layer = Sequential(
+            LinearLayer(10, hidden_size, weight_scale=scale, bias_scale=scale),
+            BatchNorm1d(hidden_size)
+            if norm == "batch"
+            else LayerNorm(hidden_size)
+            if norm == "layer"
+            else Identity(),
+            Tanh() if activation == "tanh" else torch.nn.ReLU(),
+            Dropout() if dropout else Identity(),
+        )
+        self.output_layer = LinearLayer(
+            hidden_size, 1, weight_scale=scale, bias_scale=scale
+        )
+        for _ in range(num_layers):
+            self.layers.append(
+                Sequential(
+                    LinearLayer(
+                        hidden_size, hidden_size, weight_scale=scale, bias_scale=scale
+                    ),
+                    BatchNorm1d(hidden_size)
+                    if norm == "batch"
+                    else LayerNorm(hidden_size)
+                    if norm == "layer"
+                    else Identity(),
+                    Tanh() if activation == "tanh" else torch.nn.ReLU(),
+                    Dropout() if dropout else Identity(),
+                )
+            )
+
+    def forward(self, x):
+        x = self.initial_layer(x)
+        for layer in self.layers:
+            if self.skip_connections:
+                x = x + layer(x)
+            else:
+                x = layer(x)
+        return self.output_layer(x)
+
+    def parameters(self):
+        params = self.initial_layer.parameters()
+        params += self.output_layer.parameters()
+        for layer in self.layers:
+            params += layer.parameters()
+        return params
+
+
 true_w_generator = torch.Generator().manual_seed(42)
 data_generator = torch.Generator().manual_seed(123)
 
@@ -72,13 +137,16 @@ def train(
     test_X: torch.Tensor,
     test_y: torch.Tensor,
     epochs=300,
+    early_stopping: bool = False,
+    patience: int = 10,
 ) -> tuple:
 
     train_losses = []
     test_losses = []
     train_losses.append(evaluate(model, train_X, train_y))
     test_losses.append(evaluate(model, test_X, test_y))
-
+    best_loss = test_losses[-1]
+    epochs_without_improvement = 0
     for _ in range(epochs):
         model.train()
         optimizer.zero_grad()
@@ -89,6 +157,17 @@ def train(
 
         train_losses.append(evaluate(model, train_X, train_y))
         test_losses.append(evaluate(model, test_X, test_y))
+        if early_stopping:
+            if test_losses[-1] < best_loss:
+                best_loss = test_losses[-1]
+                epochs_without_improvement = 0
+            else:
+                epochs_without_improvement += 1
+            if epochs_without_improvement >= patience:
+                print(
+                    f"Early stopping after {len(train_losses)} epochs. Best test loss: {best_loss:.4f}"
+                )
+                break
 
     return train_losses, test_losses
 
@@ -100,63 +179,37 @@ def r2_score(predictions: torch.Tensor, targets: torch.Tensor) -> float:
 
 
 def print_res(results: list[tuple[str, float, str]]):
-    print(f"{'model':<17}{'test r2':>8}  comment")
+    print("'model', 'test r2'")
     for name, r2, comment in results:
-        print(f"{name:<17}{r2:>8.4f}  {comment}")
+        print(f"{name}, {r2}")
+        # print(f"{r2}")
 
     best_name, best_r2, _ = max(results, key=lambda row: row[1])
     print(f"Best model: {best_name} (test r2 = {best_r2:.4f})")
 
 
 def build_models() -> dict[str, tuple[Module, str]]:
-    return {
-        "plain MLP": (
-            Sequential(
-                LinearLayer(10, 64),
-                Tanh(),
-                LinearLayer(64, 64),
-                Tanh(),
-                LinearLayer(64, 1),
-            ),
-            "no regularization, overfits the 20-example train set",
-        ),
-        "+Dropout": (
-            Sequential(
-                LinearLayer(10, 64),
-                Tanh(),
-                Dropout(),
-                LinearLayer(64, 64),
-                Tanh(),
-                Dropout(),
-                LinearLayer(64, 1),
-            ),
-            "randomly zeroes activations, narrows the train/test gap",
-        ),
-        "+BatchNorm1d": (
-            Sequential(
-                LinearLayer(10, 64),
-                BatchNorm1d(64),
-                Tanh(),
-                LinearLayer(64, 64),
-                BatchNorm1d(64),
-                Tanh(),
-                LinearLayer(64, 1),
-            ),
-            "normalizes over the batch, mainly a training stabilizer here",
-        ),
-        "+LayerNorm": (
-            Sequential(
-                LinearLayer(10, 64),
-                LayerNorm(64),
-                Tanh(),
-                LinearLayer(64, 64),
-                LayerNorm(64),
-                Tanh(),
-                LinearLayer(64, 1),
-            ),
-            "normalizes per sample, stable even with this tiny batch",
-        ),
-    }
+
+    models: dict[str, tuple[Module, str]] = {}
+    for activation in ["tanh"]:  # , "relu"]:
+        for dropout in [True, False]:
+            for norm in ["batch", "layer"]:
+                for skip_connections in [True]:  # , False]:
+                    for scale in [0.1, 0.2, 1 / (10**0.5)]:  # , 1, 10]:
+                        for hidden_size in [4, 8]:  # , 16, 32, 64]:
+                            model_name = f"{activation} {'+Dropout' if dropout else ''} {'+BatchNorm1d' if norm == 'batch' else '+LayerNorm' if norm == 'layer' else ''} {'+skip connections' if skip_connections else ''} (scale={scale}) layers={1} hidden_size={hidden_size}".strip()
+                            models[model_name] = (
+                                MyModel(
+                                    activation=activation,
+                                    dropout=dropout,
+                                    norm=norm,
+                                    skip_connections=skip_connections,
+                                    scale=scale,
+                                    hidden_size=hidden_size,
+                                ),
+                                f"{activation} {'with dropout' if dropout else 'without dropout'} {'with batch norm' if norm == 'batch' else 'with layer norm' if norm == 'layer' else 'without normalization'} {'with skip connections' if skip_connections else 'without skip connections'} (scale={scale}) layers={1} hidden_size={hidden_size}",
+                            )
+    return models
 
 
 def main() -> int:
@@ -173,9 +226,19 @@ def main() -> int:
         )
     ]
     for model_name, (model, comment) in build_models().items():
-        optimizer = SGD(model.parameters(), lr=0.01)
+        optimizer = SGD(model.parameters(), lr=0.05)
 
-        _, _ = train(model, optimizer, x_train, y_train, x_test, y_test)
+        _, _ = train(
+            model,
+            optimizer,
+            x_train,
+            y_train,
+            x_test,
+            y_test,
+            epochs=300,
+            early_stopping=True,
+            patience=10,
+        )
         model.eval()
         with torch.no_grad():
             results.append((model_name, r2_score(model(x_test), y_test), comment))
