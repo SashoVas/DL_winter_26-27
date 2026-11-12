@@ -91,7 +91,7 @@ def train(
         optimizer.step()
         grads.append(
             [
-                layer.W.grad.abs().mean().item() if layer.W.grad else 0
+                layer.W.grad.abs().mean().item() if layer.W.grad is not None else 0
                 for layer in model.modules
                 if isinstance(layer, LinearLayer)
             ]
