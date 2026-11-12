@@ -1,11 +1,9 @@
-import matplotlib.pyplot as plt
 import torch
 
 from dl_lib.nn.activations import Tanh
 from dl_lib.nn.module import Module
 from dl_lib.nn.sequential import Sequential
 from dl_lib.optim.optimizer import Optimizer
-from dl_lib.optim.optimizers import SGD
 
 
 class LinearLayer(Module):
