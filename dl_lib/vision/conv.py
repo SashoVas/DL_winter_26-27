@@ -15,8 +15,28 @@ class Conv1d(Module):
         self.out_channels = out_channels
 
     def forward(self, x):
-        res = torch.ones(self.out_channels, x.shape[1]-self.kernel_size+1)
-        for i in range(0, x.shape[1]-self.kernel_size+1):
-            res[:, i: i+self.kernel_size] = (x[:,
-                                               i: i+self.kernel_size]*self.weight).sum(dim=(1, 2)) + self.bias
+        # (in_channels, length) or (batch, in_channels, length)
+
+        length = x.shape[-1]
+        if x.ndim == 2:
+            res = torch.ones(self.out_channels, length-self.kernel_size+1)
+        else:
+            batch_size = x.shape[0]
+            res = torch.ones(
+                batch_size, self.out_channels, length-self.kernel_size+1)
+
+        for i in range(0, length-self.kernel_size+1):
+            if x.ndim == 2:
+                # x: input_chanel , kernel_size
+                # w: out_channels, in_channels, kernel_size
+                # Should broadcast
+                res[:, i] = (x[:,
+                               i: i+self.kernel_size]*self.weight).sum(dim=(1, 2)) + self.bias
+            else:
+                # x: batch_size , input_chanel , kernel_size -> batch_size , 1 , input_chanel , kernel_size
+                # w: out_channels , in_channels , kernel_size  -> 1 , out_channels , in_channels , kernel_size
+                res[:, :, i] = (
+                    x[:, :, i: i+self.kernel_size].view(
+                        batch_size, 1, self.in_channels, self.kernel_size)
+                    * self.weight.view(1, self.out_channels, self.in_channels, self.kernel_size)).sum(dim=(-1, -2)) + self.bias
         return res
