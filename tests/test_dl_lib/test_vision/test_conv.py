@@ -66,25 +66,24 @@ class TestConv1dForward(unittest.TestCase):
         # Assert
         self.assertEqual(actual.shape[0], batch_size)
 
-#     def test_when_stride_and_padding_given_then_output_length_matches_the_formula(self):
-#         # Arrange
-#         length, kernel_size, stride, padding = 10, 3, 2, 1
-#         expected_length = (length + 2 * padding - kernel_size) // stride + 1
-#         conv = Conv1d(
-#             in_channels=1,
-#             out_channels=1,
-#             kernel_size=kernel_size,
-#             stride=stride,
-#             padding=padding,
-#         )
-#         x = torch.randn(1, length)
-#
-#         # Act
-#         actual = conv(x)
-#
-#         # Assert
-#         self.assertEqual(actual.shape[-1], expected_length)
-#
+    def test_when_stride_and_padding_given_then_output_length_matches_the_formula(self):
+        # Arrange
+        length, kernel_size, stride, padding = 10, 3, 2, 1
+        expected_length = (length + 2 * padding - kernel_size) // stride + 1
+        conv = Conv1d(
+            in_channels=1,
+            out_channels=1,
+            kernel_size=kernel_size,
+            stride=stride,
+            padding=padding,
+        )
+        x = torch.randn(1, length)
+
+        # Act
+        actual = conv(x)
+
+        # Assert
+        self.assertEqual(actual.shape[-1], expected_length)
 
     def test_when_single_channel_unbatched_then_matches_torch_nn_conv1d(self):
         # Arrange
@@ -126,48 +125,48 @@ class TestConv1dForward(unittest.TestCase):
         # Assert
         self.assertTrue(torch.allclose(actual, expected, atol=1e-5))
 
-#     def test_when_stride_given_then_matches_torch_nn_conv1d(self):
-#         # Arrange
-#         torch.manual_seed(2)
-#         in_channels, out_channels, kernel_size, stride, length = 2, 3, 3, 2, 17
-#         x = torch.randn(2, in_channels, length)
-#         ours = Conv1d(in_channels, out_channels, kernel_size, stride=stride)
-#         reference = torch.nn.Conv1d(
-#             in_channels, out_channels, kernel_size, stride=stride
-#         )
-#         with torch.no_grad():
-#             ours.weight.copy_(reference.weight)
-#             assert reference.bias is not None
-#             ours.bias.copy_(reference.bias)
-#
-#         # Act
-#         actual = ours(x)
-#         expected = reference(x)
-#
-#         # Assert
-#         self.assertTrue(torch.allclose(actual, expected, atol=1e-5))
-#
-#     def test_when_padding_given_then_matches_torch_nn_conv1d(self):
-#         # Arrange
-#         torch.manual_seed(3)
-#         in_channels, out_channels, kernel_size, padding, length = 2, 3, 3, 2, 17
-#         x = torch.randn(2, in_channels, length)
-#         ours = Conv1d(in_channels, out_channels, kernel_size, padding=padding)
-#         reference = torch.nn.Conv1d(
-#             in_channels, out_channels, kernel_size, padding=padding
-#         )
-#         with torch.no_grad():
-#             ours.weight.copy_(reference.weight)
-#             assert reference.bias is not None
-#             ours.bias.copy_(reference.bias)
-#
-#         # Act
-#         actual = ours(x)
-#         expected = reference(x)
-#
-#         # Assert
-#         self.assertTrue(torch.allclose(actual, expected, atol=1e-5))
-#
+    def test_when_stride_given_then_matches_torch_nn_conv1d(self):
+        # Arrange
+        torch.manual_seed(2)
+        in_channels, out_channels, kernel_size, stride, length = 2, 3, 3, 2, 17
+        x = torch.randn(2, in_channels, length)
+        ours = Conv1d(in_channels, out_channels, kernel_size, stride=stride)
+        reference = torch.nn.Conv1d(
+            in_channels, out_channels, kernel_size, stride=stride
+        )
+        with torch.no_grad():
+            ours.weight.copy_(reference.weight)
+            assert reference.bias is not None
+            ours.bias.copy_(reference.bias)
+
+        # Act
+        actual = ours(x)
+        expected = reference(x)
+
+        # Assert
+        self.assertTrue(torch.allclose(actual, expected, atol=1e-5))
+
+    def test_when_padding_given_then_matches_torch_nn_conv1d(self):
+        # Arrange
+        torch.manual_seed(3)
+        in_channels, out_channels, kernel_size, padding, length = 2, 3, 3, 2, 17
+        x = torch.randn(2, in_channels, length)
+        ours = Conv1d(in_channels, out_channels, kernel_size, padding=padding)
+        reference = torch.nn.Conv1d(
+            in_channels, out_channels, kernel_size, padding=padding
+        )
+        with torch.no_grad():
+            ours.weight.copy_(reference.weight)
+            assert reference.bias is not None
+            ours.bias.copy_(reference.bias)
+
+        # Act
+        actual = ours(x)
+        expected = reference(x)
+
+        # Assert
+        self.assertTrue(torch.allclose(actual, expected, atol=1e-5))
+
 #     def test_when_stride_and_padding_both_given_then_matches_torch_nn_conv1d(self):
 #         # Arrange
 #         torch.manual_seed(4)

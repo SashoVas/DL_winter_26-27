@@ -14,29 +14,62 @@ class Conv1d(Module):
         self.in_channels = in_channels
         self.out_channels = out_channels
 
-    def forward(self, x):
-        # (in_channels, length) or (batch, in_channels, length)
-
+    def _init_result(self, x):
         length = x.shape[-1]
+        expected_length = (length + 2 * self.padding -
+                           self.kernel_size) // self.stride + 1
         if x.ndim == 2:
-            res = torch.ones(self.out_channels, length-self.kernel_size+1)
+            res = torch.ones(self.out_channels, expected_length)
         else:
             batch_size = x.shape[0]
             res = torch.ones(
-                batch_size, self.out_channels, length-self.kernel_size+1)
+                batch_size, self.out_channels, expected_length)
+        return res
 
-        for i in range(0, length-self.kernel_size+1):
+    def _pad_input(self, x):
+        length = x.shape[-1]
+        # Handle padding
+        if self.padding > 0:
+            if x.ndim == 2:
+                new_x = torch.zeros(self.in_channels, length+self.padding*2)
+                new_x[:, self.padding:self.padding + length] = x
+            else:
+                batch_size = x.shape[0]
+                new_x = torch.zeros(
+                    batch_size, self.in_channels, length+self.padding*2)
+                new_x[:, :, self.padding:self.padding + length] = x
+            return new_x
+        return x
+
+    def forward(self, x):
+        # (in_channels, length) or (batch, in_channels, length)
+        length = x.shape[-1]
+
+        # Handle output
+        res = self._init_result(x)
+
+        # Handle padding
+        x = self._pad_input(x)
+
+        for current_index in range(res.shape[-1]):
+            i = current_index * self.stride
+
             if x.ndim == 2:
                 # x: input_chanel , kernel_size
                 # w: out_channels, in_channels, kernel_size
                 # Should broadcast
-                res[:, i] = (x[:,
-                               i: i+self.kernel_size]*self.weight).sum(dim=(1, 2)) + self.bias
+                res[:, current_index] = (x[:,
+                                           i: i+self.kernel_size]*self.weight).sum(dim=(1, 2)) + self.bias
             else:
+                batch_size = x.shape[0]
                 # x: batch_size , input_chanel , kernel_size -> batch_size , 1 , input_chanel , kernel_size
                 # w: out_channels , in_channels , kernel_size  -> 1 , out_channels , in_channels , kernel_size
-                res[:, :, i] = (
+                # Should broadcast
+                res[:, :, current_index] = (
                     x[:, :, i: i+self.kernel_size].view(
                         batch_size, 1, self.in_channels, self.kernel_size)
                     * self.weight.view(1, self.out_channels, self.in_channels, self.kernel_size)).sum(dim=(-1, -2)) + self.bias
         return res
+
+    def parameters(self):
+        return [self.weight, self.bias]
