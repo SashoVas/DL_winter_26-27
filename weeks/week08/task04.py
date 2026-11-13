@@ -31,7 +31,7 @@ def test(config: dict) -> None:
         real_output = real_conv(input)
     print("Config:", config)
     print(f"Output shape: {my_output.shape}")
-    print("Matches torch.nn.Conv1d:", torch.allclose(my_output, real_output, atol=1e-5))
+    print("Matches torch.nn.Conv2d:", torch.allclose(my_output, real_output, atol=1e-5))
 
 
 def main() -> int:
