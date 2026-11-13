@@ -1,5 +1,7 @@
-import torch
 import unittest
+
+import torch
+
 from dl_lib.vision.conv import Conv1d  # , Conv2d
 
 
@@ -167,61 +169,61 @@ class TestConv1dForward(unittest.TestCase):
         # Assert
         self.assertTrue(torch.allclose(actual, expected, atol=1e-5))
 
-#     def test_when_stride_and_padding_both_given_then_matches_torch_nn_conv1d(self):
-#         # Arrange
-#         torch.manual_seed(4)
-#         in_channels, out_channels, kernel_size, stride, padding, length = (
-#             3,
-#             2,
-#             4,
-#             3,
-#             2,
-#             25,
-#         )
-#         x = torch.randn(3, in_channels, length)
-#         ours = Conv1d(
-#             in_channels, out_channels, kernel_size, stride=stride, padding=padding
-#         )
-#         reference = torch.nn.Conv1d(
-#             in_channels, out_channels, kernel_size, stride=stride, padding=padding
-#         )
-#         with torch.no_grad():
-#             ours.weight.copy_(reference.weight)
-#             assert reference.bias is not None
-#             ours.bias.copy_(reference.bias)
-#
-#         # Act
-#         actual = ours(x)
-#         expected = reference(x)
-#
-#         # Assert
-#         self.assertTrue(torch.allclose(actual, expected, atol=1e-5))
-#
-#
-# class TestConv1dParameters(unittest.TestCase):
-#     def test_when_called_then_returns_weight_and_bias(self):
-#         # Arrange
-#         conv = Conv1d(in_channels=2, out_channels=3, kernel_size=3)
-#         expected = [conv.weight, conv.bias]
-#
-#         # Act
-#         actual = conv.parameters()
-#
-#         # Assert
-#         self.assertEqual(actual, expected)
-#
-#     def test_when_called_then_the_returned_weight_and_bias_are_the_same_objects(self):
-#         # Arrange
-#         conv = Conv1d(in_channels=2, out_channels=3, kernel_size=3)
-#
-#         # Act
-#         actual = conv.parameters()
-#
-#         # Assert
-#         self.assertIs(actual[0], conv.weight)
-#         self.assertIs(actual[1], conv.bias)
-#
-#
+    def test_when_stride_and_padding_both_given_then_matches_torch_nn_conv1d(self):
+        # Arrange
+        torch.manual_seed(4)
+        in_channels, out_channels, kernel_size, stride, padding, length = (
+            3,
+            2,
+            4,
+            3,
+            2,
+            25,
+        )
+        x = torch.randn(3, in_channels, length)
+        ours = Conv1d(
+            in_channels, out_channels, kernel_size, stride=stride, padding=padding
+        )
+        reference = torch.nn.Conv1d(
+            in_channels, out_channels, kernel_size, stride=stride, padding=padding
+        )
+        with torch.no_grad():
+            ours.weight.copy_(reference.weight)
+            assert reference.bias is not None
+            ours.bias.copy_(reference.bias)
+
+        # Act
+        actual = ours(x)
+        expected = reference(x)
+
+        # Assert
+        self.assertTrue(torch.allclose(actual, expected, atol=1e-5))
+
+
+class TestConv1dParameters(unittest.TestCase):
+    def test_when_called_then_returns_weight_and_bias(self):
+        # Arrange
+        conv = Conv1d(in_channels=2, out_channels=3, kernel_size=3)
+        expected = [conv.weight, conv.bias]
+
+        # Act
+        actual = conv.parameters()
+
+        # Assert
+        self.assertEqual(actual, expected)
+
+    def test_when_called_then_the_returned_weight_and_bias_are_the_same_objects(self):
+        # Arrange
+        conv = Conv1d(in_channels=2, out_channels=3, kernel_size=3)
+
+        # Act
+        actual = conv.parameters()
+
+        # Assert
+        self.assertIs(actual[0], conv.weight)
+        self.assertIs(actual[1], conv.bias)
+
+
 # class TestConv2dInit(unittest.TestCase):
 #     def test_when_constructed_then_weight_and_bias_have_torch_shapes(self):
 #         # Arrange

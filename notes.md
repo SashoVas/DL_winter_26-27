@@ -7786,12 +7786,12 @@ Here's an example of sequential model definition:
 import torch.nn as nn
 
 net = nn.Sequential(
-  nn.Linear(9, 16),
-  nn.ReLU(),
-  nn.Linear(16, 8),
-  nn.ReLU(),
-  nn.Linear(8, 1),
-  nn.Sigmoid(),
+    nn.Linear(9, 16),
+    nn.ReLU(),
+    nn.Linear(16, 8),
+    nn.ReLU(),
+    nn.Linear(8, 1),
+    nn.Sigmoid(),
 )
 ```
 
@@ -7799,17 +7799,18 @@ Here's how it can be re-written using the `class-based` approach:
 
 ```python
 class Net(nn.Module):
-  def __init__(self):
-    super(Net, self).__init__()
-    self.fc1 = nn.Linear(9, 16)
-    self.fc2 = nn.Linear(16, 8)
-    self.fc3 = nn.Linear(8, 1)
-  
-  def forward(self, x):
-    x = nn.functional.relu(self.fc1(x))
-    x = nn.functional.relu(self.fc2(x))
-    x = nn.functional.sigmoid(self.fc3(x))
-    return x
+    def __init__(self):
+        super(Net, self).__init__()
+        self.fc1 = nn.Linear(9, 16)
+        self.fc2 = nn.Linear(16, 8)
+        self.fc3 = nn.Linear(8, 1)
+
+    def forward(self, x):
+        x = nn.functional.relu(self.fc1(x))
+        x = nn.functional.relu(self.fc2(x))
+        x = nn.functional.sigmoid(self.fc3(x))
+        return x
+
 
 net = Net()
 ```
@@ -7912,20 +7913,22 @@ from torchvision.datasets import ImageFolder
 from torchvision import transforms
 from torch.utils import data
 
-train_transforms = transforms.Compose([
-  transforms.ToTensor(), # convert the object into a tensor
-  transforms.Resize((128, 128)), # resize the images to be of size 128x128
-])
+train_transforms = transforms.Compose(
+    [
+        transforms.ToTensor(),  # convert the object into a tensor
+        transforms.Resize((128, 128)),  # resize the images to be of size 128x128
+    ]
+)
 
 dataset_train = ImageFolder(
-  'DATA/clouds/clouds_train',
-  transform=train_transforms,
+    "DATA/clouds/clouds_train",
+    transform=train_transforms,
 )
 
 dataloader_train = data.DataLoader(
-  dataset_train,
-  shuffle=True,
-  batch_size=1,
+    dataset_train,
+    shuffle=True,
+    batch_size=1,
 )
 
 image, label = next(iter(dataloader_train))
@@ -7961,8 +7964,9 @@ We can now, plot this using `matplotlib`:
 
 ```python
 import matplotlib.pyplot as plt
+
 plt.imshow(image)
-plt.axis('off')
+plt.axis("off")
 plt.show()
 ```
 
@@ -8047,13 +8051,17 @@ Explore, explore, explore!
 <summary>What transformations can you think of for our current task (cloud classification)?</summary>
 
 ```python
-train_transforms = transforms.Compose([
-  transforms.RandomHorizontalFlip(), # simulate different viewpoints of the sky
-  transforms.RandomRotation(45), # expose model to different angles of cloud formations
-  transforms.RandomAutocontrast(), # simulate different lighting conditions
-  transforms.ToTensor(), # convert the object into a tensor
-  transforms.Resize((128, 128)), # resize the images to be of size 128x128
-])
+train_transforms = transforms.Compose(
+    [
+        transforms.RandomHorizontalFlip(),  # simulate different viewpoints of the sky
+        transforms.RandomRotation(
+            45
+        ),  # expose model to different angles of cloud formations
+        transforms.RandomAutocontrast(),  # simulate different lighting conditions
+        transforms.ToTensor(),  # convert the object into a tensor
+        transforms.Resize((128, 128)),  # resize the images to be of size 128x128
+    ]
+)
 ```
 
 ![w08_data_augmentation.png](assets/w08_data_augmentation.png "w08_data_augmentation.png")
@@ -8770,10 +8778,10 @@ To calculate them with `torch`, we can use the classes [`torchmetrics.Recall`](h
 ```python
 from torchmetrics import Recall
 
-recall_per_class = Recall(task='multiclass', num_classes=7, average=None)
-recall_micro = Recall(task='multiclass', num_classes=7, average='micro')
-recall_macro = Recall(task='multiclass', num_classes=7, average='macro')
-recall_weighted = Recall(task='multiclass', num_classes=7, average='weighted')
+recall_per_class = Recall(task="multiclass", num_classes=7, average=None)
+recall_micro = Recall(task="multiclass", num_classes=7, average="micro")
+recall_macro = Recall(task="multiclass", num_classes=7, average="macro")
+recall_weighted = Recall(task="multiclass", num_classes=7, average="weighted")
 ```
 
 When to use each:

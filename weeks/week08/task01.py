@@ -1,11 +1,14 @@
-from dl_lib.vision.conv import Conv1d as Conv1dMy
-from torch.nn import Conv1d
 import torch
+from torch.nn import Conv1d
+
+from dl_lib.vision.conv import Conv1d as Conv1dMy
 
 
 def main() -> int:
     my_conv = Conv1dMy(1, 1, 3)
     real_conv = Conv1d(1, 1, 3)
+    assert real_conv.weight is not None
+    assert real_conv.bias is not None
     my_conv.weight = real_conv.weight
     my_conv.bias = real_conv.bias
 

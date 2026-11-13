@@ -1,12 +1,16 @@
-from dl_lib.nn.module import Module
 import torch
+
+from dl_lib.nn.module import Module
 
 
 class Conv1d(Module):
-    def __init__(self,  in_channels=1, out_channels=1, kernel_size=3, stride=1, padding=0):
+    def __init__(
+        self, in_channels=1, out_channels=1, kernel_size=3, stride=1, padding=0
+    ):
         super().__init__()
         self.weight = torch.randn(
-            out_channels, in_channels, kernel_size, requires_grad=True)
+            out_channels, in_channels, kernel_size, requires_grad=True
+        )
         self.bias = torch.rand(out_channels, requires_grad=True)
         self.stride = stride
         self.padding = padding
@@ -14,37 +18,36 @@ class Conv1d(Module):
         self.in_channels = in_channels
         self.out_channels = out_channels
 
-    def _init_result(self, x):
+    def _init_result(self, x: torch.Tensor) -> torch.Tensor:
         length = x.shape[-1]
-        expected_length = (length + 2 * self.padding -
-                           self.kernel_size) // self.stride + 1
+        expected_length = (
+            length + 2 * self.padding - self.kernel_size
+        ) // self.stride + 1
         if x.ndim == 2:
             res = torch.ones(self.out_channels, expected_length)
         else:
             batch_size = x.shape[0]
-            res = torch.ones(
-                batch_size, self.out_channels, expected_length)
+            res = torch.ones(batch_size, self.out_channels, expected_length)
         return res
 
-    def _pad_input(self, x):
+    def _pad_input(self, x: torch.Tensor) -> torch.Tensor:
         length = x.shape[-1]
         # Handle padding
         if self.padding > 0:
             if x.ndim == 2:
-                new_x = torch.zeros(self.in_channels, length+self.padding*2)
-                new_x[:, self.padding:self.padding + length] = x
+                new_x = torch.zeros(self.in_channels, length + self.padding * 2)
+                new_x[:, self.padding : self.padding + length] = x
             else:
                 batch_size = x.shape[0]
                 new_x = torch.zeros(
-                    batch_size, self.in_channels, length+self.padding*2)
-                new_x[:, :, self.padding:self.padding + length] = x
+                    batch_size, self.in_channels, length + self.padding * 2
+                )
+                new_x[:, :, self.padding : self.padding + length] = x
             return new_x
         return x
 
     def forward(self, x):
         # (in_channels, length) or (batch, in_channels, length)
-        length = x.shape[-1]
-
         # Handle output
         res = self._init_result(x)
 
@@ -58,17 +61,22 @@ class Conv1d(Module):
                 # x: input_chanel , kernel_size
                 # w: out_channels, in_channels, kernel_size
                 # Should broadcast
-                res[:, current_index] = (x[:,
-                                           i: i+self.kernel_size]*self.weight).sum(dim=(1, 2)) + self.bias
+                res[:, current_index] = (
+                    x[:, i : i + self.kernel_size] * self.weight
+                ).sum(dim=(1, 2)) + self.bias
             else:
                 batch_size = x.shape[0]
                 # x: batch_size , input_chanel , kernel_size -> batch_size , 1 , input_chanel , kernel_size
                 # w: out_channels , in_channels , kernel_size  -> 1 , out_channels , in_channels , kernel_size
                 # Should broadcast
                 res[:, :, current_index] = (
-                    x[:, :, i: i+self.kernel_size].view(
-                        batch_size, 1, self.in_channels, self.kernel_size)
-                    * self.weight.view(1, self.out_channels, self.in_channels, self.kernel_size)).sum(dim=(-1, -2)) + self.bias
+                    x[:, :, i : i + self.kernel_size].view(
+                        batch_size, 1, self.in_channels, self.kernel_size
+                    )
+                    * self.weight.view(
+                        1, self.out_channels, self.in_channels, self.kernel_size
+                    )
+                ).sum(dim=(-1, -2)) + self.bias
         return res
 
     def parameters(self):
