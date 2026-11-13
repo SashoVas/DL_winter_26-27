@@ -2,7 +2,7 @@ import unittest
 
 import torch
 
-from dl_lib.vision.conv import Conv1d  # , Conv2d
+from dl_lib.vision.conv import Conv1d, Conv2d
 
 
 class TestConv1dInit(unittest.TestCase):
@@ -224,150 +224,175 @@ class TestConv1dParameters(unittest.TestCase):
         self.assertIs(actual[1], conv.bias)
 
 
-# class TestConv2dInit(unittest.TestCase):
-#     def test_when_constructed_then_weight_and_bias_have_torch_shapes(self):
-#         # Arrange
-#         in_channels, out_channels, kernel_size = 3, 8, 5
-#         expected_weight_shape = (out_channels, in_channels, kernel_size, kernel_size)
-#         expected_bias_shape = (out_channels,)
-#
-#         # Act
-#         conv = Conv2d(in_channels, out_channels, kernel_size)
-#
-#         # Assert
-#         self.assertEqual(tuple(conv.weight.shape), expected_weight_shape)
-#         self.assertEqual(tuple(conv.bias.shape), expected_bias_shape)
-#
-#     def test_when_stride_and_padding_not_given_then_default_to_one_and_zero(self):
-#         # Arrange
-#         expected_stride, expected_padding = 1, 0
-#
-#         # Act
-#         conv = Conv2d(in_channels=3, out_channels=8, kernel_size=5)
-#
-#         # Assert
-#         self.assertEqual(conv.stride, expected_stride)
-#         self.assertEqual(conv.padding, expected_padding)
-#
-#
-# class TestConv2dForward(unittest.TestCase):
-#     def test_when_input_is_unbatched_then_output_is_unbatched(self):
-#         # Arrange
-#         conv = Conv2d(in_channels=3, out_channels=2, kernel_size=3)
-#         x = torch.randn(3, 10, 10)
-#
-#         # Act
-#         actual = conv(x)
-#
-#         # Assert
-#         self.assertEqual(actual.dim(), 3)
-#
-#     def test_when_stride_and_padding_given_then_output_shape_matches_the_formula(self):
-#         # Arrange
-#         height, width, kernel_size, stride, padding = 16, 16, 3, 2, 1
-#         expected_height = (height + 2 * padding - kernel_size) // stride + 1
-#         expected_width = (width + 2 * padding - kernel_size) // stride + 1
-#         conv = Conv2d(
-#             in_channels=3,
-#             out_channels=4,
-#             kernel_size=kernel_size,
-#             stride=stride,
-#             padding=padding,
-#         )
-#         x = torch.randn(2, 3, height, width)
-#
-#         # Act
-#         actual = conv(x)
-#
-#         # Assert
-#         self.assertEqual(actual.shape[-2], expected_height)
-#         self.assertEqual(actual.shape[-1], expected_width)
-#
-#     def test_when_given_same_weights_then_matches_torch_nn_conv2d(self):
-#         # Arrange
-#         torch.manual_seed(5)
-#         in_channels, out_channels, kernel_size = 3, 4, 3
-#         x = torch.randn(2, in_channels, 12, 12)
-#         ours = Conv2d(in_channels, out_channels, kernel_size)
-#         reference = torch.nn.Conv2d(in_channels, out_channels, kernel_size)
-#         with torch.no_grad():
-#             ours.weight.copy_(reference.weight)
-#             assert reference.bias is not None
-#             ours.bias.copy_(reference.bias)
-#
-#         # Act
-#         actual = ours(x)
-#         expected = reference(x)
-#
-#         # Assert
-#         self.assertTrue(torch.allclose(actual, expected, atol=1e-5))
-#
-#     def test_when_stride_and_padding_given_then_matches_torch_nn_conv2d(self):
-#         # Arrange
-#         torch.manual_seed(6)
-#         in_channels, out_channels, kernel_size, stride, padding = 3, 4, 5, 2, 2
-#         x = torch.randn(2, in_channels, 20, 20)
-#         ours = Conv2d(
-#             in_channels, out_channels, kernel_size, stride=stride, padding=padding
-#         )
-#         reference = torch.nn.Conv2d(
-#             in_channels, out_channels, kernel_size, stride=stride, padding=padding
-#         )
-#         with torch.no_grad():
-#             ours.weight.copy_(reference.weight)
-#             assert reference.bias is not None
-#             ours.bias.copy_(reference.bias)
-#
-#         # Act
-#         actual = ours(x)
-#         expected = reference(x)
-#
-#         # Assert
-#         self.assertTrue(torch.allclose(actual, expected, atol=1e-5))
-#
-#     def test_when_given_alexnet_conv1_config_then_matches_torch_nn_conv2d(self):
-#         # Arrange
-#         torch.manual_seed(7)
-#         in_channels, out_channels, kernel_size, stride, padding = 3, 96, 11, 4, 2
-#         x = torch.randn(2, in_channels, 64, 64)
-#         ours = Conv2d(
-#             in_channels, out_channels, kernel_size, stride=stride, padding=padding
-#         )
-#         reference = torch.nn.Conv2d(
-#             in_channels, out_channels, kernel_size, stride=stride, padding=padding
-#         )
-#         with torch.no_grad():
-#             ours.weight.copy_(reference.weight)
-#             assert reference.bias is not None
-#             ours.bias.copy_(reference.bias)
-#
-#         # Act
-#         actual = ours(x)
-#         expected = reference(x)
-#
-#         # Assert
-#         self.assertTrue(torch.allclose(actual, expected, atol=1e-5))
-#
-#
-# class TestConv2dParameters(unittest.TestCase):
-#     def test_when_called_then_returns_weight_and_bias(self):
-#         # Arrange
-#         conv = Conv2d(in_channels=3, out_channels=4, kernel_size=3)
-#         expected = [conv.weight, conv.bias]
-#
-#         # Act
-#         actual = conv.parameters()
-#
-#         # Assert
-#         self.assertEqual(actual, expected)
-#
-#     def test_when_called_then_the_returned_weight_and_bias_are_the_same_objects(self):
-#         # Arrange
-#         conv = Conv2d(in_channels=3, out_channels=4, kernel_size=3)
-#
-#         # Act
-#         actual = conv.parameters()
-#
-#         # Assert
-#         self.assertIs(actual[0], conv.weight)
-#         self.assertIs(actual[1], conv.bias)
+class TestConv2dInit(unittest.TestCase):
+    def test_when_constructed_then_weight_and_bias_have_torch_shapes(self):
+        # Arrange
+        in_channels, out_channels, kernel_size = 3, 8, 5
+        expected_weight_shape = (out_channels, in_channels, kernel_size, kernel_size)
+        expected_bias_shape = (out_channels,)
+
+        # Act
+        conv = Conv2d(in_channels, out_channels, kernel_size)
+
+        # Assert
+        self.assertEqual(tuple(conv.weight.shape), expected_weight_shape)
+        self.assertEqual(tuple(conv.bias.shape), expected_bias_shape)
+
+    def test_when_stride_and_padding_not_given_then_default_to_one_and_zero(self):
+        # Arrange
+        expected_stride, expected_padding = 1, 0
+
+        # Act
+        conv = Conv2d(in_channels=3, out_channels=8, kernel_size=5)
+
+        # Assert
+        self.assertEqual(conv.stride, expected_stride)
+        self.assertEqual(conv.padding, expected_padding)
+
+
+class TestConv2dForward(unittest.TestCase):
+    def test_when_input_is_unbatched_then_output_is_unbatched(self):
+        # Arrange
+        conv = Conv2d(in_channels=3, out_channels=2, kernel_size=3)
+        x = torch.randn(3, 10, 10)
+
+        # Act
+        actual = conv(x)
+
+        # Assert
+        self.assertEqual(actual.dim(), 3)
+
+    def test_when_stride_and_padding_given_then_output_shape_matches_the_formula(self):
+        # Arrange
+        height, width, kernel_size, stride, padding = 16, 16, 3, 2, 1
+        expected_height = (height + 2 * padding - kernel_size) // stride + 1
+        expected_width = (width + 2 * padding - kernel_size) // stride + 1
+        conv = Conv2d(
+            in_channels=3,
+            out_channels=4,
+            kernel_size=kernel_size,
+            stride=stride,
+            padding=padding,
+        )
+        x = torch.randn(2, 3, height, width)
+
+        # Act
+        actual = conv(x)
+
+        # Assert
+        self.assertEqual(actual.shape[-2], expected_height)
+        self.assertEqual(actual.shape[-1], expected_width)
+
+    def test_when_given_same_weights_then_matches_torch_nn_conv2d(self):
+        # Arrange
+        torch.manual_seed(5)
+        in_channels, out_channels, kernel_size = 3, 4, 3
+        x = torch.randn(2, in_channels, 12, 12)
+        ours = Conv2d(in_channels, out_channels, kernel_size)
+        reference = torch.nn.Conv2d(in_channels, out_channels, kernel_size)
+        with torch.no_grad():
+            ours.weight.copy_(reference.weight)
+            assert reference.bias is not None
+            ours.bias.copy_(reference.bias)
+
+        # Act
+        actual = ours(x)
+        expected = reference(x)
+
+        # Assert
+        self.assertTrue(torch.allclose(actual, expected, atol=1e-5))
+
+    def test_when_stride_and_padding_given_then_matches_torch_nn_conv2d(self):
+        # Arrange
+        torch.manual_seed(6)
+        in_channels, out_channels, kernel_size, stride, padding = 3, 4, 5, 2, 2
+        x = torch.randn(2, in_channels, 20, 20)
+        ours = Conv2d(
+            in_channels, out_channels, kernel_size, stride=stride, padding=padding
+        )
+        reference = torch.nn.Conv2d(
+            in_channels, out_channels, kernel_size, stride=stride, padding=padding
+        )
+        with torch.no_grad():
+            ours.weight.copy_(reference.weight)
+            assert reference.bias is not None
+            ours.bias.copy_(reference.bias)
+
+        # Act
+        actual = ours(x)
+        expected = reference(x)
+
+        # Assert
+        self.assertTrue(torch.allclose(actual, expected, atol=1e-5))
+
+    def test_when_given_alexnet_conv1_config_then_matches_torch_nn_conv2d(self):
+        # Arrange
+        torch.manual_seed(7)
+        in_channels, out_channels, kernel_size, stride, padding = 3, 96, 11, 4, 2
+        x = torch.randn(2, in_channels, 64, 64)
+        ours = Conv2d(
+            in_channels, out_channels, kernel_size, stride=stride, padding=padding
+        )
+        reference = torch.nn.Conv2d(
+            in_channels, out_channels, kernel_size, stride=stride, padding=padding
+        )
+        with torch.no_grad():
+            ours.weight.copy_(reference.weight)
+            assert reference.bias is not None
+            ours.bias.copy_(reference.bias)
+
+        # Act
+        actual = ours(x)
+        expected = reference(x)
+
+        # Assert
+        self.assertTrue(torch.allclose(actual, expected, atol=1e-5))
+
+    def test_when_given_alexnet_conv1_config_un_bached_then_matches_torch_nn_conv2d(
+        self,
+    ):
+        # Arrange
+        torch.manual_seed(7)
+        in_channels, out_channels, kernel_size, stride, padding = 3, 96, 11, 4, 2
+        x = torch.randn(in_channels, 64, 64)
+        ours = Conv2d(
+            in_channels, out_channels, kernel_size, stride=stride, padding=padding
+        )
+        reference = torch.nn.Conv2d(
+            in_channels, out_channels, kernel_size, stride=stride, padding=padding
+        )
+        with torch.no_grad():
+            ours.weight.copy_(reference.weight)
+            assert reference.bias is not None
+            ours.bias.copy_(reference.bias)
+
+        # Act
+        actual = ours(x)
+        expected = reference(x)
+
+        # Assert
+        self.assertTrue(torch.allclose(actual, expected, atol=1e-5))
+
+
+class TestConv2dParameters(unittest.TestCase):
+    def test_when_called_then_returns_weight_and_bias(self):
+        # Arrange
+        conv = Conv2d(in_channels=3, out_channels=4, kernel_size=3)
+        expected = [conv.weight, conv.bias]
+
+        # Act
+        actual = conv.parameters()
+
+        # Assert
+        self.assertEqual(actual, expected)
+
+    def test_when_called_then_the_returned_weight_and_bias_are_the_same_objects(self):
+        # Arrange
+        conv = Conv2d(in_channels=3, out_channels=4, kernel_size=3)
+
+        # Act
+        actual = conv.parameters()
+
+        # Assert
+        self.assertIs(actual[0], conv.weight)
+        self.assertIs(actual[1], conv.bias)
