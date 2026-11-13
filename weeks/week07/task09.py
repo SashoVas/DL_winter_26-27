@@ -197,7 +197,8 @@ def build_models() -> dict[str, tuple[Module, str]]:
                 for skip_connections in [True]:  # , False]:
                     for scale in [0.1, 0.2, 1 / (10**0.5)]:  # , 1, 10]:
                         for hidden_size in [4, 8]:  # , 16, 32, 64]:
-                            model_name = f"{activation} {'+Dropout' if dropout else ''} {'+BatchNorm1d' if norm == 'batch' else '+LayerNorm' if norm == 'layer' else ''} {'+skip connections' if skip_connections else ''} (scale={scale}) layers={1} hidden_size={hidden_size}".strip()
+                            model_name = f"{activation} {'+Dropout' if dropout else ''} {'+BatchNorm1d' if norm == 'batch' else '+LayerNorm' if norm == 'layer' else ''} {'+skip connections' if skip_connections else ''} (scale={scale}) layers={1} hidden_size={hidden_size}".strip(
+                            )
                             models[model_name] = (
                                 MyModel(
                                     activation=activation,
@@ -241,7 +242,8 @@ def main() -> int:
         )
         model.eval()
         with torch.no_grad():
-            results.append((model_name, r2_score(model(x_test), y_test), comment))
+            results.append((model_name, r2_score(
+                model(x_test), y_test), comment))
 
     print_res(results)
     return 0

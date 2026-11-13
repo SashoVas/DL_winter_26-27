@@ -1,47 +1,47 @@
-# import torch
-#
-# from dl_lib.vision.conv import Conv1d, Conv2d
-#
-#
-# class TestConv1dInit(unittest.TestCase):
-#     def test_when_constructed_then_weight_and_bias_have_torch_shapes(self):
-#         # Arrange
-#         in_channels, out_channels, kernel_size = 3, 4, 5
-#         expected_weight_shape = (out_channels, in_channels, kernel_size)
-#         expected_bias_shape = (out_channels,)
-#
-#         # Act
-#         conv = Conv1d(in_channels, out_channels, kernel_size)
-#
-#         # Assert
-#         self.assertEqual(tuple(conv.weight.shape), expected_weight_shape)
-#         self.assertEqual(tuple(conv.bias.shape), expected_bias_shape)
-#
-#     def test_when_constructed_then_weight_and_bias_require_grad(self):
-#         # Arrange & Act
-#         conv = Conv1d(in_channels=2, out_channels=2, kernel_size=3)
-#
-#         # Assert
-#         self.assertTrue(conv.weight.requires_grad)
-#         self.assertTrue(conv.bias.requires_grad)
-#
-#     def test_when_channels_and_stride_and_padding_not_given_then_default_to_one_and_zero(
-#         self,
-#     ):
-#         # Arrange
-#         expected_in_channels, expected_out_channels = 1, 1
-#         expected_stride, expected_padding = 1, 0
-#
-#         # Act
-#         conv = Conv1d(kernel_size=3)
-#
-#         # Assert
-#         self.assertEqual(conv.in_channels, expected_in_channels)
-#         self.assertEqual(conv.out_channels, expected_out_channels)
-#         self.assertEqual(conv.stride, expected_stride)
-#         self.assertEqual(conv.padding, expected_padding)
-#
-#
+import torch
+import unittest
+from dl_lib.vision.conv import Conv1d  # , Conv2d
+
+
+class TestConv1dInit(unittest.TestCase):
+    def test_when_constructed_then_weight_and_bias_have_torch_shapes(self):
+        # Arrange
+        in_channels, out_channels, kernel_size = 3, 4, 5
+        expected_weight_shape = (out_channels, in_channels, kernel_size)
+        expected_bias_shape = (out_channels,)
+
+        # Act
+        conv = Conv1d(in_channels, out_channels, kernel_size)
+
+        # Assert
+        self.assertEqual(tuple(conv.weight.shape), expected_weight_shape)
+        self.assertEqual(tuple(conv.bias.shape), expected_bias_shape)
+
+    def test_when_constructed_then_weight_and_bias_require_grad(self):
+        # Arrange & Act
+        conv = Conv1d(in_channels=2, out_channels=2, kernel_size=3)
+
+        # Assert
+        self.assertTrue(conv.weight.requires_grad)
+        self.assertTrue(conv.bias.requires_grad)
+
+    def test_when_channels_and_stride_and_padding_not_given_then_default_to_one_and_zero(
+        self,
+    ):
+        # Arrange
+        expected_in_channels, expected_out_channels = 1, 1
+        expected_stride, expected_padding = 1, 0
+
+        # Act
+        conv = Conv1d(kernel_size=3)
+
+        # Assert
+        self.assertEqual(conv.in_channels, expected_in_channels)
+        self.assertEqual(conv.out_channels, expected_out_channels)
+        self.assertEqual(conv.stride, expected_stride)
+        self.assertEqual(conv.padding, expected_padding)
+
+
 # class TestConv1dForward(unittest.TestCase):
 #     def test_when_input_is_unbatched_then_output_is_unbatched(self):
 #         # Arrange
@@ -85,27 +85,28 @@
 #         # Assert
 #         self.assertEqual(actual.shape[-1], expected_length)
 #
-#     def test_when_single_channel_unbatched_then_matches_torch_nn_conv1d(self):
-#         # Arrange
-#         torch.manual_seed(0)
-#         kernel_size = 3
-#         x = torch.randn(1, 12)
-#         ours = Conv1d(in_channels=1, out_channels=1, kernel_size=kernel_size)
-#         reference = torch.nn.Conv1d(
-#             in_channels=1, out_channels=1, kernel_size=kernel_size
-#         )
-#         with torch.no_grad():
-#             ours.weight.copy_(reference.weight)
-#             assert reference.bias is not None
-#             ours.bias.copy_(reference.bias)
-#
-#         # Act
-#         actual = ours(x)
-#         expected = reference(x)
-#
-#         # Assert
-#         self.assertTrue(torch.allclose(actual, expected, atol=1e-5))
-#
+
+    def test_when_single_channel_unbatched_then_matches_torch_nn_conv1d(self):
+        # Arrange
+        torch.manual_seed(0)
+        kernel_size = 3
+        x = torch.randn(1, 12)
+        ours = Conv1d(in_channels=1, out_channels=1, kernel_size=kernel_size)
+        reference = torch.nn.Conv1d(
+            in_channels=1, out_channels=1, kernel_size=kernel_size
+        )
+        with torch.no_grad():
+            ours.weight.copy_(reference.weight)
+            assert reference.bias is not None
+            ours.bias.copy_(reference.bias)
+
+        # Act
+        actual = ours(x)
+        expected = reference(x)
+
+        # Assert
+        self.assertTrue(torch.allclose(actual, expected, atol=1e-5))
+
 #     def test_when_multiple_channels_and_batched_then_matches_torch_nn_conv1d(self):
 #         # Arrange
 #         torch.manual_seed(1)
