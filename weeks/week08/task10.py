@@ -7,6 +7,7 @@ def main() -> int:
     train_dataloader, _, class_names = load_fashion_mnist_loaders(8)
 
     images, labels = next(iter(train_dataloader))
+    print(f"Classes: {len(class_names)}")
 
     _, axes = plt.subplots(1, len(images), figsize=(16, 3))
 

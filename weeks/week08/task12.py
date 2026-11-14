@@ -9,6 +9,7 @@ def main() -> int:
     images, labels = next(iter(train_dataloader))
 
     _, axes = plt.subplots(1, len(images), figsize=(16, 3))
+    print(f"Classes: {len(class_names)}")
 
     for image, label, ax in zip(images, labels, axes):
         image = image.permute(1, 2, 0).numpy()
