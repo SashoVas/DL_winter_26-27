@@ -76,3 +76,42 @@ def load_cifar10_loaders(
     )
 
     return dataloader_train, dataloader_val, dataloader_test, dataset_train.classes
+
+
+def load_clouds_loaders(
+    batch_size: int,
+) -> tuple[data.DataLoader, data.DataLoader, data.DataLoader, list[str]]:
+    transform = v2.Compose(
+        [
+            v2.ToImage(),
+            v2.ToDtype(torch.float32, scale=True),
+            v2.Resize([64, 64], antialias=True),
+        ]
+    )
+    dataset_train = torchvision.datasets.ImageFolder(
+        root="DATA/clouds/clouds_train", transform=transform
+    )
+    dataset_test = torchvision.datasets.ImageFolder(
+        root="DATA/clouds/clouds_test", transform=transform
+    )
+    dataset_val, dataset_test = data.random_split(
+        dataset_test,
+        [0.5, 0.5],
+    )
+    dataloader_train = data.DataLoader(
+        dataset_train,
+        shuffle=True,
+        batch_size=batch_size,
+    )
+    dataloader_test = data.DataLoader(
+        dataset_test,
+        shuffle=False,
+        batch_size=batch_size,
+    )
+    dataloader_val = data.DataLoader(
+        dataset_val,
+        shuffle=False,
+        batch_size=batch_size,
+    )
+
+    return dataloader_train, dataloader_val, dataloader_test, dataset_train.classes

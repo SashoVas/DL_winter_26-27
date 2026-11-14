@@ -82,8 +82,7 @@ def train_model(
             running_loss += loss.item()
 
         train_losses.append(running_loss / len(train_dataloader))
-        test_f1_macro, test_f1_micro, test_loss = test_model(
-            model, test_dataloader)
+        test_f1_macro, test_f1_micro, test_loss = test_model(model, test_dataloader)
         test_losses.append(test_loss)
         test_f1_macro_scores.append(test_f1_macro)
         test_f1_micro_scores.append(test_f1_micro)
@@ -123,8 +122,7 @@ def save_to_csv(data: list[list], file_path: str) -> None:
 
 
 def main() -> int:
-    train_dataloader, test_dataloader, class_names = load_fashion_mnist_loaders(
-        32)
+    train_dataloader, test_dataloader, class_names = load_fashion_mnist_loaders(32)
     model = AlexNet(in_channels=1, num_classes=len(class_names))
     columns = [
         "Model",

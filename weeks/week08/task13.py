@@ -2,9 +2,9 @@ import csv
 
 import torch
 import torchvision
+from torch.utils.data import Subset
 from torchmetrics import F1Score
 from torchvision.datasets import CIFAR10
-from torch.utils.data import Subset
 
 from dl_lib.vision.alexnet import AlexNet
 from dl_lib.vision.functional import load_cifar10_loaders
@@ -83,8 +83,7 @@ def train_model(
             running_loss += loss.item()
 
         train_losses.append(running_loss / len(train_dataloader))
-        test_f1_macro, test_f1_micro, test_loss = test_model(
-            model, test_dataloader)
+        test_f1_macro, test_f1_micro, test_loss = test_model(model, test_dataloader)
         test_losses.append(test_loss)
         test_f1_macro_scores.append(test_f1_macro)
         test_f1_micro_scores.append(test_f1_micro)
@@ -128,7 +127,11 @@ class myModel(torch.nn.Module):
         super().__init__()
         self.features = torch.nn.Sequential(
             torch.nn.Conv2d(
-                in_channels=in_channels, out_channels=64, kernel_size=3, stride=2, padding=1
+                in_channels=in_channels,
+                out_channels=64,
+                kernel_size=3,
+                stride=2,
+                padding=1,
             ),
             torch.nn.ReLU(),
             torch.nn.MaxPool2d(kernel_size=3, stride=2, padding=0),
@@ -157,11 +160,13 @@ class myModel(torch.nn.Module):
         )
         self.classifier_first_part = torch.nn.Sequential(
             torch.nn.Linear(256 * 1 * 1, 256),
+            torch.nn.LayerNorm(256),
             torch.nn.ReLU(),
             torch.nn.Dropout(0.1),
         )
         self.classifier_second_part = torch.nn.Sequential(
             torch.nn.Linear(256, 256),
+            torch.nn.LayerNorm(256),
             torch.nn.ReLU(),
             torch.nn.Dropout(0.1),
         )
@@ -177,8 +182,9 @@ class myModel(torch.nn.Module):
 
 
 def main() -> int:
-    train_dataloader, val_dataloader, test_dataloader, class_names = load_cifar10_loaders(
-        32)
+    train_dataloader, val_dataloader, test_dataloader, class_names = (
+        load_cifar10_loaders(32)
+    )
     model = AlexNet(in_channels=3, num_classes=len(class_names))
     columns = [
         "Model",
@@ -191,13 +197,12 @@ def main() -> int:
     ]
     res_my = ["My Model"] + train_model(
         model,
-        torch.optim.AdamW(model.parameters(), lr=0.0001),
+        torch.optim.AdamW(model.parameters(), lr=0.00005),
         train_dataloader,
         val_dataloader,
         num_epochs=10,
         early_stopping_patience=2,
     )
-#
     alexnet_model = torchvision.models.alexnet(num_classes=10)
     alexnet_model.features[0] = torch.nn.Conv2d(
         in_channels=3,
@@ -208,28 +213,25 @@ def main() -> int:
     )
     res_torch = ["Torchvision AlexNet"] + train_model(
         alexnet_model,
-        torch.optim.AdamW(alexnet_model.parameters(), lr=0.0001),
+        torch.optim.AdamW(alexnet_model.parameters(), lr=0.00005),
         train_dataloader,
         val_dataloader,
         num_epochs=10,
         early_stopping_patience=2,
     )
-#
     alexnet_smaller = torchvision.models.alexnet(
         weights=None,
         num_classes=10,
     )
-#
     alexnet_smaller.features[0] = torch.nn.Conv2d(
         3, 64, kernel_size=11, stride=4, padding=2
     )
-#
     alexnet_smaller.classifier[1] = torch.nn.Linear(256 * 6 * 6, 128)
     alexnet_smaller.classifier[4] = torch.nn.Linear(128, 128)
     alexnet_smaller.classifier[6] = torch.nn.Linear(128, 10)
     res_alexnet_smaller = ["Torchvision AlexNet Smaller"] + train_model(
         alexnet_smaller,
-        torch.optim.AdamW(alexnet_smaller.parameters(), lr=0.0001),
+        torch.optim.AdamW(alexnet_smaller.parameters(), lr=0.00005),
         train_dataloader,
         val_dataloader,
         num_epochs=10,
@@ -239,19 +241,18 @@ def main() -> int:
     my_model = myModel(in_channels=3, num_classes=len(class_names))
     res_my_model = ["My Model"] + train_model(
         my_model,
-        torch.optim.AdamW(my_model.parameters(), lr=0.001),
+        torch.optim.AdamW(my_model.parameters(), lr=0.00005),
         train_dataloader,
         val_dataloader,
         num_epochs=10,
         early_stopping_patience=2,
     )
     save_to_csv(
-        [columns, res_my, res_torch, res_alexnet_smaller,
-         res_my_model], "results/week08/task13.csv"
+        [columns, res_my, res_torch, res_alexnet_smaller, res_my_model],
+        "results/week08/task13.csv",
     )
     print("Best model on test set:", test_model(model, test_dataloader))
     print("Best model on test set:", test_model(alexnet_model, test_dataloader))
-    print("Best model on test set:", test_model(
-        alexnet_smaller, test_dataloader))
+    print("Best model on test set:", test_model(alexnet_smaller, test_dataloader))
     print("Best model on test set:", test_model(my_model, test_dataloader))
     return 0
