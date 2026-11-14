@@ -1,88 +1,96 @@
-# import unittest
-#
-# import torch
-#
-# from dl_lib.vision.functional import load_fashion_mnist_loaders
-#
-#
-# class TestLoadFashionMnistLoaders(unittest.TestCase):
-#     def test_when_called_then_returns_ten_class_names(self):
-#         # Arrange
-#         expected_num_classes = 10
-#
-#         # Act
-#         _, _, class_names = load_fashion_mnist_loaders(batch_size=4)
-#
-#         # Assert
-#         self.assertEqual(len(class_names), expected_num_classes)
-#
-#     def test_when_called_then_a_train_batch_is_64x64x1(self):
-#         # Arrange
-#         batch_size = 4
-#         expected = torch.Size([batch_size, 1, 64, 64])
-#         train_loader, _, _ = load_fashion_mnist_loaders(batch_size=batch_size)
-#
-#         # Act
-#         images, _ = next(iter(train_loader))
-#
-#         # Assert
-#         self.assertEqual(images.shape, expected)
-#
-#     def test_when_called_then_a_test_batch_is_64x64x1(self):
-#         # Arrange
-#         batch_size = 4
-#         expected = torch.Size([batch_size, 1, 64, 64])
-#         _, test_loader, _ = load_fashion_mnist_loaders(batch_size=batch_size)
-#
-#         # Act
-#         images, _ = next(iter(test_loader))
-#
-#         # Assert
-#         self.assertEqual(images.shape, expected)
-#
-#     def test_when_called_then_train_and_test_are_the_standard_fashion_mnist_splits(self):
-#         # Arrange
-#         expected_train_size = 60000
-#         expected_test_size = 10000
-#
-#         # Act
-#         train_loader, test_loader, _ = load_fashion_mnist_loaders(batch_size=4)
-#
-#         # Assert
-#         self.assertEqual(len(train_loader.dataset), expected_train_size)
-#         self.assertEqual(len(test_loader.dataset), expected_test_size)
-#
-#     def test_when_called_then_class_names_match_the_datasets_label_order(self):
-#         # Arrange
-#         train_loader, _, class_names = load_fashion_mnist_loaders(batch_size=4)
-#
-#         # Act
-#         expected = train_loader.dataset.classes
-#
-#         # Assert
-#         self.assertEqual(class_names, expected)
-#
-#     def test_when_called_then_a_loaded_image_still_has_contrast(self):
-#         # Arrange
-#         min_std = 0.05
-#         train_loader, _, _ = load_fashion_mnist_loaders(batch_size=4)
-#
-#         # Act
-#         images, _ = next(iter(train_loader))
-#         stds = images.std(dim=(1, 2, 3))
-#
-#         # Assert
-#         self.assertTrue((stds > min_std).all())
-#
-#     def test_when_called_then_different_samples_in_a_batch_are_not_identical(self):
-#         # Arrange
-#         train_loader, _, _ = load_fashion_mnist_loaders(batch_size=4)
-#
-#         # Act
-#         images, _ = next(iter(train_loader))
-#
-#         # Assert
-#         self.assertFalse(torch.equal(images[0], images[1]))
+import unittest
+
+import torch
+from torchvision.datasets import FashionMNIST
+
+from dl_lib.vision.functional import load_fashion_mnist_loaders
+
+
+class TestLoadFashionMnistLoaders(unittest.TestCase):
+    def test_when_called_then_returns_ten_class_names(self):
+        # Arrange
+        expected_num_classes = 10
+
+        # Act
+        _, _, class_names = load_fashion_mnist_loaders(batch_size=4)
+
+        # Assert
+        self.assertEqual(len(class_names), expected_num_classes)
+
+    def test_when_called_then_a_train_batch_is_64x64x1(self):
+        # Arrange
+        batch_size = 4
+        expected = torch.Size([batch_size, 1, 64, 64])
+        train_loader, _, _ = load_fashion_mnist_loaders(batch_size=batch_size)
+
+        # Act
+        images, _ = next(iter(train_loader))
+
+        # Assert
+        self.assertEqual(images.shape, expected)
+
+    def test_when_called_then_a_test_batch_is_64x64x1(self):
+        # Arrange
+        batch_size = 4
+        expected = torch.Size([batch_size, 1, 64, 64])
+        _, test_loader, _ = load_fashion_mnist_loaders(batch_size=batch_size)
+
+        # Act
+        images, _ = next(iter(test_loader))
+
+        # Assert
+        self.assertEqual(images.shape, expected)
+
+    def test_when_called_then_train_and_test_are_the_standard_fashion_mnist_splits(
+        self,
+    ):
+        # Arrange
+        expected_train_size = 60000
+        expected_test_size = 10000
+
+        # Act
+        train_loader, test_loader, _ = load_fashion_mnist_loaders(batch_size=4)
+
+        # Assert
+        assert isinstance(train_loader.dataset, FashionMNIST)
+        assert isinstance(test_loader.dataset, FashionMNIST)
+        self.assertEqual(len(train_loader.dataset), expected_train_size)
+        self.assertEqual(len(test_loader.dataset), expected_test_size)
+
+    def test_when_called_then_class_names_match_the_datasets_label_order(self):
+        # Arrange
+        train_loader, _, class_names = load_fashion_mnist_loaders(batch_size=4)
+
+        # Act
+        assert isinstance(train_loader.dataset, FashionMNIST)
+
+        expected = train_loader.dataset.classes
+
+        # Assert
+
+        self.assertEqual(class_names, expected)
+
+    def test_when_called_then_a_loaded_image_still_has_contrast(self):
+        # Arrange
+        min_std = 0.05
+        train_loader, _, _ = load_fashion_mnist_loaders(batch_size=4)
+
+        # Act
+        images, _ = next(iter(train_loader))
+        stds = images.std(dim=(1, 2, 3))
+
+        # Assert
+        self.assertTrue((stds > min_std).all())
+
+    def test_when_called_then_different_samples_in_a_batch_are_not_identical(self):
+        # Arrange
+        train_loader, _, _ = load_fashion_mnist_loaders(batch_size=4)
+
+        # Act
+        images, _ = next(iter(train_loader))
+
+        # Assert
+        self.assertFalse(torch.equal(images[0], images[1]))
 
 
 # import unittest
