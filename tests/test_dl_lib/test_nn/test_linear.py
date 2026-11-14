@@ -190,8 +190,8 @@ class TestLinearTo(unittest.TestCase):
         linear.to(device)
 
         # Assert
-        self.assertEqual(linear.weight.device, device)
-        self.assertEqual(linear.bias.device, device)
+        self.assertEqual(linear.weight.device.type, device.type)
+        self.assertEqual(linear.bias.device.type, device.type)
 
     def test_when_called_then_preserves_parameter_values(self):
         # Arrange

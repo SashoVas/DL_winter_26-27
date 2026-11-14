@@ -1,0 +1,4 @@
+Model,Train Loss,Test Loss,Best Test F1 Macro,Best Test F1 Micro,Comment
+My Model,0.3191,0.3345,0.8609,0.8831,"This is our implementation of alexnet, it is smaller that the original but it outperforms it because of the low training epochs"
+Torchvision AlexNet,0.3332,0.3623,0.8529,0.8744,"This is the orignal implementation of alexnet, which has the most parametters compared to the other two. It performs worse than the other two, because of the low number of epochs"
+Torchvision AlexNet Smaller,0.3084,0.3317,0.8667,0.8849,"This is the original implementation of alexnet, but with reduced hidden size in the classification head. This reduction helps the model to generalize faster, which is why it outperforms the other two models"
