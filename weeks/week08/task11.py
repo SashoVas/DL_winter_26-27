@@ -1,11 +1,11 @@
+import copy
 import csv
 
 import torch
 import torchvision
-from torch.utils.data import Subset
 from torchmetrics import F1Score
 from torchvision.datasets import FashionMNIST
-import copy
+
 from dl_lib.vision.alexnet import AlexNet
 from dl_lib.vision.functional import load_fashion_mnist_loaders
 
@@ -14,12 +14,12 @@ def test_model(model, test_dataloader, num_classes=10):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.eval()
 
-    f1_score_macro = F1Score(num_classes=num_classes, average="macro", task="multiclass").to(
-        device
-    )
-    f1_score_micro = F1Score(num_classes=num_classes, average="micro", task="multiclass").to(
-        device
-    )
+    f1_score_macro = F1Score(
+        num_classes=num_classes, average="macro", task="multiclass"
+    ).to(device)
+    f1_score_micro = F1Score(
+        num_classes=num_classes, average="micro", task="multiclass"
+    ).to(device)
 
     total_loss = 0.0
     total_samples = 0
@@ -51,8 +51,7 @@ def train_model(
     early_stopping_patience: int = 3,
     num_classes: int = 10,
 ):
-    assert isinstance(train_dataloader.dataset,
-                      FashionMNIST)
+    assert isinstance(train_dataloader.dataset, FashionMNIST)
     assert isinstance(test_dataloader.dataset, FashionMNIST)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -89,7 +88,8 @@ def train_model(
 
         train_losses.append(running_loss / total_samples)
         test_f1_macro, test_f1_micro, test_loss = test_model(
-            model, test_dataloader, num_classes)
+            model, test_dataloader, num_classes
+        )
         test_losses.append(test_loss)
         test_f1_macro_scores.append(test_f1_macro)
         test_f1_micro_scores.append(test_f1_micro)
@@ -114,7 +114,7 @@ def train_model(
                 f"Early stopping triggered after {epoch + 1} epochs due to no improvement in test loss."
             )
             break
-    if best_model_state is not None:
+    if best_model_state is not None and hasattr(model, "load_state_dict"):
         model.load_state_dict(best_model_state)
     return [
         best_train_loss,
@@ -194,13 +194,10 @@ class myModel(torch.nn.Module):
 def main() -> int:
     in_channels = 1
     epochs = 5
-    train_dataloader, val_dataloader, test_dataloader, class_names = (
-        load_fashion_mnist_loaders(32)
-    )
+    train_dataloader, test_dataloader, class_names = load_fashion_mnist_loaders(32)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model = AlexNet(in_channels=in_channels,
-                    num_classes=len(class_names)).to(device)
+    model = AlexNet(in_channels=in_channels, num_classes=len(class_names)).to(device)
     columns = [
         "Model",
         "Train Loss",
@@ -214,13 +211,12 @@ def main() -> int:
         model,
         torch.optim.Adam(model.parameters(), lr=0.00005),
         train_dataloader,
-        val_dataloader,
+        test_dataloader,
         num_epochs=epochs,
         early_stopping_patience=2,
         num_classes=len(class_names),
     )
-    alexnet_model = torchvision.models.alexnet(
-        num_classes=len(class_names))
+    alexnet_model = torchvision.models.alexnet(num_classes=len(class_names))
     alexnet_model.features[0] = torch.nn.Conv2d(
         in_channels=in_channels,
         out_channels=64,
@@ -233,7 +229,7 @@ def main() -> int:
         alexnet_model,
         torch.optim.Adam(alexnet_model.parameters(), lr=0.00005),
         train_dataloader,
-        val_dataloader,
+        test_dataloader,
         num_epochs=epochs,
         early_stopping_patience=2,
         num_classes=len(class_names),
@@ -243,11 +239,7 @@ def main() -> int:
         num_classes=len(class_names),
     )
     alexnet_smaller.features[0] = torch.nn.Conv2d(
-        in_channels=in_channels,
-        out_channels=64,
-        kernel_size=11,
-        stride=4,
-        padding=2
+        in_channels=in_channels, out_channels=64, kernel_size=11, stride=4, padding=2
     )
     alexnet_smaller.classifier[1] = torch.nn.Linear(256 * 6 * 6, 128)
     alexnet_smaller.classifier[4] = torch.nn.Linear(128, 128)
@@ -257,19 +249,18 @@ def main() -> int:
         alexnet_smaller,
         torch.optim.Adam(alexnet_smaller.parameters(), lr=0.00005),
         train_dataloader,
-        val_dataloader,
+        test_dataloader,
         num_epochs=epochs,
         early_stopping_patience=2,
         num_classes=len(class_names),
     )
 
-    my_model = myModel(in_channels=in_channels,
-                       num_classes=len(class_names)).to(device)
+    my_model = myModel(in_channels=in_channels, num_classes=len(class_names)).to(device)
     res_my_model = ["My Model"] + train_model(
         my_model,
         torch.optim.Adam(my_model.parameters(), lr=0.00005),
         train_dataloader,
-        val_dataloader,
+        test_dataloader,
         num_epochs=epochs,
         early_stopping_patience=2,
         num_classes=len(class_names),
@@ -278,12 +269,5 @@ def main() -> int:
         [columns, res_my, res_torch, res_alexnet_smaller, res_my_model],
         "results/week08/task11.csv",
     )
-    print("Best model on test set:", test_model(
-        model, test_dataloader, num_classes=len(class_names)))
-    print("Best model on test set:", test_model(
-        alexnet_model, test_dataloader, num_classes=len(class_names)))
-    print("Best model on test set:", test_model(
-        alexnet_smaller, test_dataloader, num_classes=len(class_names)))
-    print("Best model on test set:", test_model(
-        my_model, test_dataloader, num_classes=len(class_names)))
+
     return 0
