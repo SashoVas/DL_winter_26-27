@@ -6,7 +6,7 @@ from dl_lib.nn.module import Module
 class Sequential(Module):
     def __init__(self, *args):
         super().__init__()
-        self.modules: list[Module] = list(args)
+        self.modules: list[Module | torch.nn.Module] = list(args)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         for module in self.modules:

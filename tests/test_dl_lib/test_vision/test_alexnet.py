@@ -233,8 +233,7 @@ class TestParameters(unittest.TestCase):
     ):
         # Arrange
         model = AlexNet()
-        expected = len(model.features.parameters()) + \
-            len(model.classifier.parameters())
+        expected = len(model.features.parameters()) + len(model.classifier.parameters())
 
         # Act
         actual = len(model.parameters())
