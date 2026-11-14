@@ -82,7 +82,8 @@ def train_model(
             running_loss += loss.item()
 
         train_losses.append(running_loss / len(train_dataloader))
-        test_f1_macro, test_f1_micro, test_loss = test_model(model, test_dataloader)
+        test_f1_macro, test_f1_micro, test_loss = test_model(
+            model, test_dataloader)
         test_losses.append(test_loss)
         test_f1_macro_scores.append(test_f1_macro)
         test_f1_micro_scores.append(test_f1_micro)
@@ -122,7 +123,8 @@ def save_to_csv(data: list[list], file_path: str) -> None:
 
 
 def main() -> int:
-    train_dataloader, test_dataloader, class_names = load_fashion_mnist_loaders(32)
+    train_dataloader, test_dataloader, class_names = load_fashion_mnist_loaders(
+        32)
     model = AlexNet(in_channels=1, num_classes=len(class_names))
     columns = [
         "Model",
@@ -164,12 +166,10 @@ def main() -> int:
         num_classes=10,
     )
 
-    # Adapt first convolution for grayscale images
     alexnet_smaller.features[0] = torch.nn.Conv2d(
         1, 64, kernel_size=11, stride=4, padding=2
     )
 
-    # Change classifier hidden dimensions
     alexnet_smaller.classifier[1] = torch.nn.Linear(256 * 6 * 6, 128)
     alexnet_smaller.classifier[4] = torch.nn.Linear(128, 128)
     alexnet_smaller.classifier[6] = torch.nn.Linear(128, 10)
