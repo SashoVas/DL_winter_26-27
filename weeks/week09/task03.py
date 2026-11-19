@@ -1,9 +1,8 @@
+import matplotlib.pyplot as plt
 import torch
 
-from dl_lib.nn.module import Module
-from dl_lib.vision.functional import compute_receptive_field, load_cifar10_loaders
+from dl_lib.vision.functional import load_cifar10_loaders
 from dl_lib.vision.vgg import Vgg
-import matplotlib.pyplot as plt
 
 
 def main() -> int:
@@ -27,7 +26,10 @@ def main() -> int:
         for layer in vgg_batched.features
         if isinstance(layer, torch.nn.Conv2d) and layer.weight.grad is not None
     ]
-
+    i = 1
+    for unbached, bached in zip(vgg_grads, vgg_batched_grads):
+        print(f"layer {i}: plain={unbached}  batch_norm={bached}")
+        i += 1
     plt.figure(figsize=(6, 4))
     plt.plot(
         range(1, len(vgg_grads) + 1), vgg_grads, marker="o", label="batch_norm=False"
