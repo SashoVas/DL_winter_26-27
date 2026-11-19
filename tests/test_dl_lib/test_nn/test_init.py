@@ -121,56 +121,56 @@ class TestKaimingUniform(unittest.TestCase):
         self.assertLessEqual(actual_max_abs, expected_bound + 1e-6)
 
 
-# class TestXavierNormal(unittest.TestCase):
-#     def test_when_called_then_mutates_the_tensor_in_place_and_returns_it(self):
-#         # Arrange
-#         torch.manual_seed(0)
-#         tensor = torch.empty(256, 256)
-#
-#         # Act
-#         actual = init.xavier_normal_(tensor)
-#
-#         # Assert
-#         self.assertIs(actual, tensor)
-#
-#     def test_when_called_then_std_matches_the_fan_in_fan_out_average_formula(self):
-#         # Arrange
-#         torch.manual_seed(0)
-#         tensor = torch.empty(1024, 256)
-#         fan_in, fan_out = 256, 1024
-#         expected_std = (2.0 / (fan_in + fan_out)) ** 0.5
-#
-#         # Act
-#         init.xavier_normal_(tensor)
-#         actual_std = tensor.std().item()
-#
-#         # Assert
-#         self.assertAlmostEqual(actual_std, expected_std, delta=0.05 * expected_std)
-#
-#
-# class TestXavierUniform(unittest.TestCase):
-#     def test_when_called_then_mutates_the_tensor_in_place_and_returns_it(self):
-#         # Arrange
-#         torch.manual_seed(0)
-#         tensor = torch.empty(256, 256)
-#
-#         # Act
-#         actual = init.xavier_uniform_(tensor)
-#
-#         # Assert
-#         self.assertIs(actual, tensor)
-#
-#     def test_when_called_then_every_value_is_within_the_fan_in_fan_out_bound(self):
-#         # Arrange
-#         torch.manual_seed(0)
-#         tensor = torch.empty(1024, 256)
-#         fan_in, fan_out = 256, 1024
-#         std = (2.0 / (fan_in + fan_out)) ** 0.5
-#         expected_bound = (3.0 ** 0.5) * std
-#
-#         # Act
-#         init.xavier_uniform_(tensor)
-#         actual_max_abs = tensor.abs().max().item()
-#
-#         # Assert
-#         self.assertLessEqual(actual_max_abs, expected_bound + 1e-6)
+class TestXavierNormal(unittest.TestCase):
+    def test_when_called_then_mutates_the_tensor_in_place_and_returns_it(self):
+        # Arrange
+        torch.manual_seed(0)
+        tensor = torch.empty(256, 256)
+
+        # Act
+        actual = init.xavier_normal_(tensor)
+
+        # Assert
+        self.assertIs(actual, tensor)
+
+    def test_when_called_then_std_matches_the_fan_in_fan_out_average_formula(self):
+        # Arrange
+        torch.manual_seed(0)
+        tensor = torch.empty(1024, 256)
+        fan_in, fan_out = 256, 1024
+        expected_std = (2.0 / (fan_in + fan_out)) ** 0.5
+
+        # Act
+        init.xavier_normal_(tensor)
+        actual_std = tensor.std().item()
+
+        # Assert
+        self.assertAlmostEqual(actual_std, expected_std, delta=0.05 * expected_std)
+
+
+class TestXavierUniform(unittest.TestCase):
+    def test_when_called_then_mutates_the_tensor_in_place_and_returns_it(self):
+        # Arrange
+        torch.manual_seed(0)
+        tensor = torch.empty(256, 256)
+
+        # Act
+        actual = init.xavier_uniform_(tensor)
+
+        # Assert
+        self.assertIs(actual, tensor)
+
+    def test_when_called_then_every_value_is_within_the_fan_in_fan_out_bound(self):
+        # Arrange
+        torch.manual_seed(0)
+        tensor = torch.empty(1024, 256)
+        fan_in, fan_out = 256, 1024
+        std = (2.0 / (fan_in + fan_out)) ** 0.5
+        expected_bound = (3.0**0.5) * std
+
+        # Act
+        init.xavier_uniform_(tensor)
+        actual_max_abs = tensor.abs().max().item()
+
+        # Assert
+        self.assertLessEqual(actual_max_abs, expected_bound + 1e-6)

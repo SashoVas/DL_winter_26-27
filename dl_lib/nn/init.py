@@ -38,7 +38,7 @@ def _calculate_fan_in_and_fan_out(tensor: torch.Tensor):
     )
 
 
-def calculate_std(
+def calculate_std_kaiming(
     tensor: torch.Tensor,
     mode: str = "fan_in",
     nonlinearity: Literal[
@@ -55,7 +55,7 @@ def calculate_std(
         "sigmoid",
         "tanh",
     ] = "leaky_relu",
-):
+) -> float:
     fan_in, fan_out = _calculate_fan_in_and_fan_out(tensor)
     fan = fan_in if mode == "fan_in" else fan_out
     gain = calculate_gain(nonlinearity)
@@ -79,8 +79,8 @@ def kaiming_normal_(
         "sigmoid",
         "tanh",
     ] = "leaky_relu",
-):
-    std = calculate_std(tensor, mode, nonlinearity)
+) -> torch.Tensor:
+    std = calculate_std_kaiming(tensor, mode, nonlinearity)
     with torch.no_grad():
         return tensor.normal_(0, std)
 
@@ -102,7 +102,73 @@ def kaiming_uniform_(
         "sigmoid",
         "tanh",
     ] = "leaky_relu",
-):
-    std = calculate_std(tensor, mode, nonlinearity)
+) -> torch.Tensor:
+    std = calculate_std_kaiming(tensor, mode, nonlinearity)
+    with torch.no_grad():
+        return tensor.uniform_(-std, std)
+
+
+def calculate_std_xavier(
+    tensor: torch.Tensor,
+    nonlinearity: Literal[
+        "conv1d",
+        "conv2d",
+        "conv3d",
+        "conv_transpose1d",
+        "conv_transpose2d",
+        "conv_transpose3d",
+        "leaky_relu",
+        "linear",
+        "relu",
+        "selu",
+        "sigmoid",
+        "tanh",
+    ] = "leaky_relu",
+) -> float:
+    fan_in, fan_out = _calculate_fan_in_and_fan_out(tensor)
+    gain = calculate_gain(nonlinearity)
+    return gain / math.sqrt(fan_in + fan_out)
+
+
+def xavier_normal_(
+    tensor: torch.Tensor,
+    nonlinearity: Literal[
+        "conv1d",
+        "conv2d",
+        "conv3d",
+        "conv_transpose1d",
+        "conv_transpose2d",
+        "conv_transpose3d",
+        "leaky_relu",
+        "linear",
+        "relu",
+        "selu",
+        "sigmoid",
+        "tanh",
+    ] = "leaky_relu",
+) -> torch.Tensor:
+    std = calculate_std_xavier(tensor, nonlinearity)
+    with torch.no_grad():
+        return tensor.normal_(0, std)
+
+
+def xavier_uniform_(
+    tensor: torch.Tensor,
+    nonlinearity: Literal[
+        "conv1d",
+        "conv2d",
+        "conv3d",
+        "conv_transpose1d",
+        "conv_transpose2d",
+        "conv_transpose3d",
+        "leaky_relu",
+        "linear",
+        "relu",
+        "selu",
+        "sigmoid",
+        "tanh",
+    ] = "leaky_relu",
+) -> torch.Tensor:
+    std = calculate_std_xavier(tensor, nonlinearity)
     with torch.no_grad():
         return tensor.uniform_(-std, std)
