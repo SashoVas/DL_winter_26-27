@@ -115,3 +115,12 @@ def load_clouds_loaders(
     )
 
     return dataloader_train, dataloader_val, dataloader_test, dataset_train.classes
+
+
+def compute_receptive_field(layers: list):
+    rec_field = 1
+    jumps = 1
+    for kernel_size, stride in layers:
+        rec_field += (kernel_size - 1) * jumps
+        jumps *= stride
+    return rec_field

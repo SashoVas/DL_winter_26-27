@@ -333,3 +333,19 @@ class TestLoadCloudsLoaders(unittest.TestCase):
 
         # Assert
         self.assertFalse(torch.equal(images[0], images[1]))
+
+
+from dl_lib.vision.functional import compute_receptive_field
+
+
+class TestComputeReceptiveField(unittest.TestCase):
+    def test_when_conv_conv_pool_conv_then_receptive_field_is_10(self):
+        # Arrange
+        layers = [(3, 1), (3, 1), (2, 2), (3, 1)]
+        expected = 10
+
+        # Act
+        result = compute_receptive_field(layers)
+
+        # Assert
+        self.assertEqual(result, expected)

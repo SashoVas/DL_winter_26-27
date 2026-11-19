@@ -9007,21 +9007,17 @@ class AlexNet(nn.Module):
             # we use 5e-4 / 5 to match the paper's coefficient of 1e-4
             nn.LocalResponseNorm(size=5, alpha=5e-4, beta=0.75, k=2),
             nn.MaxPool2d(kernel_size=3, stride=2),
-
             # (N, 96, 27, 27) -> (N, 256, 13, 13)
             nn.Conv2d(96, 256, kernel_size=5, padding=2, groups=2),
             nn.ReLU(),
             nn.LocalResponseNorm(size=5, alpha=5e-4, beta=0.75, k=2),
             nn.MaxPool2d(kernel_size=3, stride=2),
-
             # (N, 256, 13, 13) -> (N, 384, 13, 13)
             nn.Conv2d(256, 384, kernel_size=3, padding=1),
             nn.ReLU(),
-
             # (N, 384, 13, 13) -> (N, 384, 13, 13)
             nn.Conv2d(384, 384, kernel_size=3, padding=1, groups=2),
             nn.ReLU(),
-
             # (N, 384, 13, 13) -> (N, 256, 6, 6)
             nn.Conv2d(384, 256, kernel_size=3, padding=1, groups=2),
             nn.ReLU(),
@@ -9029,8 +9025,13 @@ class AlexNet(nn.Module):
         )
 
         self.classifier = nn.Sequential(
-            nn.Flatten(), nn.Linear(256 * 6 * 6, 4096), nn.ReLU(), nn.Dropout(p=0.5),
-            nn.Linear(4096, 4096), nn.ReLU(), nn.Dropout(p=0.5),
+            nn.Flatten(),
+            nn.Linear(256 * 6 * 6, 4096),
+            nn.ReLU(),
+            nn.Dropout(p=0.5),
+            nn.Linear(4096, 4096),
+            nn.ReLU(),
+            nn.Dropout(p=0.5),
             nn.Linear(4096, num_classes),
         )
 
@@ -9290,8 +9291,9 @@ Let's say we have this code:
 ```python
 import torch
 import matplotlib.pyplot as plt
-x = torch.randn(1000, 10) # 1000 samples, each with 10 features
-w = torch.randn(10, 200) # turn each of the 10 features into 200
+
+x = torch.randn(1000, 10)  # 1000 samples, each with 10 features
+w = torch.randn(10, 200)  # turn each of the 10 features into 200
 y = x @ w
 print(x.mean(), x.std())
 print(y.mean(), y.std())
@@ -9331,6 +9333,7 @@ Now, let's say we have this code:
 ```python
 import torch
 import matplotlib.pyplot as plt
+
 k = 5
 x = torch.randn(1000, 10)
 w = torch.randn(10, 200) * k
@@ -9365,6 +9368,7 @@ Now, we let's say we have this code:
 ```python
 import torch
 import matplotlib.pyplot as plt
+
 k = 0.05
 x = torch.randn(1000, 10)
 w = torch.randn(10, 200) * k
@@ -9430,6 +9434,7 @@ Implemented in PyTorch as [nn.init.kaiming_normal_](https://pytorch.org/docs/sta
 ```python
 import torch
 import matplotlib.pyplot as plt
+
 x = torch.randn(1000, 10)
 w = torch.randn(10, 200) / 10**0.5
 y = x @ w
@@ -10034,13 +10039,17 @@ In PyTorch:
 import torch
 from torch import nn
 
-x = torch.tensor([[
-    [[1., 3.], [5., 7.]],  # Channel 1
-    [[2., 4.], [6., 8.]],  # Channel 2
-]])  # Shape: (batch=1, channels=2, height=2, width=2)
+x = torch.tensor(
+    [
+        [
+            [[1.0, 3.0], [5.0, 7.0]],  # Channel 1
+            [[2.0, 4.0], [6.0, 8.0]],  # Channel 2
+        ]
+    ]
+)  # Shape: (batch=1, channels=2, height=2, width=2)
 
 pooled = nn.AdaptiveAvgPool2d(1)(x)  # Shape: (1, 2, 1, 1)
-output = pooled.flatten(1)          # Shape: (1, 2)
+output = pooled.flatten(1)  # Shape: (1, 2)
 
 print(output)  # tensor([[4., 5.]])
 ```

@@ -16,8 +16,7 @@ class TestLinearInit(unittest.TestCase):
         linear = Linear(in_features, out_features)
 
         # Then: weight and bias are shaped the same way
-        self.assertEqual(tuple(linear.weight.shape),
-                         tuple(reference.weight.shape))
+        self.assertEqual(tuple(linear.weight.shape), tuple(reference.weight.shape))
         self.assertEqual(tuple(linear.bias.shape), tuple(reference.bias.shape))
 
     def test_when_constructed_then_weight_and_bias_require_grad(self):
@@ -42,7 +41,9 @@ class TestLinearForward(unittest.TestCase):
         # Then: the output is shaped (out_features,)
         self.assertEqual(tuple(actual.shape), (3,))
 
-    def test_when_given_a_batched_input_then_output_shape_matches_batch_and_out_features(self):
+    def test_when_given_a_batched_input_then_output_shape_matches_batch_and_out_features(
+        self,
+    ):
         # Given: a Linear layer and a batch of input vectors
         linear = Linear(in_features=4, out_features=3)
         x = torch.randn(5, 4)
@@ -128,7 +129,9 @@ class TestLinearTo(unittest.TestCase):
         # Then: it returns the same instance
         self.assertIs(actual, linear)
 
-    def test_when_moved_to_cpu_then_weight_and_bias_keep_their_shape_and_requires_grad(self):
+    def test_when_moved_to_cpu_then_weight_and_bias_keep_their_shape_and_requires_grad(
+        self,
+    ):
         # Given: a Linear layer
         linear = Linear(in_features=4, out_features=3)
         expected_weight_shape = tuple(linear.weight.shape)
