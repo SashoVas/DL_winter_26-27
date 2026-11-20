@@ -1,265 +1,277 @@
-# import unittest
-#
-# import torch
-#
-# from dl_lib.vision.resnet import ResidualBlock, ResNet
-#
-#
-# class TestResidualBlockInit(unittest.TestCase):
-#     def test_when_in_and_out_channels_match_then_has_no_shortcut_projection(self):
-#         # Arrange
-#         block = ResidualBlock(in_channels=16, out_channels=16, stride=1)
-#
-#         # Act / Assert
-#         self.assertIsNone(block.shortcut_conv)
-#         self.assertIsNone(block.shortcut_bn)
-#
-#     def test_when_out_channels_differs_from_in_channels_then_has_a_shortcut_projection(self):
-#         # Arrange
-#         block = ResidualBlock(in_channels=16, out_channels=32, stride=2)
-#
-#         # Act / Assert
-#         self.assertIsInstance(block.shortcut_conv, torch.nn.Conv2d)
-#         self.assertIsInstance(block.shortcut_bn, torch.nn.BatchNorm2d)
-#
-#     def test_when_conv1_is_applied_then_output_channels_and_spatial_size_match_stride(self):
-#         # Arrange
-#         block = ResidualBlock(in_channels=16, out_channels=32, stride=2)
-#         x = torch.randn(2, 16, 8, 8)
-#         expected = torch.Size([2, 32, 4, 4])
-#
-#         # Act
-#         actual = block.conv1(x).shape
-#
-#         # Assert
-#         self.assertEqual(actual, expected)
-#
-#     def test_when_bn1_is_applied_to_conv1_output_then_shape_is_unchanged(self):
-#         # Arrange
-#         block = ResidualBlock(in_channels=16, out_channels=32, stride=2)
-#         x = torch.randn(2, 16, 8, 8)
-#         conv1_out = block.conv1(x)
-#
-#         # Act
-#         actual = block.bn1(conv1_out).shape
-#
-#         # Assert
-#         self.assertEqual(actual, conv1_out.shape)
-#
-#     def test_when_relu_is_applied_then_every_output_value_is_non_negative(self):
-#         # Arrange
-#         block = ResidualBlock(in_channels=16, out_channels=16, stride=1)
-#         x = torch.randn(4, 16, 8, 8)
-#
-#         # Act
-#         actual = block.relu(x)
-#
-#         # Assert
-#         self.assertTrue((actual >= 0).all())
-#
-#     def test_when_conv2_is_applied_then_spatial_size_and_channels_stay_the_same(self):
-#         # Arrange
-#         block = ResidualBlock(in_channels=16, out_channels=32, stride=2)
-#         x = torch.randn(2, 32, 4, 4)
-#         expected = torch.Size([2, 32, 4, 4])
-#
-#         # Act
-#         actual = block.conv2(x).shape
-#
-#         # Assert
-#         self.assertEqual(actual, expected)
-#
-#     def test_when_shortcut_conv_is_applied_then_output_matches_the_main_paths_shape(self):
-#         # Arrange
-#         block = ResidualBlock(in_channels=16, out_channels=32, stride=2)
-#         x = torch.randn(2, 16, 8, 8)
-#         expected = torch.Size([2, 32, 4, 4])
-#
-#         # Act
-#         actual = block.shortcut_conv(x).shape
-#
-#         # Assert
-#         self.assertEqual(actual, expected)
-#
-#
-# class TestResidualBlockLayers(unittest.TestCase):
-#     def test_when_no_shortcut_then_returns_the_main_paths_layers_in_order(self):
-#         # Arrange
-#         block = ResidualBlock(in_channels=16, out_channels=16, stride=1)
-#         expected = [block.conv1, block.bn1, block.relu, block.conv2, block.bn2]
-#
-#         # Act
-#         actual = block._layers()
-#
-#         # Assert
-#         self.assertEqual(actual, expected)
-#
-#     def test_when_projecting_then_also_appends_the_shortcuts_layers(self):
-#         # Arrange
-#         block = ResidualBlock(in_channels=16, out_channels=32, stride=2)
-#         expected = [
-#             block.conv1,
-#             block.bn1,
-#             block.relu,
-#             block.conv2,
-#             block.bn2,
-#             block.shortcut_conv,
-#             block.shortcut_bn,
-#         ]
-#
-#         # Act
-#         actual = block._layers()
-#
-#         # Assert
-#         self.assertEqual(actual, expected)
-#
-#
-# class TestResidualBlockForward(unittest.TestCase):
-#     def test_when_in_and_out_channels_match_then_output_shape_equals_input_shape(self):
-#         # Arrange
-#         block = ResidualBlock(in_channels=16, out_channels=16, stride=1)
-#         x = torch.randn(2, 16, 8, 8)
-#         expected = x.shape
-#
-#         # Act
-#         actual = block(x).shape
-#
-#         # Assert
-#         self.assertEqual(actual, expected)
-#
-#     def test_when_projecting_then_output_shape_matches_the_new_channels_and_spatial_size(self):
-#         # Arrange
-#         block = ResidualBlock(in_channels=16, out_channels=32, stride=2)
-#         x = torch.randn(2, 16, 8, 8)
-#         expected = torch.Size([2, 32, 4, 4])
-#
-#         # Act
-#         actual = block(x).shape
-#
-#         # Assert
-#         self.assertEqual(actual, expected)
-#
-#
-# class TestResidualBlockParameters(unittest.TestCase):
-#     def test_when_no_shortcut_then_returns_parameters_from_the_main_path_only(self):
-#         # Arrange
-#         block = ResidualBlock(in_channels=16, out_channels=16, stride=1)
-#         expected = (
-#             len(list(block.conv1.parameters()))
-#             + len(list(block.bn1.parameters()))
-#             + len(list(block.conv2.parameters()))
-#             + len(list(block.bn2.parameters()))
-#         )
-#
-#         # Act
-#         actual = len(block.parameters())
-#
-#         # Assert
-#         self.assertEqual(actual, expected)
-#
-#     def test_when_projecting_then_also_includes_the_shortcuts_parameters(self):
-#         # Arrange
-#         block = ResidualBlock(in_channels=16, out_channels=32, stride=2)
-#         main_path_count = (
-#             len(list(block.conv1.parameters()))
-#             + len(list(block.bn1.parameters()))
-#             + len(list(block.conv2.parameters()))
-#             + len(list(block.bn2.parameters()))
-#         )
-#         expected = (
-#             main_path_count
-#             + len(list(block.shortcut_conv.parameters()))
-#             + len(list(block.shortcut_bn.parameters()))
-#         )
-#
-#         # Act
-#         actual = len(block.parameters())
-#
-#         # Assert
-#         self.assertEqual(actual, expected)
-#
-#
-# class TestResidualBlockTrain(unittest.TestCase):
-#     def test_when_called_after_eval_then_sets_every_sublayer_to_training_mode(self):
-#         # Arrange
-#         block = ResidualBlock(in_channels=16, out_channels=32, stride=2)
-#         block.eval()
-#
-#         # Act
-#         block.train()
-#
-#         # Assert
-#         self.assertTrue(block.training)
-#         self.assertTrue(block.conv1.training)
-#         self.assertTrue(block.bn1.training)
-#         self.assertTrue(block.conv2.training)
-#         self.assertTrue(block.bn2.training)
-#         self.assertTrue(block.shortcut_conv.training)
-#         self.assertTrue(block.shortcut_bn.training)
-#
-#     def test_when_called_then_returns_the_block_itself(self):
-#         # Arrange
-#         block = ResidualBlock(in_channels=16, out_channels=16, stride=1)
-#
-#         # Act
-#         actual = block.train()
-#
-#         # Assert
-#         self.assertIs(actual, block)
-#
-#
-# class TestResidualBlockEval(unittest.TestCase):
-#     def test_when_called_then_sets_every_sublayer_to_evaluation_mode(self):
-#         # Arrange
-#         block = ResidualBlock(in_channels=16, out_channels=32, stride=2)
-#
-#         # Act
-#         block.eval()
-#
-#         # Assert
-#         self.assertFalse(block.training)
-#         self.assertFalse(block.conv1.training)
-#         self.assertFalse(block.bn1.training)
-#         self.assertFalse(block.conv2.training)
-#         self.assertFalse(block.bn2.training)
-#         self.assertFalse(block.shortcut_conv.training)
-#         self.assertFalse(block.shortcut_bn.training)
-#
-#     def test_when_called_then_returns_the_block_itself(self):
-#         # Arrange
-#         block = ResidualBlock(in_channels=16, out_channels=16, stride=1)
-#
-#         # Act
-#         actual = block.eval()
-#
-#         # Assert
-#         self.assertIs(actual, block)
-#
-#
-# class TestResidualBlockTo(unittest.TestCase):
-#     def test_when_called_with_cpu_then_every_parameter_stays_on_cpu(self):
-#         # Arrange
-#         block = ResidualBlock(in_channels=16, out_channels=32, stride=2)
-#         expected = torch.device("cpu")
-#
-#         # Act
-#         block.to(expected)
-#
-#         # Assert
-#         for param in block.parameters():
-#             self.assertEqual(param.device, expected)
-#
-#     def test_when_called_then_returns_the_block_itself(self):
-#         # Arrange
-#         block = ResidualBlock(in_channels=16, out_channels=16, stride=1)
-#
-#         # Act
-#         actual = block.to(torch.device("cpu"))
-#
-#         # Assert
-#         self.assertIs(actual, block)
-#
-#
+import unittest
+
+import torch
+
+from dl_lib.vision.resnet import ResidualBlock  # , ResNet
+
+
+class TestResidualBlockInit(unittest.TestCase):
+    def test_when_in_and_out_channels_match_then_has_no_shortcut_projection(self):
+        # Arrange
+        block = ResidualBlock(in_channels=16, out_channels=16, stride=1)
+
+        # Act / Assert
+        self.assertIsNone(block.shortcut_conv)
+        self.assertIsNone(block.shortcut_bn)
+
+    def test_when_out_channels_differs_from_in_channels_then_has_a_shortcut_projection(
+        self,
+    ):
+        # Arrange
+        block = ResidualBlock(in_channels=16, out_channels=32, stride=2)
+
+        # Act / Assert
+        self.assertIsInstance(block.shortcut_conv, torch.nn.Conv2d)
+        self.assertIsInstance(block.shortcut_bn, torch.nn.BatchNorm2d)
+
+    def test_when_conv1_is_applied_then_output_channels_and_spatial_size_match_stride(
+        self,
+    ):
+        # Arrange
+        block = ResidualBlock(in_channels=16, out_channels=32, stride=2)
+        x = torch.randn(2, 16, 8, 8)
+        expected = torch.Size([2, 32, 4, 4])
+
+        # Act
+        actual = block.conv1(x).shape
+
+        # Assert
+        self.assertEqual(actual, expected)
+
+    def test_when_bn1_is_applied_to_conv1_output_then_shape_is_unchanged(self):
+        # Arrange
+        block = ResidualBlock(in_channels=16, out_channels=32, stride=2)
+        x = torch.randn(2, 16, 8, 8)
+        conv1_out = block.conv1(x)
+
+        # Act
+        actual = block.bn1(conv1_out).shape
+
+        # Assert
+        self.assertEqual(actual, conv1_out.shape)
+
+    def test_when_relu_is_applied_then_every_output_value_is_non_negative(self):
+        # Arrange
+        block = ResidualBlock(in_channels=16, out_channels=16, stride=1)
+        x = torch.randn(4, 16, 8, 8)
+
+        # Act
+        actual = block.relu(x)
+
+        # Assert
+        self.assertTrue((actual >= 0).all())
+
+    def test_when_conv2_is_applied_then_spatial_size_and_channels_stay_the_same(self):
+        # Arrange
+        block = ResidualBlock(in_channels=16, out_channels=32, stride=2)
+        x = torch.randn(2, 32, 4, 4)
+        expected = torch.Size([2, 32, 4, 4])
+
+        # Act
+        actual = block.conv2(x).shape
+
+        # Assert
+        self.assertEqual(actual, expected)
+
+    def test_when_shortcut_conv_is_applied_then_output_matches_the_main_paths_shape(
+        self,
+    ):
+        # Arrange
+        block = ResidualBlock(in_channels=16, out_channels=32, stride=2)
+        x = torch.randn(2, 16, 8, 8)
+        expected = torch.Size([2, 32, 4, 4])
+        assert block.shortcut_conv is not None
+        # Act
+        actual = block.shortcut_conv(x).shape
+
+        # Assert
+        self.assertEqual(actual, expected)
+
+
+class TestResidualBlockLayers(unittest.TestCase):
+    def test_when_no_shortcut_then_returns_the_main_paths_layers_in_order(self):
+        # Arrange
+        block = ResidualBlock(in_channels=16, out_channels=16, stride=1)
+        expected = [block.conv1, block.bn1, block.relu, block.conv2, block.bn2]
+
+        # Act
+        actual = block._layers()
+
+        # Assert
+        self.assertEqual(actual, expected)
+
+    def test_when_projecting_then_also_appends_the_shortcuts_layers(self):
+        # Arrange
+        block = ResidualBlock(in_channels=16, out_channels=32, stride=2)
+        expected = [
+            block.conv1,
+            block.bn1,
+            block.relu,
+            block.conv2,
+            block.bn2,
+            block.shortcut_conv,
+            block.shortcut_bn,
+        ]
+
+        # Act
+        actual = block._layers()
+
+        # Assert
+        self.assertEqual(actual, expected)
+
+
+class TestResidualBlockForward(unittest.TestCase):
+    def test_when_in_and_out_channels_match_then_output_shape_equals_input_shape(self):
+        # Arrange
+        block = ResidualBlock(in_channels=16, out_channels=16, stride=1)
+        x = torch.randn(2, 16, 8, 8)
+        expected = x.shape
+
+        # Act
+        actual = block(x).shape
+
+        # Assert
+        self.assertEqual(actual, expected)
+
+    def test_when_projecting_then_output_shape_matches_the_new_channels_and_spatial_size(
+        self,
+    ):
+        # Arrange
+        block = ResidualBlock(in_channels=16, out_channels=32, stride=2)
+        x = torch.randn(2, 16, 8, 8)
+        expected = torch.Size([2, 32, 4, 4])
+
+        # Act
+        actual = block(x).shape
+
+        # Assert
+        self.assertEqual(actual, expected)
+
+
+class TestResidualBlockParameters(unittest.TestCase):
+    def test_when_no_shortcut_then_returns_parameters_from_the_main_path_only(self):
+        # Arrange
+        block = ResidualBlock(in_channels=16, out_channels=16, stride=1)
+        expected = (
+            len(list(block.conv1.parameters()))
+            + len(list(block.bn1.parameters()))
+            + len(list(block.conv2.parameters()))
+            + len(list(block.bn2.parameters()))
+        )
+
+        # Act
+        actual = len(block.parameters())
+
+        # Assert
+        self.assertEqual(actual, expected)
+
+    def test_when_projecting_then_also_includes_the_shortcuts_parameters(self):
+        # Arrange
+        block = ResidualBlock(in_channels=16, out_channels=32, stride=2)
+        main_path_count = (
+            len(list(block.conv1.parameters()))
+            + len(list(block.bn1.parameters()))
+            + len(list(block.conv2.parameters()))
+            + len(list(block.bn2.parameters()))
+        )
+        assert block.shortcut_conv is not None
+        assert block.shortcut_bn is not None
+        expected = (
+            main_path_count
+            + len(list(block.shortcut_conv.parameters()))
+            + len(list(block.shortcut_bn.parameters()))
+        )
+
+        # Act
+        actual = len(block.parameters())
+
+        # Assert
+        self.assertEqual(actual, expected)
+
+
+class TestResidualBlockTrain(unittest.TestCase):
+    def test_when_called_after_eval_then_sets_every_sublayer_to_training_mode(self):
+        # Arrange
+        block = ResidualBlock(in_channels=16, out_channels=32, stride=2)
+        block.eval()
+
+        # Act
+        block.train()
+        assert block.shortcut_conv is not None
+        assert block.shortcut_bn is not None
+        # Assert
+        self.assertTrue(block.training)
+        self.assertTrue(block.conv1.training)
+        self.assertTrue(block.bn1.training)
+        self.assertTrue(block.conv2.training)
+        self.assertTrue(block.bn2.training)
+        self.assertTrue(block.shortcut_conv.training)
+        self.assertTrue(block.shortcut_bn.training)
+
+    def test_when_called_then_returns_the_block_itself(self):
+        # Arrange
+        block = ResidualBlock(in_channels=16, out_channels=16, stride=1)
+
+        # Act
+        actual = block.train()
+
+        # Assert
+        self.assertIs(actual, block)
+
+
+class TestResidualBlockEval(unittest.TestCase):
+    def test_when_called_then_sets_every_sublayer_to_evaluation_mode(self):
+        # Arrange
+        block = ResidualBlock(in_channels=16, out_channels=32, stride=2)
+
+        # Act
+        block.eval()
+        assert block.shortcut_conv is not None
+        assert block.shortcut_bn is not None
+        # Assert
+        self.assertFalse(block.training)
+        self.assertFalse(block.conv1.training)
+        self.assertFalse(block.bn1.training)
+        self.assertFalse(block.conv2.training)
+        self.assertFalse(block.bn2.training)
+        self.assertFalse(block.shortcut_conv.training)
+        self.assertFalse(block.shortcut_bn.training)
+
+    def test_when_called_then_returns_the_block_itself(self):
+        # Arrange
+        block = ResidualBlock(in_channels=16, out_channels=16, stride=1)
+
+        # Act
+        actual = block.eval()
+
+        # Assert
+        self.assertIs(actual, block)
+
+
+class TestResidualBlockTo(unittest.TestCase):
+    def test_when_called_with_cpu_then_every_parameter_stays_on_cpu(self):
+        # Arrange
+        block = ResidualBlock(in_channels=16, out_channels=32, stride=2)
+        expected = torch.device("cpu")
+
+        # Act
+        block.to(expected)
+
+        # Assert
+        for param in block.parameters():
+            self.assertEqual(param.device, expected)
+
+    def test_when_called_then_returns_the_block_itself(self):
+        # Arrange
+        block = ResidualBlock(in_channels=16, out_channels=16, stride=1)
+
+        # Act
+        actual = block.to(torch.device("cpu"))
+
+        # Assert
+        self.assertIs(actual, block)
+
+
 # class TestResNetInit(unittest.TestCase):
 #     def test_when_depth_does_not_satisfy_six_n_plus_two_then_raises_value_error(self):
 #         # Act / Assert
