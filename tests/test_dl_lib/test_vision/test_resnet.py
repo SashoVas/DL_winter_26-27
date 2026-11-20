@@ -2,7 +2,7 @@ import unittest
 
 import torch
 
-from dl_lib.vision.resnet import ResidualBlock  # , ResNet
+from dl_lib.vision.resnet import ResidualBlock, ResNet
 
 
 class TestResidualBlockInit(unittest.TestCase):
@@ -272,261 +272,271 @@ class TestResidualBlockTo(unittest.TestCase):
         self.assertIs(actual, block)
 
 
-# class TestResNetInit(unittest.TestCase):
-#     def test_when_depth_does_not_satisfy_six_n_plus_two_then_raises_value_error(self):
-#         # Act / Assert
-#         with self.assertRaises(ValueError):
-#             ResNet(depth=21)
-#
-#     def test_when_global_avg_pool_is_true_then_head_starts_with_an_adaptive_avg_pool(self):
-#         # Arrange
-#         model = ResNet(depth=20, global_avg_pool=True)
-#
-#         # Act
-#         actual = type(model.head[0])
-#
-#         # Assert
-#         self.assertEqual(actual, torch.nn.AdaptiveAvgPool2d)
-#
-#     def test_when_global_avg_pool_is_false_then_head_has_far_more_parameters(self):
-#         # Arrange
-#         model_with_gap = ResNet(depth=20, global_avg_pool=True)
-#         model_without_gap = ResNet(depth=20, global_avg_pool=False)
-#
-#         # Act
-#         gap_head_params = sum(p.numel() for p in model_with_gap.head.parameters())
-#         flatten_head_params = sum(p.numel() for p in model_without_gap.head.parameters())
-#
-#         # Assert
-#         self.assertLess(gap_head_params, flatten_head_params)
-#
-#     def test_when_constructed_then_each_stage_has_the_expected_number_of_blocks(self):
-#         # Arrange
-#         model = ResNet(depth=20)
-#         expected_blocks_per_stage = 3
-#
-#         # Act / Assert
-#         self.assertEqual(len(model.stage1), expected_blocks_per_stage)
-#         self.assertEqual(len(model.stage2), expected_blocks_per_stage)
-#         self.assertEqual(len(model.stage3), expected_blocks_per_stage)
-#
-#     def test_when_constructed_then_defaults_to_training_mode(self):
-#         # Arrange
-#         model = ResNet(depth=20)
-#
-#         # Act
-#         actual = model.training
-#
-#         # Assert
-#         self.assertTrue(actual)
-#
-#
-# class TestResNetMakeStage(unittest.TestCase):
-#     def test_when_called_then_returns_the_requested_number_of_blocks(self):
-#         # Arrange
-#         expected = 3
-#
-#         # Act
-#         actual = ResNet._make_stage(16, 32, num_blocks=3, stride=2)
-#
-#         # Assert
-#         self.assertEqual(len(actual), expected)
-#
-#     def test_when_called_then_only_the_first_block_projects_and_the_rest_keep_shape(self):
-#         # Arrange
-#         blocks = ResNet._make_stage(16, 32, num_blocks=3, stride=2)
-#
-#         # Act / Assert
-#         self.assertIsNotNone(blocks[0].shortcut_conv)
-#         self.assertIsNone(blocks[1].shortcut_conv)
-#         self.assertIsNone(blocks[2].shortcut_conv)
-#
-#
-# class TestResNetStages(unittest.TestCase):
-#     def test_when_called_then_returns_stage1_stage2_and_stage3_in_order(self):
-#         # Arrange
-#         model = ResNet(depth=20)
-#         expected = [model.stage1, model.stage2, model.stage3]
-#
-#         # Act
-#         actual = model._stages()
-#
-#         # Assert
-#         self.assertEqual(actual, expected)
-#
-#
-# class TestResNetTo(unittest.TestCase):
-#     def test_when_called_with_cpu_then_every_parameter_stays_on_cpu(self):
-#         # Arrange
-#         model = ResNet(depth=20)
-#         expected = torch.device("cpu")
-#
-#         # Act
-#         model.to(expected)
-#
-#         # Assert
-#         for param in model.parameters():
-#             self.assertEqual(param.device, expected)
-#
-#     def test_when_called_then_returns_the_model_itself(self):
-#         # Arrange
-#         model = ResNet(depth=20)
-#
-#         # Act
-#         actual = model.to(torch.device("cpu"))
-#
-#         # Assert
-#         self.assertIs(actual, model)
-#
-#
-# class TestResNetForward(unittest.TestCase):
-#     def test_when_called_then_output_shape_matches_batch_size_and_num_classes(self):
-#         # Arrange
-#         model = ResNet(depth=20, num_classes=10)
-#         x = torch.randn(4, 3, 64, 64)
-#         expected = torch.Size([4, 10])
-#
-#         # Act
-#         actual = model(x).shape
-#
-#         # Assert
-#         self.assertEqual(actual, expected)
-#
-#     def test_when_called_then_output_is_finite(self):
-#         # Arrange
-#         torch.manual_seed(0)
-#         model = ResNet(depth=20)
-#         x = torch.randn(4, 3, 64, 64)
-#
-#         # Act
-#         actual = model(x)
-#
-#         # Assert
-#         self.assertFalse(torch.isnan(actual).any())
-#         self.assertTrue(torch.isfinite(actual).all())
-#
-#     def test_when_evaluating_then_two_forward_passes_of_the_same_input_are_identical(self):
-#         # Arrange
-#         torch.manual_seed(0)
-#         model = ResNet(depth=20)
-#         model.eval()
-#         x = torch.randn(2, 3, 64, 64)
-#
-#         # Act
-#         first = model(x)
-#         second = model(x)
-#
-#         # Assert
-#         self.assertTrue(torch.equal(first, second))
-#
-#     def test_when_backward_is_called_then_every_parameter_gets_a_finite_gradient(self):
-#         # Arrange
-#         torch.manual_seed(0)
-#         model = ResNet(depth=20, num_classes=10)
-#         x = torch.randn(2, 3, 64, 64)
-#         y = torch.tensor([0, 1])
-#         loss_fn = torch.nn.CrossEntropyLoss()
-#
-#         # Act
-#         loss = loss_fn(model(x), y)
-#         loss.backward()
-#
-#         # Assert
-#         total_grad_magnitude = 0.0
-#         for param in model.parameters():
-#             self.assertIsNotNone(param.grad)
-#             self.assertFalse(torch.isnan(param.grad).any())
-#             total_grad_magnitude += param.grad.abs().sum().item()
-#         self.assertGreater(total_grad_magnitude, 0.0)
-#
-#     def test_when_trained_for_a_few_steps_then_loss_decreases(self):
-#         # Arrange
-#         torch.manual_seed(0)
-#         model = ResNet(depth=20, num_classes=2)
-#         x = torch.randn(8, 3, 64, 64)
-#         y = torch.randint(0, 2, (8,))
-#         loss_fn = torch.nn.CrossEntropyLoss()
-#         optimizer = torch.optim.AdamW(model.parameters(), lr=1e-2)
-#
-#         initial_loss = loss_fn(model(x), y).item()
-#
-#         # Act
-#         for _ in range(20):
-#             optimizer.zero_grad()
-#             loss = loss_fn(model(x), y)
-#             loss.backward()
-#             optimizer.step()
-#         final_loss = loss_fn(model(x), y).item()
-#
-#         # Assert
-#         self.assertFalse(torch.isnan(torch.tensor(final_loss)))
-#         self.assertLess(final_loss, initial_loss)
-#
-#
-# class TestResNetTrain(unittest.TestCase):
-#     def test_when_called_after_eval_then_sets_stem_stages_and_head_to_training_mode(self):
-#         # Arrange
-#         model = ResNet(depth=20)
-#         model.eval()
-#
-#         # Act
-#         model.train()
-#
-#         # Assert
-#         self.assertTrue(model.training)
-#         self.assertTrue(model.stem.training)
-#         self.assertTrue(model.stage1[0].training)
-#         self.assertTrue(model.head.training)
-#
-#     def test_when_called_then_returns_the_model_itself(self):
-#         # Arrange
-#         model = ResNet(depth=20)
-#
-#         # Act
-#         actual = model.train()
-#
-#         # Assert
-#         self.assertIs(actual, model)
-#
-#
-# class TestResNetEval(unittest.TestCase):
-#     def test_when_called_then_sets_stem_stages_and_head_to_evaluation_mode(self):
-#         # Arrange
-#         model = ResNet(depth=20)
-#
-#         # Act
-#         model.eval()
-#
-#         # Assert
-#         self.assertFalse(model.training)
-#         self.assertFalse(model.stem.training)
-#         self.assertFalse(model.stage1[0].training)
-#         self.assertFalse(model.head.training)
-#
-#     def test_when_called_then_returns_the_model_itself(self):
-#         # Arrange
-#         model = ResNet(depth=20)
-#
-#         # Act
-#         actual = model.eval()
-#
-#         # Assert
-#         self.assertIs(actual, model)
-#
-#
-# class TestResNetParameters(unittest.TestCase):
-#     def test_when_called_then_returns_every_parameter_from_stem_stages_and_head(self):
-#         # Arrange
-#         model = ResNet(depth=20)
-#         expected = len(list(model.stem.parameters()))
-#         for stage in (model.stage1, model.stage2, model.stage3):
-#             for block in stage:
-#                 expected += len(block.parameters())
-#         expected += len(list(model.head.parameters()))
-#
-#         # Act
-#         actual = len(model.parameters())
-#
-#         # Assert
-#         self.assertEqual(actual, expected)
-#         self.assertGreater(actual, 0)
+class TestResNetInit(unittest.TestCase):
+    def test_when_depth_does_not_satisfy_six_n_plus_two_then_raises_value_error(self):
+        # Act / Assert
+        with self.assertRaises(ValueError):
+            ResNet(depth=21)
+
+    def test_when_global_avg_pool_is_true_then_head_starts_with_an_adaptive_avg_pool(
+        self,
+    ):
+        # Arrange
+        model = ResNet(depth=20, global_avg_pool=True)
+
+        # Act
+        actual = type(model.head[0])
+
+        # Assert
+        self.assertEqual(actual, torch.nn.AdaptiveAvgPool2d)
+
+    def test_when_global_avg_pool_is_false_then_head_has_far_more_parameters(self):
+        # Arrange
+        model_with_gap = ResNet(depth=20, global_avg_pool=True)
+        model_without_gap = ResNet(depth=20, global_avg_pool=False)
+
+        # Act
+        gap_head_params = sum(p.numel() for p in model_with_gap.head.parameters())
+        flatten_head_params = sum(
+            p.numel() for p in model_without_gap.head.parameters()
+        )
+
+        # Assert
+        self.assertLess(gap_head_params, flatten_head_params)
+
+    def test_when_constructed_then_each_stage_has_the_expected_number_of_blocks(self):
+        # Arrange
+        model = ResNet(depth=20)
+        expected_blocks_per_stage = 3
+
+        # Act / Assert
+        self.assertEqual(len(model.stage1), expected_blocks_per_stage)
+        self.assertEqual(len(model.stage2), expected_blocks_per_stage)
+        self.assertEqual(len(model.stage3), expected_blocks_per_stage)
+
+    def test_when_constructed_then_defaults_to_training_mode(self):
+        # Arrange
+        model = ResNet(depth=20)
+
+        # Act
+        actual = model.training
+
+        # Assert
+        self.assertTrue(actual)
+
+
+class TestResNetMakeStage(unittest.TestCase):
+    def test_when_called_then_returns_the_requested_number_of_blocks(self):
+        # Arrange
+        expected = 3
+
+        # Act
+        actual = ResNet._make_stage(16, 32, num_blocks=3, stride=2)
+
+        # Assert
+        self.assertEqual(len(actual), expected)
+
+    def test_when_called_then_only_the_first_block_projects_and_the_rest_keep_shape(
+        self,
+    ):
+        # Arrange
+        blocks = ResNet._make_stage(16, 32, num_blocks=3, stride=2)
+
+        # Act / Assert
+        self.assertIsNotNone(blocks[0].shortcut_conv)
+        self.assertIsNone(blocks[1].shortcut_conv)
+        self.assertIsNone(blocks[2].shortcut_conv)
+
+
+class TestResNetStages(unittest.TestCase):
+    def test_when_called_then_returns_stage1_stage2_and_stage3_in_order(self):
+        # Arrange
+        model = ResNet(depth=20)
+        expected = [model.stage1, model.stage2, model.stage3]
+
+        # Act
+        actual = model._stages()
+
+        # Assert
+        self.assertEqual(actual, expected)
+
+
+class TestResNetTo(unittest.TestCase):
+    def test_when_called_with_cpu_then_every_parameter_stays_on_cpu(self):
+        # Arrange
+        model = ResNet(depth=20)
+        expected = torch.device("cpu")
+
+        # Act
+        model.to(expected)
+
+        # Assert
+        for param in model.parameters():
+            self.assertEqual(param.device, expected)
+
+    def test_when_called_then_returns_the_model_itself(self):
+        # Arrange
+        model = ResNet(depth=20)
+
+        # Act
+        actual = model.to(torch.device("cpu"))
+
+        # Assert
+        self.assertIs(actual, model)
+
+
+class TestResNetForward(unittest.TestCase):
+    def test_when_called_then_output_shape_matches_batch_size_and_num_classes(self):
+        # Arrange
+        model = ResNet(depth=20, num_classes=10)
+        x = torch.randn(4, 3, 64, 64)
+        expected = torch.Size([4, 10])
+
+        # Act
+        actual = model(x).shape
+
+        # Assert
+        self.assertEqual(actual, expected)
+
+    def test_when_called_then_output_is_finite(self):
+        # Arrange
+        torch.manual_seed(0)
+        model = ResNet(depth=20)
+        x = torch.randn(4, 3, 64, 64)
+
+        # Act
+        actual = model(x)
+
+        # Assert
+        self.assertFalse(torch.isnan(actual).any())
+        self.assertTrue(torch.isfinite(actual).all())
+
+    def test_when_evaluating_then_two_forward_passes_of_the_same_input_are_identical(
+        self,
+    ):
+        # Arrange
+        torch.manual_seed(0)
+        model = ResNet(depth=20)
+        model.eval()
+        x = torch.randn(2, 3, 64, 64)
+
+        # Act
+        first = model(x)
+        second = model(x)
+
+        # Assert
+        self.assertTrue(torch.equal(first, second))
+
+    def test_when_backward_is_called_then_every_parameter_gets_a_finite_gradient(self):
+        # Arrange
+        torch.manual_seed(0)
+        model = ResNet(depth=20, num_classes=10)
+        x = torch.randn(2, 3, 64, 64)
+        y = torch.tensor([0, 1])
+        loss_fn = torch.nn.CrossEntropyLoss()
+
+        # Act
+        loss = loss_fn(model(x), y)
+        loss.backward()
+
+        # Assert
+        total_grad_magnitude = 0.0
+        for param in model.parameters():
+            self.assertIsNotNone(param.grad)
+            self.assertFalse(torch.isnan(param.grad).any())
+            total_grad_magnitude += param.grad.abs().sum().item()
+        self.assertGreater(total_grad_magnitude, 0.0)
+
+    def test_when_trained_for_a_few_steps_then_loss_decreases(self):
+        # Arrange
+        torch.manual_seed(0)
+        model = ResNet(depth=20, num_classes=2)
+        x = torch.randn(8, 3, 64, 64)
+        y = torch.randint(0, 2, (8,))
+        loss_fn = torch.nn.CrossEntropyLoss()
+        optimizer = torch.optim.AdamW(model.parameters(), lr=1e-2)
+
+        initial_loss = loss_fn(model(x), y).item()
+
+        # Act
+        for _ in range(20):
+            optimizer.zero_grad()
+            loss = loss_fn(model(x), y)
+            loss.backward()
+            optimizer.step()
+        final_loss = loss_fn(model(x), y).item()
+
+        # Assert
+        self.assertFalse(torch.isnan(torch.tensor(final_loss)))
+        self.assertLess(final_loss, initial_loss)
+
+
+class TestResNetTrain(unittest.TestCase):
+    def test_when_called_after_eval_then_sets_stem_stages_and_head_to_training_mode(
+        self,
+    ):
+        # Arrange
+        model = ResNet(depth=20)
+        model.eval()
+
+        # Act
+        model.train()
+
+        # Assert
+        self.assertTrue(model.training)
+        self.assertTrue(model.stem.training)
+        self.assertTrue(model.stage1[0].training)
+        self.assertTrue(model.head.training)
+
+    def test_when_called_then_returns_the_model_itself(self):
+        # Arrange
+        model = ResNet(depth=20)
+
+        # Act
+        actual = model.train()
+
+        # Assert
+        self.assertIs(actual, model)
+
+
+class TestResNetEval(unittest.TestCase):
+    def test_when_called_then_sets_stem_stages_and_head_to_evaluation_mode(self):
+        # Arrange
+        model = ResNet(depth=20)
+
+        # Act
+        model.eval()
+
+        # Assert
+        self.assertFalse(model.training)
+        self.assertFalse(model.stem.training)
+        self.assertFalse(model.stage1[0].training)
+        self.assertFalse(model.head.training)
+
+    def test_when_called_then_returns_the_model_itself(self):
+        # Arrange
+        model = ResNet(depth=20)
+
+        # Act
+        actual = model.eval()
+
+        # Assert
+        self.assertIs(actual, model)
+
+
+class TestResNetParameters(unittest.TestCase):
+    def test_when_called_then_returns_every_parameter_from_stem_stages_and_head(self):
+        # Arrange
+        model = ResNet(depth=20)
+        expected = len(list(model.stem.parameters()))
+        for stage in (model.stage1, model.stage2, model.stage3):
+            for block in stage:
+                expected += len(block.parameters())
+        expected += len(list(model.head.parameters()))
+
+        # Act
+        actual = len(model.parameters())
+
+        # Assert
+        self.assertEqual(actual, expected)
+        self.assertGreater(actual, 0)
