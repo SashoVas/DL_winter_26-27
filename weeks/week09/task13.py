@@ -10,7 +10,11 @@ from dl_lib.vision.vgg import Vgg
 
 
 def test_model(model, test_dataloader, num_classes=10):
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device(
+        "cuda"
+        if torch.cuda.is_available()
+        else "xpu" if torch.xpu.is_available() else "cpu"
+    )
     model.eval()
 
     f1_score_macro = F1Score(
@@ -52,7 +56,11 @@ def train_model(
 ):
     assert isinstance(train_dataloader.dataset, Subset)
     assert isinstance(test_dataloader.dataset, Subset)
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device(
+        "cuda"
+        if torch.cuda.is_available()
+        else "xpu" if torch.xpu.is_available() else "cpu"
+    )
 
     print("=================== Training Model ==================")
     print(f"Train size: {len(train_dataloader.dataset)}")
@@ -181,8 +189,7 @@ def plot(
     fig, (ax_loss, ax_f1) = plt.subplots(1, 2, figsize=(12, 4))
 
     for label, (losses, f1s) in runs.items():
-        ax_loss.plot(range(len(losses)), losses,
-                     marker="o", markersize=4, label=label)
+        ax_loss.plot(range(len(losses)), losses, marker="o", markersize=4, label=label)
         ax_f1.plot(range(len(f1s)), f1s, marker="o", markersize=4, label=label)
 
     ax_loss.set_title("Training loss")
@@ -214,10 +221,14 @@ def first_run() -> None:
         shuffle=True,
     )
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device(
+        "cuda"
+        if torch.cuda.is_available()
+        else "xpu" if torch.xpu.is_available() else "cpu"
+    )
     vgg = Vgg(batch_norm=True).to(device)
 
-    res_vgg = ['VGG 56'] + train_model(
+    res_vgg = ["VGG 56"] + train_model(
         vgg,
         torch.optim.AdamW(vgg.parameters(), lr=0.001),
         small_train,
@@ -285,11 +296,18 @@ def first_run() -> None:
         "Best Validation F1 Macro",
         "Best Validation F1 Micro",
         "Train losses",
-        "Test losses"
+        "Test losses",
     ]
     save_to_csv(
-        [columns, res_vgg, res_plain, res_resnet, res_resnet32,
-         res_resnet20, res_resnet20_new_channel_plan],
+        [
+            columns,
+            res_vgg,
+            res_plain,
+            res_resnet,
+            res_resnet32,
+            res_resnet20,
+            res_resnet20_new_channel_plan,
+        ],
         "results/week09/task13.csv",
     )
 
@@ -303,7 +321,11 @@ def second_run() -> None:
         shuffle=True,
     )
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device(
+        "cuda"
+        if torch.cuda.is_available()
+        else "xpu" if torch.xpu.is_available() else "cpu"
+    )
 
     ResNet.CHANNEL_PLAN = (32, 32, 64, 128)
     resnet32_new_channel_plan = ResNet(depth=32).to(device)
@@ -335,7 +357,7 @@ def second_run() -> None:
         "Best Validation F1 Macro",
         "Best Validation F1 Micro",
         "Train losses",
-        "Test losses"
+        "Test losses",
     ]
     save_to_csv(
         [columns, res_resnet32_new_channel_plan, res_resnet56_new_channel_plan],
@@ -351,6 +373,8 @@ def main() -> int:
         for i in range(torch.cuda.device_count()):
             props = torch.cuda.get_device_properties(i)
             print(f"  [{i}] {props.name}, {props.total_memory / 1024**3:.1f} GB")
+    elif torch.xpu.is_available():
+        print("Using xpu")
     else:
         print("CUDA not available, using CPU")
 
