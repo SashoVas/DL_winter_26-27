@@ -160,7 +160,7 @@ def conv_flops(model: nn.Module) -> int:
     return counter.get_flop_counts()["Global"][torch.ops.aten.convolution]
 
 
-def main():
+def main() -> int:
     train_dataloader, val_dataloader, _, _ = load_cifar10_loaders(32)
     small_train = DataLoader(
         Subset(train_dataloader.dataset, range(1000)),
@@ -205,3 +205,4 @@ def main():
     print(
         f"Stride-2 downsampler: final train_loss={final_loss_strided} val_f1={final_f1_strided}"
     )
+    return 0
