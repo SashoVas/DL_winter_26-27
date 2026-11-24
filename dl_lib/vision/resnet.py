@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 import torch
 
 from dl_lib.nn.module import Module
@@ -64,7 +66,7 @@ class ResidualBlock(Module):
 
 
 class ResNet(Module):
-    CHANNEL_PLAN = (16, 16, 32, 64)
+    CHANNEL_PLAN: ClassVar[tuple[int, int, int, int]] = (16, 16, 32, 64)
 
     @staticmethod
     def _make_stage(in_channels: int, out_channels: int, num_blocks: int, stride: int):

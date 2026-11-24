@@ -1,8 +1,10 @@
+import csv
+
 import matplotlib.pyplot as plt
 import torch
 from torch.utils.data import DataLoader, Subset
 from torchmetrics import F1Score
-import csv
+
 from dl_lib.nn.module import Module
 from dl_lib.vision.functional import load_cifar10_loaders
 from dl_lib.vision.resnet import ResNet
@@ -13,7 +15,9 @@ def test_model(model, test_dataloader, num_classes=10):
     device = torch.device(
         "cuda"
         if torch.cuda.is_available()
-        else "xpu" if torch.xpu.is_available() else "cpu"
+        else "xpu"
+        if torch.xpu.is_available()
+        else "cpu"
     )
     model.eval()
 
@@ -59,7 +63,9 @@ def train_model(
     device = torch.device(
         "cuda"
         if torch.cuda.is_available()
-        else "xpu" if torch.xpu.is_available() else "cpu"
+        else "xpu"
+        if torch.xpu.is_available()
+        else "cpu"
     )
 
     print("=================== Training Model ==================")
@@ -224,7 +230,9 @@ def first_run() -> None:
     device = torch.device(
         "cuda"
         if torch.cuda.is_available()
-        else "xpu" if torch.xpu.is_available() else "cpu"
+        else "xpu"
+        if torch.xpu.is_available()
+        else "cpu"
     )
     vgg = Vgg(batch_norm=True).to(device)
 
@@ -308,7 +316,7 @@ def first_run() -> None:
             res_resnet20,
             res_resnet20_new_channel_plan,
         ],
-        "results/week09/task13.csv",
+        "results/week09/snapshots/task13.csv",
     )
 
 
@@ -324,7 +332,9 @@ def second_run() -> None:
     device = torch.device(
         "cuda"
         if torch.cuda.is_available()
-        else "xpu" if torch.xpu.is_available() else "cpu"
+        else "xpu"
+        if torch.xpu.is_available()
+        else "cpu"
     )
 
     ResNet.CHANNEL_PLAN = (32, 32, 64, 128)
@@ -361,8 +371,123 @@ def second_run() -> None:
     ]
     save_to_csv(
         [columns, res_resnet32_new_channel_plan, res_resnet56_new_channel_plan],
-        "results/week09/task13_2.csv",
+        "results/week09/snapshots/task13_2.csv",
     )
+
+
+def final_run() -> None:
+
+    train_dataloader, val_dataloader, test_dataloader, _ = load_cifar10_loaders(64)
+    small_train = DataLoader(
+        Subset(train_dataloader.dataset, range(50000)),
+        batch_size=train_dataloader.batch_size,
+        shuffle=True,
+    )
+
+    device = torch.device(
+        "cuda"
+        if torch.cuda.is_available()
+        else "xpu"
+        if torch.xpu.is_available()
+        else "cpu"
+    )
+
+    ResNet.CHANNEL_PLAN = (64, 64, 128, 256)
+    resnet32_new_channel_plan = ResNet(depth=32).to(device)
+
+    res_resnet32_new_channel_plan = ["Resnet 32 new channel plan"] + train_model(
+        resnet32_new_channel_plan,
+        torch.optim.AdamW(resnet32_new_channel_plan.parameters(), lr=0.001),
+        small_train,
+        test_dataloader=val_dataloader,
+        num_epochs=20,
+    )
+    print("Test scores:", test_model(resnet32_new_channel_plan, test_dataloader, 10))
+    columns = [
+        "Model",
+        "Train Loss",
+        "Validation F1 Macro",
+        "Validation F1 Micro",
+        "Validation Loss",
+        "Best Validation F1 Macro",
+        "Best Validation F1 Micro",
+        "Train losses",
+        "Test losses",
+    ]
+    save_to_csv(
+        [columns, res_resnet32_new_channel_plan],
+        "results/week09/snapshots/task13_final.csv",
+    )
+
+
+class MajorityClassBaseline(torch.nn.Module):
+    def __init__(self, majority_class: int, num_classes: int = 10):
+        super().__init__()
+        logits = torch.zeros(num_classes)
+        logits[majority_class] = 1.0
+        self.register_buffer("logits", logits)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.logits.expand(x.size(0), -1)
+
+
+def baseline() -> None:
+    num_classes = 10
+    train_dataloader, val_dataloader, _, _ = load_cifar10_loaders(64)
+    small_train = DataLoader(
+        Subset(train_dataloader.dataset, range(20000)),
+        batch_size=train_dataloader.batch_size,
+        shuffle=False,
+    )
+
+    device = torch.device(
+        "cuda"
+        if torch.cuda.is_available()
+        else "xpu"
+        if torch.xpu.is_available()
+        else "cpu"
+    )
+
+    # Most common class in the training set
+    counts = torch.zeros(num_classes, dtype=torch.long)
+    for _, labels in small_train:
+        counts += torch.bincount(labels.long(), minlength=num_classes)
+    majority_class = int(counts.argmax())
+    print(f"Class counts: {counts.tolist()}")
+    print(f"Majority class: {majority_class}")
+
+    model = MajorityClassBaseline(majority_class, num_classes).to(device)
+    _, _, train_loss = test_model(model, small_train, num_classes)
+    val_f1_macro, val_f1_micro, val_loss = test_model(
+        model, val_dataloader, num_classes
+    )
+
+    print(f"Validation F1 Macro: {val_f1_macro}")
+    print(f"Validation F1 Micro: {val_f1_micro}")
+
+    columns = [
+        "Model",
+        "Train Loss",
+        "Validation F1 Macro",
+        "Validation F1 Micro",
+        "Validation Loss",
+        "Best Validation F1 Macro",
+        "Best Validation F1 Micro",
+        "Train losses",
+        "Test losses",
+    ]
+    res_baseline = [
+        "Majority class",
+        train_loss,
+        [val_f1_macro],
+        [val_f1_micro],
+        val_loss,
+        val_f1_macro,
+        val_f1_micro,
+        [train_loss],
+        [val_loss],
+    ]
+    save_to_csv([columns, res_baseline], "results/week09/snapshots/task13_baseline.csv")
 
 
 def main() -> int:
@@ -379,5 +504,7 @@ def main() -> int:
         print("CUDA not available, using CPU")
 
     # first_run()
-    second_run()
+    # second_run()
+    # final_run()
+    baseline()
     return 0

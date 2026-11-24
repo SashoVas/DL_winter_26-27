@@ -1,0 +1,2 @@
+Model,Train Loss,Validation F1 Macro,Validation F1 Micro,Validation Loss,Best Validation F1 Macro,Best Validation F1 Micro,Train losses,Test losses
+Majority class,2.3590501693725585,[0.017950117588043213],[0.09860000014305115],2.362550169372559,0.017950117588043213,0.09860000014305115,[2.3590501693725585],[2.362550169372559]
